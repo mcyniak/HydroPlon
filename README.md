@@ -39,6 +39,8 @@ Kliknij miniaturę, aby otworzyć pełny zrzut.
 
 Raport pokazuje stan niedoboru wody i jego możliwe przyczyny, zalecenia retencyjne i agrotechniczne oraz opcjonalne nawadnianie. Podaje też źródła, daty obserwacji IMGW i Sentinel‑2, niepewność oraz braki danych. Wyniki są orientacyjne.
 
+Na podstawie dostępnych wycen raport oblicza próg opłacalności i pokazuje trzy warianty rocznej korzyści odpowiadające 50%, 100% i 150% tego progu. Możesz też podać własną cenę sprzedaży, zakładaną zmianę plonu i roczne oszczędności. Przeliczony wynik pojawi się w raporcie i w pobieranym PDF-ie.
+
 ## Gdzie co jest
 
 | Katalog | Zawartość |
