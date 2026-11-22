@@ -153,47 +153,284 @@
   padding: 8px 10px
   white-space: nowrap
 
-.timeline
-  display: grid
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr))
-  gap: 12px
-  margin-top: 18px
+// ---------- Plan wdrożenia ----------
+.implementation-plan
+  background: $soft
+  h4
+    margin: 0 0 12px
+    font-size: 15px
+    font-weight: 750
+  a:focus-visible, summary:focus-visible, .implementation-task:focus
+    @include focus-ring($green-mid)
 
-.timeline-item
-  position: relative
-  background: #f8fbf9
-  border: 1px solid #e5ece7
-  border-radius: 12px
-  padding: 16px 14px
-  .num
-    display: grid
-    place-items: center
-    width: 29px
-    height: 29px
-    border-radius: 50%
-    background: #e1f1e6
-    color: #23764d
+.implementation-header
+  display: flex
+  align-items: center
+  gap: 14px
+  padding-bottom: 17px
+  border-bottom: 1px solid $green-line
+  margin-bottom: 19px
+  h3
+    color: $green-deep
+    font-size: clamp(21px, 2.5vw, 27px)
     font-weight: 800
-    font-size: 12px
-    margin-bottom: 10px
-  strong
-    font-size: 12px
-    display: block
+    letter-spacing: -.025em
+    line-height: 1.2
   p
-    font-size: 12px
-    color: $ink-3
-    line-height: 1.55
-    margin: 6px 0 0
+    margin: 4px 0 0
+    color: $green-ink
+    font-size: 13px
 
-.task-list
-  margin: 8px 0 0
-  padding-left: 16px
+.implementation-icon
+  display: grid
+  flex: 0 0 43px
+  height: 43px
+  place-items: center
+  border-radius: 12px
+  background: $green
+  color: $bg
+  .icon
+    width: 23px
+    height: 23px
+
+.implementation-layout
+  display: grid
+  grid-template-columns: minmax(0, 1.8fr) minmax(240px, 1fr)
+  align-items: start
+  gap: 24px
+
+.implementation-stages, .implementation-tasks, .implementation-deadlines
+  list-style: none
+  margin: 0
+  padding: 0
+
+.implementation-stages
+  --implementation-marker: 28px
+  position: relative
+  display: grid
+  gap: 8px
+  &::before
+    content: ""
+    position: absolute
+    inset: 24px auto 24px calc(var(--implementation-marker) / 2 - 1px)
+    width: 2px
+    background: $green-line
+
+.implementation-stage
+  position: relative
+  display: grid
+  grid-template-columns: var(--implementation-marker) minmax(0, 1fr)
+  gap: 11px
+  align-items: start
+
+.implementation-step
+  display: grid
+  place-items: center
+  width: var(--implementation-marker)
+  height: var(--implementation-marker)
+  margin-top: 11px
+  border: 1px solid $green-line
+  border-radius: 50%
+  background: $green-pale
+  color: $green-deep
   font-size: 12px
+  font-weight: 800
+
+.implementation-stage:first-child .implementation-step
+  background: $green
+  border-color: $green
+  color: $bg
+
+.implementation-phase
+  min-width: 0
+  border: 1px solid $border
+  border-radius: 11px
+  background: $bg
+  > summary
+    display: flex
+    min-height: 48px
+    align-items: center
+    justify-content: space-between
+    gap: 12px
+    padding: 10px 14px
+    border-radius: 10px
+    cursor: pointer
+    list-style: none
+    &::-webkit-details-marker
+      display: none
+    &:hover
+      background: $green-pale
+    > span
+      display: flex
+      align-items: baseline
+      flex-wrap: wrap
+      gap: 3px 10px
+    .icon
+      flex: 0 0 17px
+      width: 17px
+      height: 17px
+      color: $green
+  &[open]
+    border-color: $green-line
+    > summary
+      background: $green-pale
+      border-bottom: 1px solid $green-line
+      border-radius: 10px 10px 0 0
+      .icon
+        transform: rotate(180deg)
+
+.implementation-phase-title
+  color: $green-deep
+  font-size: 15px
+  font-weight: 750
+
+.implementation-phase-count
+  color: $ink-3
+  font-size: 12px
+  white-space: nowrap
+
+.implementation-tasks
+  padding: 0 14px
+
+.implementation-task
+  padding: 12px 0
+  scroll-margin-block: 80px 18px
+  overflow-wrap: anywhere
+  + .implementation-task
+    border-top: 1px solid $border
+  &:focus
+    margin: 0 -6px
+    padding-inline: 6px
+    border-radius: 6px
+    background: $green-pale
+
+.implementation-task-heading, .implementation-task-meta
+  display: flex
+  align-items: baseline
+  flex-wrap: wrap
+  gap: 4px 8px
+
+.implementation-task-heading
+  font-size: 14px
+  line-height: 1.4
+  strong
+    font-weight: 700
+
+.implementation-check, .implementation-program
+  padding: 1px 6px
+  border-radius: 5px
+  font-size: 11px
+  font-weight: 700
+
+.implementation-check
+  background: $yellow-pale
+  color: $gold-ink
+
+.implementation-program
+  background: $green-pale
+  color: $green-deep
+
+.implementation-task-meta, .implementation-completion, .implementation-agenda p
   color: $ink-2
-  li + li
-    margin-top: 4px
-  span
-    color: $ink-3
+  font-size: 13px
+  line-height: 1.45
+
+.implementation-task-meta, .implementation-completion
+  margin: 4px 0 0
+
+.implementation-sidebar
+  display: grid
+  gap: 10px
+
+.implementation-agenda
+  padding: 15px 16px
+  border: 1px solid $gold-line
+  border-radius: 12px
+  background: $yellow-pale
+  overflow-wrap: anywhere
+  h4
+    display: flex
+    align-items: center
+    gap: 7px
+    color: $gold-deep
+    .icon
+      width: 18px
+      height: 18px
+  p
+    margin: 2px 0 0
+
+.implementation-deadlines
+  li
+    display: grid
+    gap: 3px
+    padding: 10px 0
+    border-top: 1px solid $gold-line
+    &:last-child
+      padding-bottom: 0
+  a
+    border-radius: 2px
+    color: $ink
+    font-size: 14px
+    font-weight: 700
+    line-height: 1.4
+    text-decoration-line: underline
+    text-decoration-color: $gold
+    text-underline-offset: 3px
+    &:hover
+      color: $green
+      text-decoration-color: currentColor
+
+.implementation-date
+  color: $gold-deep
+  font-size: 13px
+  font-weight: 750
+  font-variant-numeric: tabular-nums
+
+.implementation-more
+  margin-top: 12px
+  summary
+    cursor: pointer
+    color: $gold-deep
+    font-size: 13px
+    font-weight: 700
+  &[open] summary
+    margin-bottom: 8px
+
+.implementation-conditions
+  padding: 12px 15px
+  border: 1px solid $green-line
+  border-radius: 11px
+  background: $bg
+  overflow-wrap: anywhere
+  summary
+    cursor: pointer
+    color: $green-deep
+    font-size: 14px
+    font-weight: 750
+  ul
+    margin: 9px 0 0
+    padding-left: 17px
+    color: $ink-2
+    font-size: 13px
+
+.implementation-empty
+  margin: 0
+  color: $ink-2
+
+@media (max-width: $bp-narrow)
+  .implementation-layout
+    grid-template-columns: minmax(0, 1fr)
+    gap: 18px
+
+@media (max-width: $bp-phone)
+  .implementation-stages
+    --implementation-marker: 24px
+  .implementation-stage
+    gap: 7px
+  .implementation-phase > summary
+    padding-inline: 10px
+  .implementation-tasks
+    padding-inline: 10px
 
 details.more summary
   cursor: pointer
@@ -325,52 +562,3 @@ details.analysis-section
   color: $ink-3 !important
   a
     color: $green
-
-// ---------- Plan: najbliższe terminy ----------
-.deadlines
-  margin-top: 16px
-  border: 1px solid #e5ece7
-  border-radius: 12px
-  padding: 14px 16px
-  background: #fbfdfb
-  h4
-    margin: 0 0 10px
-    font-size: 13px
-
-.deadline-list
-  list-style: none
-  margin: 0
-  padding: 0
-  li
-    display: grid
-    grid-template-columns: minmax(170px, auto) 1fr
-    gap: 12px
-    padding: 8px 0
-    border-top: 1px solid #edf1ee
-    font-size: 12.5px
-    &:first-child
-      border-top: 0
-  span span
-    color: $ink-3
-    font-size: 12px
-
-.deadline-date
-  font-weight: 750
-  color: $green-deep
-  font-variant-numeric: tabular-nums
-  white-space: nowrap
-
-.task-date
-  color: $green-deep
-  font-weight: 650
-  font-variant-numeric: tabular-nums
-  white-space: nowrap
-
-.task-prog
-  color: $gold-deep
-  font-weight: 650
-
-@media (max-width: $bp-phone)
-  .deadline-list li
-    grid-template-columns: 1fr
-    gap: 2px

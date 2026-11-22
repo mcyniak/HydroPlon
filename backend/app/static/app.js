@@ -399,6 +399,88 @@ function costLabel({ capex, opex, unpriced }) {
   if (unpriced) parts.push('do wyceny');
   return parts.length ? parts.join(' + ') : 'w pozycjach wspólnych';
 }
+function renderImplementation(impl) {
+  const phases = new Map();
+  for (const task of impl.tasks) {
+    if (!phases.has(task.phase)) phases.set(task.phase, { label: task.phase_label_pl, tasks: [] });
+    phases.get(task.phase).tasks.push(task);
+  }
+
+  const taskCount = (n) => `${n} ${plural(n, 'zadanie', 'zadania', 'zadań')}`;
+  const time = (date) => `<time datetime="${esc(date)}">${esc(fmtDate(date))}</time>`;
+  const dateRange = (task) => task.window_to
+    ? `${time(task.window_from)} – ${time(task.window_to)}`
+    : `od ${time(task.window_from)}`;
+  const chevron = '<svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg>';
+
+  const taskHtml = (task) => {
+    const codes = (task.program_ids || []).map((label) => label.split(' ')[0]);
+    return `<li class="implementation-task" id="implementation-${esc(task.task_id)}" tabindex="-1">
+      <div class="implementation-task-heading">
+        <strong>${esc(task.title_pl)}</strong>
+        ${task.status === 'requires_verification' ? '<span class="implementation-check">Wymaga weryfikacji</span>' : ''}
+      </div>
+      <div class="implementation-task-meta">
+        ${task.window_from ? `<span class="implementation-date">${dateRange(task)}</span>` : `<span>${esc(task.timing_pl)}</span>`}
+        ${codes.length ? `<span class="implementation-program">${esc(codes.join(', '))}</span>` : ''}
+      </div>
+      ${task.completion_check_pl ? `<p class="implementation-completion">Sprawdzenie wykonania · ${esc(task.completion_check_pl)}</p>` : ''}
+    </li>`;
+  };
+
+  const phaseHtml = ([, phase], index) => `<li class="implementation-stage">
+    <span class="implementation-step" aria-hidden="true">${index + 1}</span>
+    <details class="implementation-phase"${index === 0 ? ' open' : ''}>
+      <summary>
+        <span><span class="implementation-phase-title">${esc(phase.label)}</span>
+          <span class="implementation-phase-count">${taskCount(phase.tasks.length)}</span></span>
+        ${chevron}
+      </summary>
+      <ul class="implementation-tasks" role="list">${phase.tasks.map(taskHtml).join('')}</ul>
+    </details>
+  </li>`;
+
+  const dated = impl.tasks.filter((task) => task.window_from)
+    .sort((a, b) => a.window_from.localeCompare(b.window_from));
+  const deadlineList = (tasks) => `<ul class="implementation-deadlines" role="list">${tasks.map((task) => `<li>
+    <span class="implementation-date">${dateRange(task)}</span>
+    <a href="#implementation-${encodeURIComponent(task.task_id)}" data-implementation-task="implementation-${esc(task.task_id)}">${esc(task.title_pl)}</a>
+    ${task.window_note_pl ? `<p>${esc(task.window_note_pl)}</p>` : ''}
+  </li>`).join('')}</ul>`;
+  const upcomingCount = 3;
+  const laterCount = dated.length - upcomingCount;
+  const checks = impl.stop_go_conditions || [];
+  const warnings = impl.warnings || [];
+  const phaseCount = phases.size;
+  return `<section class="report-section implementation-plan" aria-labelledby="implementation-title">
+    <header class="implementation-header">
+      <span class="implementation-icon"><svg class="icon" aria-hidden="true"><use href="#icon-plan"/></svg></span>
+      <div>
+        <h3 id="implementation-title">Plan wdrożenia</h3>
+        <p>${phaseCount} ${plural(phaseCount, 'etap', 'etapy', 'etapów')} · ${taskCount(impl.tasks.length)}</p>
+      </div>
+    </header>
+    ${phaseCount ? `<div class="implementation-layout">
+      <div>
+        <h4>Etapy prac</h4>
+        <ol class="implementation-stages" role="list">${[...phases].sort(([a], [b]) => a - b).map(phaseHtml).join('')}</ol>
+      </div>
+      <aside class="implementation-sidebar" aria-label="Terminy i warunki wdrożenia">
+        <div class="implementation-agenda">
+          <h4><svg class="icon" aria-hidden="true"><use href="#icon-calendar"/></svg>Najbliższe terminy</h4>
+          ${dated.length ? deadlineList(dated.slice(0, upcomingCount)) : '<p>Szczegóły dotyczące czasu realizacji znajdziesz przy zadaniach.</p>'}
+          ${laterCount > 0 ? `<details class="implementation-more"><summary>Kolejne terminy (${laterCount})</summary>${deadlineList(dated.slice(upcomingCount))}</details>` : ''}
+        </div>
+        ${checks.length ? `<details class="implementation-conditions">
+          <summary>Warunki rozpoczęcia (${checks.length})</summary>
+          <ul>${checks.map((condition) => `<li>${esc(condition)}</li>`).join('')}</ul>
+        </details>` : ''}
+      </aside>
+    </div>` : '<p class="implementation-empty">Brak zadań w planie wdrożenia.</p>'}
+    ${warnings.length ? `<ul class="fine-list">${warnings.map((warning) => `<li>${esc(warning)}</li>`).join('')}</ul>` : ''}
+  </section>`;
+}
+
 function renderReport() {
   const fp = state.plan; if (!fp) { $('report').innerHTML = ''; return; }
   const pr = fp.section_1_profitability, costs = fp.section_2_costs, t = costs.totals, fund = fp.section_3_funding, impl = fp.section_4_implementation;
@@ -464,32 +546,22 @@ function renderReport() {
     ${[...(fund.double_funding_warnings || []), ...(fund.warnings || [])].length ? `<ul class="fine-list">${[...(fund.double_funding_warnings || []), ...(fund.warnings || [])].map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}
     <p class="fine">Dotacji nie odejmujemy od kosztów — wskazanie programu nie oznacza przyznania wsparcia.</p></div>`;
 
-  // 4. Plan wdrożenia — najbliższe terminy (z programów) + fazy
-  const phases = [];
-  for (const task of impl.tasks) {
-    let ph = phases.find((p) => p.phase === task.phase);
-    if (!ph) { ph = { phase: task.phase, label: task.phase_label_pl, tasks: [] }; phases.push(ph); }
-    ph.tasks.push(task);
-  }
-  phases.sort((a, b) => a.phase - b.phase);
-  const codeOf = (label) => String(label).split(' ')[0];
-  const dated = impl.tasks.filter((t) => t.window_from).sort((a, b) => a.window_from.localeCompare(b.window_from));
-  const taskLi = (tk) => `<li>${esc(tk.title_pl)}${tk.window_from ? ` <span class="task-date">${esc(fmtDate(tk.window_from))} – ${esc(fmtDate(tk.window_to))}</span>` : (tk.timing_pl ? ` <span>· ${esc(tk.timing_pl)}</span>` : '')}${(tk.program_ids || []).length ? ` <span class="task-prog">${esc(tk.program_ids.map(codeOf).join(', '))}</span>` : ''}</li>`;
-  const deadlinesHtml = dated.length ? `<div class="deadlines"><h4>Najbliższe terminy</h4><ol class="deadline-list">${dated.map((t) => `<li>
-      <span class="deadline-date">${esc(fmtDate(t.window_from))} – ${esc(fmtDate(t.window_to))}</span>
-      <span class="deadline-what"><b>${esc(t.title_pl)}</b>${(t.program_ids || []).length ? ` · ${esc(t.program_ids.map(codeOf).join(', '))}` : ''}<br><span>${esc(t.window_note_pl || '')}</span></span></li>`).join('')}</ol></div>` : '';
-  const implHtml = `<div class="report-section"><div class="report-heading"><svg class="icon"><use href="#icon-plan"/></svg>PLAN WDROŻENIA ZMIAN</div>
-    <div class="subline">${impl.tasks.length} ${plural(impl.tasks.length, 'zadanie', 'zadania', 'zadań')} w ${phases.length} ${plural(phases.length, 'fazie', 'fazach', 'fazach')} · wspólne prace dla kilku metod połączone w jedno zadanie${dated.length ? ' · terminy liczone od dziś według zasad programów' : ''}</div>
-    ${deadlinesHtml}
-    <div class="timeline">${phases.map((ph, i) => `<div class="timeline-item"><span class="num">${i + 1}</span><strong>${esc(ph.label)}</strong>
-      <ul class="task-list">${ph.tasks.slice(0, 4).map(taskLi).join('')}</ul>
-      ${ph.tasks.length > 4 ? `<details class="more"><summary>i jeszcze ${ph.tasks.length - 4}</summary><ul class="task-list">${ph.tasks.slice(4).map(taskLi).join('')}</ul></details>` : ''}</div>`).join('')}</div>
-    ${(impl.stop_go_conditions || []).length ? `<details class="more" style="margin-top:14px"><summary>Warunki STOP/GO przed realizacją (${impl.stop_go_conditions.length})</summary><ul class="fine-list">${impl.stop_go_conditions.map((c) => `<li>${esc(c)}</li>`).join('')}</ul></details>` : ''}</div>`;
+  const implHtml = renderImplementation(impl);
 
   // 5. Rozwijana analiza (zawsze na końcu)
   $('report').innerHTML = `<div class="report-top">${benefitHtml}${costHtml}</div>${fundHtml}${implHtml}${analysisDetailsHtml(an, ca, fp)}
     <div class="report-print"><a class="action blue" href="/api/plans/${encodeURIComponent(fp.plan_id)}/pdf" target="_blank" rel="noopener"><svg class="icon"><use href="#icon-printer"/></svg>Pobierz raport PDF</a></div>`;
 }
+$('report').addEventListener('click', (event) => {
+  const link = event.target.closest('[data-implementation-task]');
+  if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  const task = $(link.dataset.implementationTask);
+  if (!task) return;
+  event.preventDefault();
+  task.closest('details').open = true;
+  task.focus({ preventScroll: true });
+  task.scrollIntoView({ block: 'nearest' });
+});
 function chip(title, status, lines) {
   const ok = status === 'ok';
   return `<div class="analysis-chip ${ok ? '' : 'missing'}"><b>${esc(title)}</b>${ok || status === 'partial' ? lines.filter(Boolean).map((l) => `<span>${l}</span>`).join('') : `<span class="na">${esc(MSTATUS_PL[status] || status || 'brak danych')}</span>`}</div>`;

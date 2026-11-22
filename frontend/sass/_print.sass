@@ -17,3 +17,9 @@
     grid-template-columns: 1.75fr 1fr
   details.analysis-section > .analysis-body
     display: block !important
+  .implementation-layout
+    grid-template-columns: 1fr
+  .implementation-plan details::details-content
+    content-visibility: visible
+  .implementation-task, .implementation-phase > summary, .implementation-deadlines li
+    break-inside: avoid

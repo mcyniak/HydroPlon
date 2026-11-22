@@ -1463,56 +1463,344 @@ details.notes ul {
   white-space: nowrap;
 }
 
-.timeline {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 12px;
-  margin-top: 18px;
+.implementation-plan {
+  background: #f7faf8;
+}
+.implementation-plan h4 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 750;
+}
+.implementation-plan a:focus-visible, .implementation-plan summary:focus-visible, .implementation-plan .implementation-task:focus {
+  outline: 3px solid #18865e;
+  outline-offset: 3px;
 }
 
-.timeline-item {
-  position: relative;
-  background: #f8fbf9;
-  border: 1px solid #e5ece7;
-  border-radius: 12px;
-  padding: 16px 14px;
+.implementation-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid #b9dcc8;
+  margin-bottom: 19px;
 }
-.timeline-item .num {
+.implementation-header h3 {
+  color: #074b35;
+  font-size: clamp(21px, 2.5vw, 27px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+.implementation-header p {
+  margin: 4px 0 0;
+  color: #3f6a56;
+  font-size: 13px;
+}
+
+.implementation-icon {
+  display: grid;
+  flex: 0 0 43px;
+  height: 43px;
+  place-items: center;
+  border-radius: 12px;
+  background: #0e6548;
+  color: #fff;
+}
+.implementation-icon .icon {
+  width: 23px;
+  height: 23px;
+}
+
+.implementation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(240px, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.implementation-stages, .implementation-tasks, .implementation-deadlines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.implementation-stages {
+  --implementation-marker: 28px;
+  position: relative;
+  display: grid;
+  gap: 8px;
+}
+.implementation-stages::before {
+  content: "";
+  position: absolute;
+  inset: 24px auto 24px calc(var(--implementation-marker) / 2 - 1px);
+  width: 2px;
+  background: #b9dcc8;
+}
+
+.implementation-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--implementation-marker) minmax(0, 1fr);
+  gap: 11px;
+  align-items: start;
+}
+
+.implementation-step {
   display: grid;
   place-items: center;
-  width: 29px;
-  height: 29px;
+  width: var(--implementation-marker);
+  height: var(--implementation-marker);
+  margin-top: 11px;
+  border: 1px solid #b9dcc8;
   border-radius: 50%;
-  background: #e1f1e6;
-  color: #23764d;
+  background: #eff9f3;
+  color: #074b35;
+  font-size: 12px;
   font-weight: 800;
-  font-size: 12px;
-  margin-bottom: 10px;
-}
-.timeline-item strong {
-  font-size: 12px;
-  display: block;
-}
-.timeline-item p {
-  font-size: 12px;
-  color: #5a6d67;
-  line-height: 1.55;
-  margin: 6px 0 0;
 }
 
-.task-list {
-  margin: 8px 0 0;
-  padding-left: 16px;
+.implementation-stage:first-child .implementation-step {
+  background: #0e6548;
+  border-color: #0e6548;
+  color: #fff;
+}
+
+.implementation-phase {
+  min-width: 0;
+  border: 1px solid #e1eae6;
+  border-radius: 11px;
+  background: #fff;
+}
+.implementation-phase > summary {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  list-style: none;
+}
+.implementation-phase > summary::-webkit-details-marker {
+  display: none;
+}
+.implementation-phase > summary:hover {
+  background: #eff9f3;
+}
+.implementation-phase > summary > span {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 3px 10px;
+}
+.implementation-phase > summary .icon {
+  flex: 0 0 17px;
+  width: 17px;
+  height: 17px;
+  color: #0e6548;
+}
+.implementation-phase[open] {
+  border-color: #b9dcc8;
+}
+.implementation-phase[open] > summary {
+  background: #eff9f3;
+  border-bottom: 1px solid #b9dcc8;
+  border-radius: 10px 10px 0 0;
+}
+.implementation-phase[open] > summary .icon {
+  transform: rotate(180deg);
+}
+
+.implementation-phase-title {
+  color: #074b35;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.implementation-phase-count {
+  color: #5a6d67;
   font-size: 12px;
+  white-space: nowrap;
+}
+
+.implementation-tasks {
+  padding: 0 14px;
+}
+
+.implementation-task {
+  padding: 12px 0;
+  scroll-margin-block: 80px 18px;
+  overflow-wrap: anywhere;
+}
+.implementation-task + .implementation-task {
+  border-top: 1px solid #e1eae6;
+}
+.implementation-task:focus {
+  margin: 0 -6px;
+  padding-inline: 6px;
+  border-radius: 6px;
+  background: #eff9f3;
+}
+
+.implementation-task-heading, .implementation-task-meta {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.implementation-task-heading {
+  font-size: 14px;
+  line-height: 1.4;
+}
+.implementation-task-heading strong {
+  font-weight: 700;
+}
+
+.implementation-check, .implementation-program {
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.implementation-check {
+  background: #fff9e9;
+  color: #7a5f1c;
+}
+
+.implementation-program {
+  background: #eff9f3;
+  color: #074b35;
+}
+
+.implementation-task-meta, .implementation-completion, .implementation-agenda p {
+  color: #4a5e58;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.implementation-task-meta, .implementation-completion {
+  margin: 4px 0 0;
+}
+
+.implementation-sidebar {
+  display: grid;
+  gap: 10px;
+}
+
+.implementation-agenda {
+  padding: 15px 16px;
+  border: 1px solid #ebd492;
+  border-radius: 12px;
+  background: #fff9e9;
+  overflow-wrap: anywhere;
+}
+.implementation-agenda h4 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #805a0b;
+}
+.implementation-agenda h4 .icon {
+  width: 18px;
+  height: 18px;
+}
+.implementation-agenda p {
+  margin: 2px 0 0;
+}
+
+.implementation-deadlines li {
+  display: grid;
+  gap: 3px;
+  padding: 10px 0;
+  border-top: 1px solid #ebd492;
+}
+.implementation-deadlines li:last-child {
+  padding-bottom: 0;
+}
+.implementation-deadlines a {
+  border-radius: 2px;
+  color: #172c29;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration-line: underline;
+  text-decoration-color: #ba830d;
+  text-underline-offset: 3px;
+}
+.implementation-deadlines a:hover {
+  color: #0e6548;
+  text-decoration-color: currentColor;
+}
+
+.implementation-date {
+  color: #805a0b;
+  font-size: 13px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.implementation-more {
+  margin-top: 12px;
+}
+.implementation-more summary {
+  cursor: pointer;
+  color: #805a0b;
+  font-size: 13px;
+  font-weight: 700;
+}
+.implementation-more[open] summary {
+  margin-bottom: 8px;
+}
+
+.implementation-conditions {
+  padding: 12px 15px;
+  border: 1px solid #b9dcc8;
+  border-radius: 11px;
+  background: #fff;
+  overflow-wrap: anywhere;
+}
+.implementation-conditions summary {
+  cursor: pointer;
+  color: #074b35;
+  font-size: 14px;
+  font-weight: 750;
+}
+.implementation-conditions ul {
+  margin: 9px 0 0;
+  padding-left: 17px;
+  color: #4a5e58;
+  font-size: 13px;
+}
+
+.implementation-empty {
+  margin: 0;
   color: #4a5e58;
 }
-.task-list li + li {
-  margin-top: 4px;
-}
-.task-list span {
-  color: #5a6d67;
-}
 
+@media (max-width: 800px) {
+  .implementation-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+}
+@media (max-width: 570px) {
+  .implementation-stages {
+    --implementation-marker: 24px;
+  }
+  .implementation-stage {
+    gap: 7px;
+  }
+  .implementation-phase > summary {
+    padding-inline: 10px;
+  }
+  .implementation-tasks {
+    padding-inline: 10px;
+  }
+}
 details.more summary {
   cursor: pointer;
   font-size: 11.5px;
@@ -1671,64 +1959,6 @@ details.analysis-section[open] summary .icon {
   color: #0e6548;
 }
 
-.deadlines {
-  margin-top: 16px;
-  border: 1px solid #e5ece7;
-  border-radius: 12px;
-  padding: 14px 16px;
-  background: #fbfdfb;
-}
-.deadlines h4 {
-  margin: 0 0 10px;
-  font-size: 13px;
-}
-
-.deadline-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.deadline-list li {
-  display: grid;
-  grid-template-columns: minmax(170px, auto) 1fr;
-  gap: 12px;
-  padding: 8px 0;
-  border-top: 1px solid #edf1ee;
-  font-size: 12.5px;
-}
-.deadline-list li:first-child {
-  border-top: 0;
-}
-.deadline-list span span {
-  color: #5a6d67;
-  font-size: 12px;
-}
-
-.deadline-date {
-  font-weight: 750;
-  color: #074b35;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.task-date {
-  color: #074b35;
-  font-weight: 650;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.task-prog {
-  color: #805a0b;
-  font-weight: 650;
-}
-
-@media (max-width: 570px) {
-  .deadline-list li {
-    grid-template-columns: 1fr;
-    gap: 2px;
-  }
-}
 @media (max-width: 1050px) {
   .page, .topbar-inner, .footer-inner {
     width: min(100% - 38px, 1450px);
@@ -1921,12 +2151,6 @@ details.analysis-section[open] summary .icon {
     min-width: 0;
     flex: 1 1 100px;
   }
-  .timeline {
-    gap: 8px;
-  }
-  .timeline-item {
-    padding: 12px;
-  }
   .analysis-chips {
     grid-template-columns: 1fr;
   }
@@ -1982,5 +2206,14 @@ details.analysis-section[open] summary .icon {
   }
   details.analysis-section > .analysis-body {
     display: block !important;
+  }
+  .implementation-layout {
+    grid-template-columns: 1fr;
+  }
+  .implementation-plan details::details-content {
+    content-visibility: visible;
+  }
+  .implementation-task, .implementation-phase > summary, .implementation-deadlines li {
+    break-inside: avoid;
   }
 }
