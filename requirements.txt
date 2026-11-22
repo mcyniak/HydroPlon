@@ -1,0 +1,14 @@
+# HydroPlon prototyp — zależności (zweryfikowane w środowisku: Python 3.13, Windows 11)
+fastapi==0.165.0
+uvicorn==0.54.0
+pydantic==2.14.4
+shapely==2.2.0
+pyproj==3.8.0
+httpx==0.28.1
+fpdf2==2.9.0
+tzdata==2026.6
+pytest==9.2.0
+# opcjonalnie: odczyt PDF w testach raportu
+pypdf==7.1.1
+numpy==2.5.5
+rasterio==1.5.2

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HydroPlon — mapa testowa</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root { --ink:#172C29; --border:#C9D6D1; --muted:#5A6B67; --soft:#F4F7F6; --green:#0E6548; --blue:#237DB8; --warn:#8A5A00; --err:#A3261D; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { font: 13px/1.4 system-ui, sans-serif; color: var(--ink); background: #fff; display: flex; flex-direction: column; }
+  header { padding: 8px 16px; border-bottom: 1px solid var(--border); }
+  .layout { flex: 1; display: grid; grid-template-columns: minmax(300px, 35%) 1fr; min-height: 0; }
+  @media (max-width: 800px) { .layout { grid-template-columns: 1fr; grid-template-rows: auto 60vh; } }
+  aside { overflow: auto; padding: 12px 16px; border-right: 1px solid var(--border); }
+  #map { min-height: 300px; }
+  h3 { margin: 14px 0 6px; font-size: 14px; }
+  label { display: block; margin: 3px 0; }
+  input[type=text], input[type=date], select { width: 100%; padding: 4px; }
+  .row { display: flex; gap: 6px; align-items: center; }
+  .row > input[type=text] { flex: 1; }
+  button { padding: 5px 10px; cursor: pointer; }
+  button:disabled { opacity: .5; cursor: default; }
+  .card { background: var(--soft); padding: 8px; margin: 6px 0; }
+  .muted { color: var(--muted); font-size: 12px; }
+  .err { color: var(--err); white-space: pre-wrap; }
+  .warn { color: var(--warn); }
+  .m { border: 1px solid var(--border); border-left: 4px solid var(--border); padding: 5px 7px; margin: 4px 0; }
+  .m.recommended { border-left-color: var(--blue); }
+  .m.not_recommended { opacity: .7; }
+  .badge { font-size: 11px; padding: 0 4px; border: 1px solid currentColor; margin-left: 4px; }
+  .recommended .badge { color: var(--blue); }
+  ul { margin: 4px 0; padding-left: 18px; }
+  .fixture-links button { margin: 2px 2px 2px 0; }
+</style>
+</head>
+<body>
+<header><strong>HydroPlon — mapa testowa (ręczny test mechanizmów)</strong>
+  <span class="muted"> · tryb danych: <b id="mode">?</b> · to nie jest docelowy frontend ·
+  <a href="/docs">Swagger</a> · <a href="/panel">panel</a></span></header>
+<div class="layout">
+<aside>
+  <h3>1. Działka i data</h3>
+  <div class="row"><input type="text" id="pid" placeholder="np. 046301_1.0015.17/2"><button id="btnId">Szukaj</button></div>
+  <p class="muted">…albo kliknij działkę na mapie.</p>
+  <div id="fixtureLinks" class="fixture-links"></div>
+  <label>Data analizy (puste = dziś) <input type="date" id="date"></label>
+  <div id="parcelOut"></div>
+
+  <h3>2. Uprawa i deklaracje</h3>
+  <label>Uprawa <select id="crop"></select></label>
+  <label>Podziemny drenaż <select id="drain"><option value="unknown">Nie wiem</option><option value="yes">Tak</option><option value="no">Nie</option></select></label>
+  <label><input type="checkbox" id="pond"> istniejący zbiornik</label>
+  <label><input type="checkbox" id="weir"> zastawka na rowie</label>
+  <button id="btnAnalyze" disabled>Analizuj działkę i oceń metody</button>
+  <div id="analysisOut"></div>
+
+  <h3>3. Metody</h3>
+  <div id="methodsOut" class="muted">—</div>
+  <button id="btnPlan" disabled>Zbuduj plan</button>
+
+  <h3>4. Raport</h3>
+  <div id="planOut" class="muted">—</div>
+</aside>
+<div id="map"></div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const STATUS = {recommended: 'Rekomendowana', conditional: 'Warunkowa — wymaga weryfikacji', not_recommended: 'Niezalecana'};
+const state = { parcel: null, analysisId: null, assessmentId: null, rankingId: null, prefetch: null };
+let seq = 0;
+
+async function api(method, url, body) {
+  const r = await fetch(url, { method, headers: body ? {'Content-Type': 'application/json'} : {}, body: body ? JSON.stringify(body) : undefined });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(`${r.status} ${data.error_code || ''}: ${data.message_pl || r.statusText}` + (data.details && Object.keys(data.details).length ? `\n${JSON.stringify(data.details)}` : ''));
+  return data;
+}
+function showErr(el, e) { $(el).innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+function resetFrom(step) {           // zmiana danych nadrzędnych unieważnia wyniki zależne
+  if (step <= 1) { state.analysisId = null; $('analysisOut').innerHTML = ''; }
+  if (step <= 2) { state.rankingId = null; $('methodsOut').innerHTML = '—'; $('btnPlan').disabled = true; }
+  $('planOut').innerHTML = '—';
+}
+
+// --- mapa
+const map = L.map('map').setView([52.1, 19.4], 6);
+window.hpMap = map;  // ułatwia testy automatyczne i ręczne z konsoli
+const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
+const orto = L.tileLayer.wms('https://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMS/StandardResolution',
+  { layers: 'Raster', format: 'image/jpeg', maxZoom: 19, attribution: 'Ortofotomapa &copy; GUGiK' });
+L.control.layers({ 'OpenStreetMap': osm, 'Ortofotomapa GUGiK': orto }).addTo(map);
+const parcelLayer = L.geoJSON(null, { style: { color: '#0E6548', weight: 3, fillOpacity: 0.15 } }).addTo(map);
+const fixtureLayer = L.geoJSON(null, { style: { color: '#237DB8', weight: 1, dashArray: '4', fillOpacity: 0.05 },
+  onEachFeature: (f, l) => l.bindTooltip(`${f.properties.label}: ${f.properties.scenario_pl}`) }).addTo(map);
+
+function showParcel(p) {
+  state.parcel = p; resetFrom(1);
+  $('pid').value = p.parcel_id;
+  parcelLayer.clearLayers(); parcelLayer.addData(p.geojson_feature);
+  map.fitBounds(parcelLayer.getBounds(), { maxZoom: 17, padding: [30, 30] });
+  const m = p.metrics, s = p.source;
+  $('parcelOut').innerHTML = `<div class="card"><b>${esc(p.parcel_id)}</b> · ${esc(m.area_ha)} ha${m.is_multipart ? ` (${m.part_count} części)` : ''}<br>
+    ${esc(p.administrative_location.full_label || '')}<br>
+    <span class="muted">źródło: ${esc(s.service)} · ${s.is_demonstration ? '<b class="warn">DANE TESTOWE</b>' : 'dane rzeczywiste'}${p.from_cache ? ' · z cache' : ''}</span>
+    <ul class="muted">${p.notices.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>`;
+  $('btnAnalyze').disabled = false;
+  prefetchAnalysis();
+}
+// Dane przestrzenne nie zależą od uprawy: analiza startuje w tle zaraz po wyborze działki i daty.
+function prefetchAnalysis() {
+  if (!state.parcel) return;
+  const key = state.parcel.parcel_id + '|' + ($('date').value || '');
+  if (state.prefetch && state.prefetch.key === key) return;
+  const t0 = performance.now();
+  const promise = api('POST', '/api/analysis', { parcel_id: state.parcel.parcel_id, as_of_date: $('date').value || null,
+                                                 time_budget_s: 6 })
+    .then(an => { an._client_ms = Math.round(performance.now() - t0); return an; });
+  promise.catch(() => { if (state.prefetch && state.prefetch.promise === promise) state.prefetch = null; });
+  state.prefetch = { key, promise };
+  $('analysisOut').innerHTML = '<p class="muted">Analiza danych działki trwa w tle (gleba, teren, hydrologia, pogoda, satelita)…</p>';
+}
+async function loadParcel(url) {
+  const my = ++seq;                     // spóźniona odpowiedź nie nadpisze nowszego wyboru
+  $('parcelOut').innerHTML = '<p class="muted">Pobieranie działki…</p>';
+  try { const p = await api('GET', url); if (my === seq) showParcel(p); }
+  catch (e) { if (my === seq) showErr('parcelOut', e); }
+}
+map.on('click', (e) => loadParcel(`/api/parcels/by-point?lat=${e.latlng.lat.toFixed(7)}&lon=${e.latlng.lng.toFixed(7)}`));
+$('btnId').onclick = () => $('pid').value.trim() && loadParcel(`/api/parcels/by-id?id=${encodeURIComponent($('pid').value.trim())}`);
+$('pid').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btnId').click(); });
+['crop', 'drain', 'pond', 'weir'].forEach(id => $(id).addEventListener('change', () => resetFrom(2)));
+$('date').addEventListener('change', () => { resetFrom(1); state.prefetch = null; prefetchAnalysis(); });
+
+// --- analiza, uprawa, rekomendacje
+$('btnAnalyze').onclick = async () => {
+  $('btnAnalyze').disabled = true; resetFrom(1);
+  $('analysisOut').innerHTML = '<p class="muted">Analiza (5 usług + diagnoza)…</p>';
+  try {
+    prefetchAnalysis();
+    let an = await state.prefetch.promise;  // ta sama działka i data => wynik zapytania uruchomionego w tle
+    if (Object.values(an.timings_s || {}).some(v => v === null)) {
+      // szybki wynik był częściowy (budżet 8 s) — dociągamy brakujące moduły; gotowe przychodzą z cache
+      $('analysisOut').innerHTML = '<p class="muted">Część źródeł odpowiada wolniej — uzupełniam wynik…</p>';
+      const t0 = performance.now();
+      an = await api('POST', '/api/analysis', { parcel_id: state.parcel.parcel_id, as_of_date: $('date').value || null });
+      an._client_ms = Math.round(performance.now() - t0);
+    }
+    state.analysisId = an.analysis_id;
+    const ca = await api('POST', '/api/crops/assess', { analysis_id: an.analysis_id, crop_id: $('crop').value });
+    state.assessmentId = ca.crop_assessment_id;
+    const types = [$('pond').checked && 'pond', $('weir').checked && 'weir'].filter(Boolean);
+    const fc = { subsurface_drainage_status: $('drain').value, existing_retention_status: types.length ? 'yes' : 'unknown', existing_retention_types: types };
+    const rk = await api('POST', '/api/recommendations', { analysis_id: an.analysis_id, crop_assessment_id: ca.crop_assessment_id, field_context: fc });
+    state.rankingId = rk.ranking_run_id;
+    const tc = an.time_context, d = an.diagnosis;
+    $('analysisOut').innerHTML = `<div class="card">
+      <b>Analiza</b> ${esc(an.analysis_id)} · ${esc(tc.as_of_date)} (${esc(tc.mode)}) · status: ${esc(an.status)}
+      · czas: ${esc(an._client_ms)} ms<br>
+      <span class="muted">moduły [s]: ${Object.entries(an.timings_s || {}).map(([k, v]) => `${esc(k)}=${v === null ? 'budżet' : esc(v)}`).join(', ')}</span><br>
+      Moduły: ${Object.entries(an.module_statuses).map(([k, v]) => `${esc(k)}=<b>${esc(v)}</b>`).join(', ')}<br>
+      Problemy: ${d.problems.length ? d.problems.map(p => `${esc(p.problem_id)} (${esc(p.severity)}, pewność ${esc(p.confidence)})`).join('; ') : '<i>brak ustalonych</i>'}<br>
+      Ograniczenia: ${d.constraints.map(c => esc(c.constraint_id)).join(', ') || '—'}<br>
+      Uprawa: ${esc(ca.crop.name_pl)} — ocena ${esc(ca.status)}, saldo w oknie krytycznym: ${esc(ca.crop_water_balance?.indicative_critical_window_p_minus_etc_mm ?? 'brak danych')} mm
+      <ul class="muted">${an.warnings.slice(0, 8).map(w => `<li>${esc(w)}</li>`).join('')}</ul></div>`;
+    const all = [...rk.recommended, ...rk.conditional, ...rk.not_recommended];
+    const scr = Object.fromEntries(rk.screening.methods.map(s => [s.method_id, s]));
+    $('methodsOut').innerHTML = all.map(m => `<div class="m ${m.screening_status}">
+      <label><input type="checkbox" value="${esc(m.method_id)}" ${m.default_selected ? 'checked' : ''} ${m.screening_status === 'not_recommended' ? 'disabled' : ''}>
+      <b>${esc(m.name_pl)}</b><span class="badge">${STATUS[m.screening_status]}</span> <span class="muted">priorytet: ${esc(m.priority_class)}</span></label>
+      <div class="muted">${esc((scr[m.method_id].explanation_pl || []).slice(0, 2).join(' '))}</div></div>`).join('');
+    $('btnPlan').disabled = false;
+  } catch (e) { showErr('analysisOut', e); }
+  $('btnAnalyze').disabled = false;
+};
+
+// --- wybór metod i plan
+$('btnPlan').onclick = async () => {
+  const ids = [...document.querySelectorAll('#methodsOut input:checked')].map(i => i.value);
+  $('btnPlan').disabled = true; $('planOut').innerHTML = '<p class="muted">Kosztorys, opłacalność, dotacje, harmonogram…</p>';
+  try {
+    const sel = await api('POST', '/api/selections', { analysis_id: state.analysisId, ranking_run_id: state.rankingId, selected_method_ids: ids });
+    const fp = await api('POST', '/api/plans', { selection_id: sel.selection_id });
+    const t = fp.section_2_costs.totals, pr = fp.section_1_profitability;
+    $('planOut').innerHTML = `<div class="card"><b>${esc(fp.plan_id)}</b> · status ${esc(fp.status)} · zestaw: ${esc(sel.status)}<br>
+      <b>Opłacalność:</b> ${esc(pr.headline_pl)}<br>
+      <b>Koszty:</b> CAPEX: ${t.capex_known_net_pln == null ? (t.capex_is_complete ? 'brak pozycji inwestycyjnych' : 'nieznany (do wyceny)') : esc(t.capex_known_net_pln) + ' zł netto'}, OPEX/rok: ${t.opex_annual_known_net_pln == null ? (t.opex_is_complete ? 'brak' : 'nieznany (do wyceny)') : esc(t.opex_annual_known_net_pln) + ' zł netto'} (${esc(t.total_status)}; do wyceny: ${t.unpriced_item_ids.length})<br>
+      <b>Dotacje:</b> ${fp.section_3_funding.matches.map(m => `${esc(m.program_name_pl)} — ${esc(m.match_status)}, nabór: ${esc(m.call_status_on_as_of)}`).join('; ') || 'brak dopasowań'}<br>
+      <b>Plan wdrożenia:</b> ${fp.section_4_implementation.tasks.length} zadań<br>
+      <a target="_blank" href="/api/plans/${encodeURIComponent(fp.plan_id)}/report">raport</a> ·
+      <a target="_blank" href="/api/plans/${encodeURIComponent(fp.plan_id)}/pdf">PDF</a> ·
+      <a target="_blank" href="/api/plans/${encodeURIComponent(fp.plan_id)}">JSON</a></div>`;
+  } catch (e) { showErr('planOut', e); }
+  $('btnPlan').disabled = false;
+};
+
+// --- start
+(async () => {
+  try {
+    const h = await api('GET', '/api/health'); $('mode').textContent = h.data_mode;
+    const crops = await api('GET', '/api/crops');
+    $('crop').innerHTML = crops.crops.map(c => `<option value="${esc(c.crop_id)}">${esc(c.name_pl)}${c.available_for_assessment ? '' : ' (parametry niezweryfikowane)'}</option>`).join('');
+    const fx = await api('GET', '/api/system/fixture-parcels');
+    if (fx.features.length) {
+      fixtureLayer.addData(fx);
+      $('fixtureLinks').innerHTML = '<span class="muted">Działki testowe: </span>' + fx.features.map(f =>
+        `<button data-id="${esc(f.properties.parcel_id)}" title="${esc(f.properties.scenario_pl)}">${esc(f.properties.label)}</button>`).join('');
+      $('fixtureLinks').querySelectorAll('button').forEach(b => b.onclick = () => loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(b.dataset.id)}`));
+    } else {
+      $('fixtureLinks').innerHTML = '<span class="muted">Tryb live: działki z GUGiK (ULDK, a przy blokadzie WFS EGiB). Analiza z publicznych źródeł: SoilGrids, NMT GUGiK, BDOT10k, mapy zagrożenia powodziowego, IMGW, Sentinel-2. Brakujące dane są oznaczane jako niedostępne, nigdy nie podstawiane.</span>';
+    }
+  } catch (e) { showErr('parcelOut', e); }
+})();
+</script>
+</body>
+</html>

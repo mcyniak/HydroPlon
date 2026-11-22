@@ -1,0 +1,210 @@
+@use "tokens" as *
+
+// Krok 1 — działka: lewy panel (~34%) i mapa Leaflet (~66%), spec. §54.
+
+.parcel-grid
+  display: grid
+  grid-template-columns: minmax(315px, 34fr) minmax(0, 66fr)
+  gap: 24px
+  align-items: stretch
+
+.parcel-left
+  display: flex
+  flex-direction: column
+  gap: 20px
+  min-width: 0
+
+.field-group
+  display: block
+
+.search-row
+  display: flex
+  gap: 9px
+  .input
+    min-width: 0
+  .action
+    padding-inline: 16px
+    flex-shrink: 0
+
+.fixture-links
+  margin-top: 8px
+  display: flex
+  flex-wrap: wrap
+  gap: 4px 10px
+  align-items: center
+
+.date-ctrl
+  position: relative
+  .icon
+    position: absolute
+    top: 13px
+    left: 12px
+    width: 19px
+    height: 19px
+    color: $gold
+    pointer-events: none
+  input
+    padding-left: 42px
+
+// Karta znalezionej działki
+.parcel-detail
+  margin-top: 4px
+  padding: 17px 18px
+  border: 1px solid $green-line
+  background: #f4faf6
+  border-radius: 15px
+
+.parcel-detail-top
+  display: flex
+  align-items: center
+  gap: 7px
+  color: $green
+  font-size: 12px
+  font-weight: 780
+  margin-bottom: 12px
+  .icon
+    width: 17px
+    height: 17px
+
+.parcel-id
+  font-size: 18px
+  font-weight: 780
+  letter-spacing: -.3px
+  overflow-wrap: anywhere
+
+.parcel-location
+  color: $ink-3
+  font-size: 12px
+  margin-top: 4px
+
+.parcel-stats
+  display: flex
+  justify-content: space-between
+  gap: 10px
+  margin-top: 18px
+  border-top: 1px solid #d9e8df
+  padding-top: 14px
+  b
+    font-size: 17px
+    font-weight: 760
+  small
+    display: block
+    color: $ink-3
+    font-size: 11px
+
+details.notes
+  font-size: 12px
+  color: $ink-3
+  summary
+    cursor: pointer
+    font-weight: 700
+    color: $ink-2
+  ul
+    margin: 8px 0 0
+    padding-left: 18px
+
+// Mapa
+.map-panel
+  border: 1px solid #dedfd2
+  background: #deead9
+  min-height: 495px
+  height: 100%
+  border-radius: 17px
+  overflow: hidden
+  position: relative
+  isolation: isolate
+  #map
+    position: absolute
+    inset: 0
+    z-index: 0
+
+.leaflet-container
+  font: inherit
+  background: #e3edd9
+  cursor: crosshair
+
+.map-overlay-top
+  position: absolute
+  inset: 15px 16px auto 16px
+  display: flex
+  justify-content: space-between
+  align-items: flex-start
+  gap: 8px
+  pointer-events: none
+  z-index: 500
+  > *
+    pointer-events: auto
+
+.map-chip
+  background: rgba(255, 255, 255, .95)
+  color: #44615b
+  border: 1px solid rgba(205, 225, 215, .85)
+  border-radius: 9px
+  font-size: 12px
+  font-weight: 750
+  box-shadow: 0 2px 9px rgba(41, 76, 45, .08)
+  padding: 9px 11px
+  display: flex
+  align-items: center
+  gap: 7px
+
+.layer-tabs
+  background: #fff
+  display: flex
+  padding: 4px
+  gap: 2px
+  border-radius: 10px
+  border: 1px solid #e1eae4
+  box-shadow: 0 2px 9px rgba(41, 76, 45, .08)
+  button
+    border: 0
+    border-radius: 7px
+    background: transparent
+    padding: 7px 11px
+    color: $ink-3
+    font-size: 11px
+    font-weight: 730
+    &.active
+      background: #fff5d8
+      color: $gold-deep
+
+// Kontrolki Leaflet w barwach aplikacji (domyślne style biblioteki nie należą do systemu)
+.map-panel
+  .leaflet-bar
+    border: 1px solid #d9e5dc
+    border-radius: 10px
+    box-shadow: 0 2px 8px rgba(37, 76, 48, .14)
+    overflow: hidden
+    a
+      width: 36px
+      height: 34px
+      line-height: 34px
+      color: $green-deep
+      font-weight: 600
+      &:hover
+        background: $green-pale
+        color: $green
+  .leaflet-control-attribution
+    font-size: 11px
+    color: $ink-3
+    background: rgba(255, 255, 255, .88)
+    border-top-left-radius: 8px
+    padding: 2px 8px
+    a
+      color: $green
+
+// Pusty krok 1: co zrobić, gdy nie znasz numeru działki
+.parcel-empty
+  border: 1px dashed #cfe0d6
+  border-radius: 14px
+  padding: 15px 16px
+  font-size: 13px
+  color: $ink-2
+  line-height: 1.55
+  p
+    margin: 0 0 8px
+  b
+    color: $ink
+  .link-btn
+    font-size: 13px
+    text-align: left

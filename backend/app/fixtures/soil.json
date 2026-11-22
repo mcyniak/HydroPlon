@@ -1,0 +1,271 @@
+{
+ "source_type": "fixture",
+ "is_demonstration": true,
+ "note_pl": "DANE SYNTETYCZNE do testów mechanizmów — nie opisują rzeczywistego terenu.",
+ "version": "fixture-soilgrids-like-1.0",
+ "units": {
+  "sand": "g/kg",
+  "silt": "g/kg",
+  "clay": "g/kg",
+  "soc": "dg/kg",
+  "bdod": "cg/cm3",
+  "cfvo": "cm3/dm3"
+ },
+ "resolution_m": 250,
+ "parcels": {
+  "049901_2.0001.101": {
+   "status": "ok",
+   "layers": {
+    "0-5cm": {
+     "sand": {
+      "mean": 800,
+      "Q0.05": 720,
+      "Q0.95": 860
+     },
+     "silt": {
+      "mean": 140
+     },
+     "clay": {
+      "mean": 60,
+      "Q0.05": 40,
+      "Q0.95": 90
+     },
+     "soc": {
+      "mean": 90,
+      "Q0.05": 60,
+      "Q0.95": 130
+     },
+     "bdod": {
+      "mean": 152
+     },
+     "cfvo": {
+      "mean": 40
+     }
+    },
+    "5-15cm": {
+     "sand": {
+      "mean": 800,
+      "Q0.05": 720,
+      "Q0.95": 860
+     },
+     "silt": {
+      "mean": 140
+     },
+     "clay": {
+      "mean": 60,
+      "Q0.05": 40,
+      "Q0.95": 90
+     },
+     "soc": {
+      "mean": 87,
+      "Q0.05": 58,
+      "Q0.95": 126
+     },
+     "bdod": {
+      "mean": 152
+     },
+     "cfvo": {
+      "mean": 40
+     }
+    },
+    "15-30cm": {
+     "sand": {
+      "mean": 800,
+      "Q0.05": 720,
+      "Q0.95": 860
+     },
+     "silt": {
+      "mean": 140
+     },
+     "clay": {
+      "mean": 60,
+      "Q0.05": 40,
+      "Q0.95": 90
+     },
+     "soc": {
+      "mean": 83,
+      "Q0.05": 55,
+      "Q0.95": 120
+     },
+     "bdod": {
+      "mean": 152
+     },
+     "cfvo": {
+      "mean": 40
+     }
+    }
+   }
+  },
+  "069901_2.0001.202/3": {
+   "status": "ok",
+   "layers": {
+    "0-5cm": {
+     "sand": {
+      "mean": 150,
+      "Q0.05": 90,
+      "Q0.95": 230
+     },
+     "silt": {
+      "mean": 700
+     },
+     "clay": {
+      "mean": 150,
+      "Q0.05": 110,
+      "Q0.95": 200
+     },
+     "soc": {
+      "mean": 145,
+      "Q0.05": 110,
+      "Q0.95": 190
+     },
+     "bdod": {
+      "mean": 135
+     },
+     "cfvo": {
+      "mean": 10
+     }
+    },
+    "5-15cm": {
+     "sand": {
+      "mean": 150,
+      "Q0.05": 90,
+      "Q0.95": 230
+     },
+     "silt": {
+      "mean": 700
+     },
+     "clay": {
+      "mean": 150,
+      "Q0.05": 110,
+      "Q0.95": 200
+     },
+     "soc": {
+      "mean": 141,
+      "Q0.05": 107,
+      "Q0.95": 184
+     },
+     "bdod": {
+      "mean": 135
+     },
+     "cfvo": {
+      "mean": 10
+     }
+    },
+    "15-30cm": {
+     "sand": {
+      "mean": 150,
+      "Q0.05": 90,
+      "Q0.95": 230
+     },
+     "silt": {
+      "mean": 700
+     },
+     "clay": {
+      "mean": 150,
+      "Q0.05": 110,
+      "Q0.95": 200
+     },
+     "soc": {
+      "mean": 133,
+      "Q0.05": 101,
+      "Q0.95": 175
+     },
+     "bdod": {
+      "mean": 135
+     },
+     "cfvo": {
+      "mean": 10
+     }
+    }
+   }
+  },
+  "149901_2.0001.303": {
+   "status": "no_data",
+   "layers": null,
+   "reason_pl": "Brak wartości w źródle dla tego obszaru (scenariusz testowy)."
+  },
+  "049901_2.0002.404/1": {
+   "status": "ok",
+   "layers": {
+    "0-5cm": {
+     "sand": {
+      "mean": 780,
+      "Q0.05": 700,
+      "Q0.95": 850
+     },
+     "silt": {
+      "mean": 150
+     },
+     "clay": {
+      "mean": 70,
+      "Q0.05": 45,
+      "Q0.95": 100
+     },
+     "soc": {
+      "mean": 95,
+      "Q0.05": 65,
+      "Q0.95": 135
+     },
+     "bdod": {
+      "mean": 150
+     },
+     "cfvo": {
+      "mean": 35
+     }
+    },
+    "5-15cm": {
+     "sand": {
+      "mean": 780,
+      "Q0.05": 700,
+      "Q0.95": 850
+     },
+     "silt": {
+      "mean": 150
+     },
+     "clay": {
+      "mean": 70,
+      "Q0.05": 45,
+      "Q0.95": 100
+     },
+     "soc": {
+      "mean": 92,
+      "Q0.05": 63,
+      "Q0.95": 131
+     },
+     "bdod": {
+      "mean": 150
+     },
+     "cfvo": {
+      "mean": 35
+     }
+    },
+    "15-30cm": {
+     "sand": {
+      "mean": 780,
+      "Q0.05": 700,
+      "Q0.95": 850
+     },
+     "silt": {
+      "mean": 150
+     },
+     "clay": {
+      "mean": 70,
+      "Q0.05": 45,
+      "Q0.95": 100
+     },
+     "soc": {
+      "mean": 87,
+      "Q0.05": 60,
+      "Q0.95": 124
+     },
+     "bdod": {
+      "mean": 150
+     },
+     "cfvo": {
+      "mean": 35
+     }
+    }
+   }
+  }
+ }
+}

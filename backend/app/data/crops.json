@@ -1,0 +1,219 @@
+{
+  "version": "2.0.0",
+  "parameter_status_legend": {
+    "provisional": "dane demonstracyjne do walidacji",
+    "pending_validation": "brak danych do obliczen",
+    "validated": "przyjete i zweryfikowane parametry"
+  },
+  "methodology_reference": [
+    "https://www.fao.org/4/x0490e/x0490e0b.htm",
+    "https://www.fao.org/4/x0490e/x0490e0e.htm",
+    "https://susza.iung.pulawy.pl/system/"
+  ],
+  "note": "Osiem pozycji katalogowych, trzy z parametrami roboczymi z materialow zespolu, piec wymaga uzupelnienia. Uzycie progu IUNG do wlasnego P-ETc jest zabronione.",
+  "crops": [
+    {
+      "crop_id": "maize_grain",
+      "name_pl": "Kukurydza (ziarno / kiszonka)",
+      "category": "jara_okopowa_pastewna",
+      "water_sensitivity_class": "wysoka",
+      "root_depth_m": 1.0,
+      "depletion_fraction_p": 0.55,
+      "critical_months": [
+        6,
+        7,
+        8
+      ],
+      "critical_stage_label_pl": "wiechowanie, kwitnienie i nalewanie ziarna (czerwiec–sierpień)",
+      "phenology_calendar_pl": {
+        "start_month": 4,
+        "start_day": 25,
+        "end_month": 9,
+        "end_day": 30,
+        "stage_lengths_days": {
+          "initial": 25,
+          "development": 40,
+          "mid_season": 55,
+          "late_season": 38
+        }
+      },
+      "kc_values": {
+        "kc_ini": 0.3,
+        "kc_mid": 1.2,
+        "kc_end": 0.6
+      },
+      "agronomic_notes_pl": "Bardzo wysokie zapotrzebowanie na wodę w lipcu i sierpniu. Silnie reaguje pozytywnie na zatrzymywanie wilgoci wiosennej (uprawa uproszczona, resztki pożniwne).",
+      "parameter_status": "provisional",
+      "field_model_version": "2026.11-draft",
+      "limitations": [
+        "Parametry faz i Kc pochodza z materialu zespolu i wymagaja agronomicznej walidacji lokalnej.",
+        "Nie sa to dane ani progi oficjalnego SMSR IUNG."
+      ]
+    },
+    {
+      "crop_id": "winter_wheat",
+      "name_pl": "Pszenica ozima",
+      "category": "ozima_zbozowa",
+      "water_sensitivity_class": "umiarkowana",
+      "root_depth_m": 1.2,
+      "depletion_fraction_p": 0.55,
+      "critical_months": [
+        5,
+        6
+      ],
+      "critical_stage_label_pl": "strzelanie w źdźbło, kłoszenie i kwitnienie (maj–czerwiec)",
+      "phenology_calendar_pl": {
+        "start_month": 3,
+        "start_day": 20,
+        "end_month": 7,
+        "end_day": 31,
+        "stage_lengths_days": {
+          "initial": 20,
+          "development": 40,
+          "mid_season": 45,
+          "late_season": 28
+        }
+      },
+      "kc_values": {
+        "kc_ini": 0.4,
+        "kc_mid": 1.15,
+        "kc_end": 0.3
+      },
+      "agronomic_notes_pl": "Największa wrażliwość na deficyt wody przypada od maja do końca czerwca. W lipcu naturalnie zasycha (spadek NDVI jest zjawiskiem fizjologicznym).",
+      "parameter_status": "provisional",
+      "field_model_version": "2026.11-draft",
+      "limitations": [
+        "Parametry faz i Kc pochodza z materialu zespolu i wymagaja agronomicznej walidacji lokalnej.",
+        "Nie sa to dane ani progi oficjalnego SMSR IUNG."
+      ]
+    },
+    {
+      "crop_id": "winter_rapeseed",
+      "name_pl": "Rzepak ozimy",
+      "category": "oleista ozima",
+      "parameter_status": "pending_validation",
+      "water_sensitivity_class": "nieustalona",
+      "root_depth_m": null,
+      "depletion_fraction_p": null,
+      "critical_months": [],
+      "critical_stage_label_pl": "wymaga walidacji",
+      "phenology_calendar_pl": null,
+      "kc_values": null,
+      "agronomic_notes_pl": "Uprawa w katalogu; analiza liczbowa wymaga zweryfikowanych parametrow.",
+      "field_model_version": "2026.11-draft",
+      "limitations": [
+        "Brak potwierdzonych parametrow dla obliczen; nie nalezy imputowac z innych gatunkow."
+      ]
+    },
+    {
+      "crop_id": "potato",
+      "name_pl": "Ziemniak",
+      "category": "jara_okopowa",
+      "water_sensitivity_class": "bardzo_wysoka",
+      "root_depth_m": 0.5,
+      "depletion_fraction_p": 0.35,
+      "critical_months": [
+        6,
+        7,
+        8
+      ],
+      "critical_stage_label_pl": "zawiązywanie i wzrost bulw (czerwiec–sierpień)",
+      "phenology_calendar_pl": {
+        "start_month": 4,
+        "start_day": 20,
+        "end_month": 9,
+        "end_day": 15,
+        "stage_lengths_days": {
+          "initial": 25,
+          "development": 30,
+          "mid_season": 55,
+          "late_season": 38
+        }
+      },
+      "kc_values": {
+        "kc_ini": 0.5,
+        "kc_mid": 1.15,
+        "kc_end": 0.75
+      },
+      "agronomic_notes_pl": "Płytki system korzeniowy (ok. 50 cm) powoduje wysoką wrażliwość nawet na krótkie okresy bezopadowe w czerwcu i lipcu.",
+      "parameter_status": "provisional",
+      "field_model_version": "2026.11-draft",
+      "limitations": [
+        "Parametry faz i Kc pochodza z materialu zespolu i wymagaja agronomicznej walidacji lokalnej.",
+        "Nie sa to dane ani progi oficjalnego SMSR IUNG."
+      ]
+    },
+    {
+      "crop_id": "sugar_beet",
+      "name_pl": "Burak cukrowy",
+      "category": "okopowa",
+      "parameter_status": "pending_validation",
+      "water_sensitivity_class": "nieustalona",
+      "root_depth_m": null,
+      "depletion_fraction_p": null,
+      "critical_months": [],
+      "critical_stage_label_pl": "wymaga walidacji",
+      "phenology_calendar_pl": null,
+      "kc_values": null,
+      "agronomic_notes_pl": "Uprawa w katalogu; analiza liczbowa wymaga zweryfikowanych parametrow.",
+      "field_model_version": "2026.11-draft",
+      "limitations": [
+        "Brak potwierdzonych parametrow dla obliczen; nie nalezy imputowac z innych gatunkow."
+      ]
+    },
+    {
+      "crop_id": "spring_barley",
+      "name_pl": "Jeczmien jary",
+      "category": "zboze jare",
+      "parameter_status": "pending_validation",
+      "water_sensitivity_class": "nieustalona",
+      "root_depth_m": null,
+      "depletion_fraction_p": null,
+      "critical_months": [],
+      "critical_stage_label_pl": "wymaga walidacji",
+      "phenology_calendar_pl": null,
+      "kc_values": null,
+      "agronomic_notes_pl": "Uprawa w katalogu; analiza liczbowa wymaga zweryfikowanych parametrow.",
+      "field_model_version": "2026.11-draft",
+      "limitations": [
+        "Brak potwierdzonych parametrow dla obliczen; nie nalezy imputowac z innych gatunkow."
+      ]
+    },
+    {
+      "crop_id": "winter_triticale_rye",
+      "name_pl": "Pszenzyto ozime / zyto",
+      "category": "zboze ozime",
+      "parameter_status": "pending_validation",
+      "water_sensitivity_class": "nieustalona",
+      "root_depth_m": null,
+      "depletion_fraction_p": null,
+      "critical_months": [],
+      "critical_stage_label_pl": "wymaga walidacji",
+      "phenology_calendar_pl": null,
+      "kc_values": null,
+      "agronomic_notes_pl": "Uprawa w katalogu; analiza liczbowa wymaga zweryfikowanych parametrow.",
+      "field_model_version": "2026.11-draft",
+      "limitations": [
+        "Brak potwierdzonych parametrow dla obliczen; nie nalezy imputowac z innych gatunkow."
+      ]
+    },
+    {
+      "crop_id": "grassland",
+      "name_pl": "Trwale uzytki zielone",
+      "category": "uzytek zielony",
+      "parameter_status": "pending_validation",
+      "water_sensitivity_class": "nieustalona",
+      "root_depth_m": null,
+      "depletion_fraction_p": null,
+      "critical_months": [],
+      "critical_stage_label_pl": "wymaga walidacji",
+      "phenology_calendar_pl": null,
+      "kc_values": null,
+      "agronomic_notes_pl": "Uprawa w katalogu; analiza liczbowa wymaga zweryfikowanych parametrow.",
+      "field_model_version": "2026.11-draft",
+      "limitations": [
+        "Brak potwierdzonych parametrow dla obliczen; nie nalezy imputowac z innych gatunkow."
+      ]
+    }
+  ]
+}

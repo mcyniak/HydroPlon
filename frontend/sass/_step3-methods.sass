@@ -1,0 +1,149 @@
+@use "tokens" as *
+
+// Krok 3 — 11 metod pionowo. JEDYNY mocny niebieski w aplikacji = metoda rekomendowana (spec. §52, §56).
+
+.method-toolbar
+  display: flex
+  justify-content: space-between
+  align-items: center
+  gap: 12px
+  margin-bottom: 17px
+  flex-wrap: wrap
+
+.method-note
+  display: flex
+  align-items: center
+  gap: 8px
+  color: $ink-3
+  font-size: 12px
+  .icon
+    color: $green
+    width: 16px
+    height: 16px
+
+.selected-counter
+  display: inline-flex
+  align-items: center
+  background: #f7faf6
+  border: 1px solid #dbe7df
+  border-radius: 999px
+  padding: 8px 13px
+  font-size: 12px
+  color: $green-deep
+  font-weight: 770
+
+.method-list
+  display: flex
+  flex-direction: column
+  gap: 10px
+
+.method-row
+  position: relative
+  display: grid
+  grid-template-columns: 21px 43px minmax(0, 1fr) auto
+  align-items: center
+  gap: 15px
+  border: 1px solid $border
+  background: #fff
+  padding: 14px 17px
+  border-radius: 13px
+  cursor: pointer
+  transition: .13s ease
+  &:hover
+    box-shadow: 0 4px 14px rgba(7, 58, 32, .04)
+    border-color: #bbdac6
+  .method-check
+    accent-color: $gold
+    width: 19px
+    height: 19px
+    cursor: pointer
+
+  // ręcznie zaznaczona metoda nierekomendowana — żółty
+  &.selected:not(.recommended)
+    background: #fffaf0
+    border-color: #e2c77d
+
+  // rekomendowana — niebieska
+  &.recommended
+    background: #edf6ff
+    border: 1.5px solid #80b6e0
+    &.selected
+      box-shadow: inset 5px 0 0 $blue
+    &:hover
+      border-color: $blue
+      box-shadow: inset 5px 0 0 $blue, 0 5px 15px rgba(25, 98, 158, .09)
+    .method-icon
+      background: #dcefff
+      color: $blue-deep
+      border-color: #bcdcf5
+    .method-heading
+      color: #155b8b
+    .method-check
+      accent-color: $blue
+
+  // warunkowa — wymaga weryfikacji
+  &.conditional
+    border-color: #ecdcae
+
+  // niezalecana — widoczna z uzasadnieniem, bez możliwości wyboru
+  &.not-recommended
+    background: #fbfbfa
+    cursor: default
+    .method-heading
+      color: $ink-2
+
+.method-icon
+  width: 42px
+  height: 42px
+  border: 1px solid #dfebe2
+  border-radius: 12px
+  background: #f5faf5
+  display: grid
+  place-items: center
+  color: #26825c
+  .icon
+    width: 22px
+    height: 22px
+    stroke-width: 1.8
+
+.method-heading
+  font-size: 14px
+  font-weight: 750
+  line-height: 1.25
+
+.method-description
+  font-size: 12px
+  color: $ink-3
+  margin-top: 4px
+  i
+    color: $gold-ink
+    font-style: normal
+    font-weight: 650
+
+.method-status
+  color: $ink-3
+  font-size: 11px
+  font-weight: 760
+  border: 1px solid #e0e8e3
+  border-radius: 999px
+  background: #f8faf9
+  padding: 6px 10px
+  white-space: nowrap
+  text-align: center
+  &.rec
+    background: #deefff
+    border-color: #a8cdeb
+    color: #155a8b
+  &.cond
+    color: $gold-deep
+    background: #fff7e4
+    border-color: #f1deb4
+  &.not
+    color: #8a5a52
+    background: #fbf1ef
+    border-color: #efd3cd
+
+.summary-hint
+  margin-top: 13px
+  font-size: 12px
+  color: $ink-3

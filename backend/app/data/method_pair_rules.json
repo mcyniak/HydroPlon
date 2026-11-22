@@ -1,0 +1,33 @@
+{
+  "version": "pair-rules-0.1.0",
+  "status": "draft",
+  "note_pl": "Relacje par metod (§38.2). Konflikt twardy wyłącznie po potwierdzeniu faktów z listy escalate_to_hard_if — w obecnych źródłach danych takie fakty nie występują.",
+  "rules": [
+    {"methods": ["crop_residues", "reduced_tillage"], "relation_type": "shared_scope", "reason_code": "SAME_FIELD_PASS",
+     "explanation_pl": "Mogą korzystać z tego samego przejazdu i sprzętu — sprawdzić, czy to ten sam zabieg i wydatek.",
+     "required_verifications": ["confirm_shared_field_operation"], "shared_scope_keys": ["field_operations"]},
+    {"methods": ["crop_residues", "reduced_tillage"], "relation_type": "complementary", "reason_code": "MULCH_AND_MIN_TILL",
+     "explanation_pl": "Pozostawione resztki i ograniczona uprawa wzajemnie się uzupełniają.",
+     "required_verifications": [], "shared_scope_keys": []},
+    {"methods": ["organic_matter", "cover_crops"], "relation_type": "complementary", "reason_code": "SOIL_ORGANIC_BUILDUP",
+     "explanation_pl": "Działają na ten sam mechanizm glebowy — efektów nie wolno sumować.",
+     "required_verifications": [], "shared_scope_keys": ["soil_testing"]},
+    {"methods": ["cover_crops", "reduced_tillage"], "relation_type": "dependency", "reason_code": "SOWING_TECHNOLOGY_AND_CALENDAR",
+     "explanation_pl": "Siew międzyplonu zależy od technologii uprawy i kalendarza prac.",
+     "required_verifications": ["verify_sowing_technology_and_calendar"], "shared_scope_keys": ["field_operations"]},
+    {"methods": ["vegetative_strips", "windbreaks"], "relation_type": "conditional_conflict", "reason_code": "LAND_TAKE_OVERLAP",
+     "explanation_pl": "Mogą konkurować o ten sam pas gruntu — rozstrzyga rzeczywisty układ terenu.",
+     "required_verifications": ["verify_land_layout_for_strips_and_trees"], "shared_scope_keys": ["field_layout"],
+     "escalate_to_hard_if": ["layout.same_strip_confirmed"]},
+    {"methods": ["contour_farming", "vegetative_strips"], "relation_type": "complementary", "reason_code": "RUNOFF_CONTROL_SET",
+     "explanation_pl": "Uzupełniające się sposoby ograniczania spływu — efektów nie wolno sumować.",
+     "required_verifications": [], "shared_scope_keys": ["field_layout"]},
+    {"methods": ["retention_pond", "efficient_irrigation"], "relation_type": "dependency", "reason_code": "WATER_BALANCE_AND_RIGHTS",
+     "explanation_pl": "Nawadnianie ze zbiornika wymaga bilansu wody, praw do poboru i wspólnego projektu.",
+     "required_verifications": ["water_source_assessment", "verify_water_abstraction_rights"],
+     "shared_scope_keys": ["water_source_assessment", "technical_assessment_hydro"]},
+    {"methods": ["runoff_slowing", "controlled_drainage"], "relation_type": "dependency", "reason_code": "HYDRAULIC_COMPATIBILITY",
+     "explanation_pl": "Zastawki na rowie i regulacja drenażu muszą być zgodne hydraulicznie.",
+     "required_verifications": ["hydrotechnical_assessment"], "shared_scope_keys": ["technical_assessment_hydro"]}
+  ]
+}

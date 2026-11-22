@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HydroPlon — panel testowy</title>
+<style>
+  :root { --ink:#172C29; --border:#C9D6D1; --muted:#5A6B67; --bg:#FFFFFF; --soft:#F4F7F6; }
+  body { font: 14px/1.45 system-ui, sans-serif; color: var(--ink); background: var(--bg); margin: 0; }
+  header { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+  main { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 16px; padding: 16px; }
+  @media (max-width: 800px) { main { grid-template-columns: 1fr; } }
+  fieldset { border: 1px solid var(--border); margin: 0 0 10px; padding: 8px 10px; }
+  label { display: block; margin: 4px 0; }
+  select, input[type=text], input[type=date], input[type=number] { width: 100%; box-sizing: border-box; padding: 4px; }
+  button { padding: 6px 12px; margin-right: 6px; }
+  pre { background: var(--soft); padding: 10px; overflow: auto; max-height: 75vh; white-space: pre-wrap; }
+  .muted { color: var(--muted); font-size: 12px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 1100px) { .cols { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header><strong>HydroPlon — panel testowy mechanizmów</strong>
+  <span class="muted"> · tryb danych: <span id="mode">?</span> · to NIE jest docelowy frontend · <a href="/docs">Swagger /docs</a></span></header>
+<main>
+<form id="f">
+  <fieldset><legend>Działka i data</legend>
+    <label>Działka
+      <select name="parcel_id">
+        <option value="049901_2.0001.101">A — gleba lekka, spływ, niedobory</option>
+        <option value="069901_2.0001.202/3">B — gleba pyłowa, płasko</option>
+        <option value="149901_2.0001.303">C — niekompletne dane</option>
+        <option value="049901_2.0002.404/1">D — MultiPolygon</option>
+      </select></label>
+    <label>Data analizy (puste = dziś) <input type="date" name="as_of_date" value="2019-06-15"></label>
+  </fieldset>
+  <fieldset><legend>Uprawa</legend>
+    <select name="crop_id">
+      <option value="maize_grain">Kukurydza</option><option value="winter_wheat">Pszenica ozima</option>
+      <option value="winter_rapeseed">Rzepak ozimy (parametry niezweryfikowane)</option><option value="potato">Ziemniaki</option>
+      <option value="sugar_beet">Buraki cukrowe (parametry niezweryfikowane)</option>
+      <option value="spring_barley">Jęczmień jary (parametry niezweryfikowane)</option>
+      <option value="winter_triticale_rye">Żyto / pszenżyto (parametry niezweryfikowane)</option>
+      <option value="grassland">Łąki i pastwiska (parametry niezweryfikowane)</option>
+    </select>
+  </fieldset>
+  <fieldset><legend>Deklaracje (domyślnie „Nie wiem”)</legend>
+    <label>Drenaż podziemny
+      <select name="drain"><option value="unknown">Nie wiem</option><option value="yes">Tak</option><option value="no">Nie</option></select></label>
+    <label><input type="checkbox" name="pond"> istniejący zbiornik</label>
+    <label><input type="checkbox" name="weir"> zastawka na rowie</label>
+  </fieldset>
+  <fieldset><legend>Korekty metod</legend>
+    <label>Dodaj (po przecinku) <input type="text" name="add" placeholder="reduced_tillage,runoff_slowing"></label>
+    <label>Odznacz (po przecinku) <input type="text" name="remove" placeholder="vegetative_strips"></label>
+  </fieldset>
+  <fieldset><legend>Opcjonalne dane ekonomiczne</legend>
+    <label>Własny plon t/ha <input type="number" step="0.1" name="yield"></label>
+    <label>Własna cena zł/t <input type="number" step="1" name="price"></label>
+  </fieldset>
+  <button type="submit" data-slot="0">Uruchom → wynik 1</button>
+  <button type="submit" data-slot="1">Uruchom → wynik 2</button>
+  <p class="muted">Wszystkie dane w trybie fixture są syntetyczne. Raport i PDF otwierają się w nowej karcie.</p>
+</form>
+<section class="cols">
+  <div><h3>Wynik 1 <span id="l0"></span></h3><pre id="o0">—</pre></div>
+  <div><h3>Wynik 2 <span id="l1"></span></h3><pre id="o1">—</pre></div>
+</section>
+</main>
+<script>
+fetch('/api/health').then(r => r.json()).then(h => { document.getElementById('mode').textContent = h.data_mode; }).catch(() => {});
+const split = s => s.split(',').map(x => x.trim()).filter(Boolean);
+let slot = 0;
+document.querySelectorAll('button[type=submit]').forEach(b => b.addEventListener('click', () => { slot = Number(b.dataset.slot); }));
+document.getElementById('f').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const types = ['pond', 'weir'].filter(t => f.get(t));
+  const body = {
+    parcel_id: f.get('parcel_id'), crop_id: f.get('crop_id'), as_of_date: f.get('as_of_date') || null,
+    field_context: { subsurface_drainage_status: f.get('drain'),
+                     existing_retention_status: types.length ? 'yes' : 'unknown', existing_retention_types: types },
+    add_methods: split(f.get('add') || ''), remove_methods: split(f.get('remove') || ''),
+    economic_inputs: { own_yield_t_ha: f.get('yield') ? Number(f.get('yield')) : null,
+                       own_price_pln_t: f.get('price') ? Number(f.get('price')) : null }
+  };
+  const out = document.getElementById('o' + slot), links = document.getElementById('l' + slot);
+  out.textContent = 'Liczenie…'; links.textContent = '';
+  try {
+    const r = await fetch('/api/demo/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const d = await r.json();
+    out.textContent = JSON.stringify(d, null, 2);
+    if (d.plan_id) {
+      links.innerHTML = `<a target="_blank" href="${d.report_url}">raport</a> · <a target="_blank" href="${d.pdf_url}">PDF</a> · <a target="_blank" href="/api/plans/${d.plan_id}">JSON</a>`;
+    }
+  } catch (err) { out.textContent = 'Błąd: ' + err; }
+});
+</script>
+</body>
+</html>

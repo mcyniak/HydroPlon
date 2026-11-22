@@ -1,0 +1,16 @@
+{
+  "version": "benchmarks-fixture-0.1.0",
+  "source_type": "fixture",
+  "is_demonstration": true,
+  "as_of_date": "2026-11-21",
+  "note_pl": "Wartości SYNTETYCZNE do testu mechanizmu progu opłacalności. NIE są danymi GUS ani ZSRIR. Plon i cenę rolnik może nadpisać własnymi danymi.",
+  "crops": {
+    "maize_grain":  {"demo_yield_t_ha": 8.0, "demo_price_pln_t": 700.0},
+    "winter_wheat": {"demo_yield_t_ha": 6.0, "demo_price_pln_t": 850.0},
+    "potato":       {"demo_yield_t_ha": 28.0, "demo_price_pln_t": 600.0}
+  },
+  "method_effects": {
+    "note_pl": "Brak zweryfikowanych źródeł skuteczności dla wszystkich 11 metod — wpływ na plon NIE jest szacowany.",
+    "documented_yield_effect_pct": {}
+  }
+}

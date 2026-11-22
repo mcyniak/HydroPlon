@@ -1,0 +1,84 @@
+{
+ "source_type": "fixture",
+ "is_demonstration": true,
+ "note_pl": "DANE SYNTETYCZNE do testów mechanizmów — nie opisują rzeczywistego terenu.",
+ "version": "fixture-imgw-like-1.0",
+ "generator": "app.fixtures.weather_generator (deterministyczny)",
+ "stations": {
+  "FX-P-A": {
+   "name": "STACJA TESTOWA A-OPAD",
+   "lon": 18.58,
+   "lat": 53.02,
+   "has_precip": true,
+   "has_temp": false,
+   "archive_start": "2016-01-01",
+   "archive_end": "2026-10-31",
+   "profile": "dry",
+   "gaps": [
+    [
+     "2018-07-10",
+     "2018-07-14"
+    ],
+    [
+     "2021-05-03",
+     "2021-05-03"
+    ]
+   ]
+  },
+  "FX-T-A": {
+   "name": "STACJA TESTOWA A-TEMP",
+   "lon": 18.66,
+   "lat": 52.93,
+   "has_precip": false,
+   "has_temp": true,
+   "archive_start": "2016-01-01",
+   "archive_end": "2026-10-31",
+   "profile": "warm",
+   "gaps": []
+  },
+  "FX-P-B": {
+   "name": "STACJA TESTOWA B-OPAD",
+   "lon": 22.5,
+   "lat": 51.27,
+   "has_precip": true,
+   "has_temp": false,
+   "archive_start": "2016-01-01",
+   "archive_end": "2026-10-31",
+   "profile": "moist",
+   "gaps": []
+  },
+  "FX-T-B": {
+   "name": "STACJA TESTOWA B-TEMP",
+   "lon": 22.6,
+   "lat": 51.22,
+   "has_precip": false,
+   "has_temp": true,
+   "archive_start": "2016-01-01",
+   "archive_end": "2026-10-31",
+   "profile": "mild",
+   "gaps": []
+  },
+  "FX-P-C": {
+   "name": "STACJA TESTOWA C-OPAD",
+   "lon": 21.4,
+   "lat": 52.4,
+   "has_precip": true,
+   "has_temp": false,
+   "archive_start": "2016-01-01",
+   "archive_end": "2025-12-31",
+   "profile": "normal",
+   "gaps": "every_3rd_week"
+  },
+  "FX-T-C": {
+   "name": "STACJA TESTOWA C-TEMP",
+   "lon": 21.45,
+   "lat": 52.42,
+   "has_precip": false,
+   "has_temp": true,
+   "archive_start": "2016-01-01",
+   "archive_end": "2025-12-31",
+   "profile": "mild",
+   "gaps": []
+  }
+ }
+}

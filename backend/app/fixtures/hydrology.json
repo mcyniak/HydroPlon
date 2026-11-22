@@ -1,0 +1,96 @@
+{
+ "source_type": "fixture",
+ "is_demonstration": true,
+ "note_pl": "DANE SYNTETYCZNE do testów mechanizmów — nie opisują rzeczywistego terenu.",
+ "version": "fixture-bdot-isok-like-1.0",
+ "search_buffer_m": 500,
+ "parcels": {
+  "049901_2.0001.101": {
+   "features_layer_status": "ok",
+   "flood_layer_status": "ok",
+   "features": [
+    {
+     "bdot_code": "SWRM",
+     "feature_type": "row_melioracyjny",
+     "name": null,
+     "wkt": "LINESTRING (474648 568221.5, 474648 568481.5)"
+    },
+    {
+     "bdot_code": "SWRS",
+     "feature_type": "ciek_naturalny",
+     "name": "Struga Testowa",
+     "wkt": "LINESTRING (474044 568611.5, 474944 568611.5)"
+    }
+   ],
+   "flood_zones": [
+    {
+     "hazard_class": "obszar szczególnego zagrożenia (1%)",
+     "wkt": "POLYGON ((475544 569031.5, 475544 569631.5, 473444 569631.5, 473444 569031.5, 475544 569031.5))"
+    }
+   ],
+   "jcwp": {
+    "code": "FX-RW-0001",
+    "name": "JCWP testowa A"
+   }
+  },
+  "069901_2.0001.202/3": {
+   "features_layer_status": "ok",
+   "flood_layer_status": "ok",
+   "features": [
+    {
+     "bdot_code": "SWRM",
+     "feature_type": "row_melioracyjny",
+     "name": null,
+     "wkt": "LINESTRING (747307.4 381709.3, 747307.4 382109.3)"
+    },
+    {
+     "bdot_code": "PTWP",
+     "feature_type": "zbiornik_wodny",
+     "name": "Staw Testowy",
+     "wkt": "POLYGON ((748217.4 381809.3, 748217.4 381869.3, 748157.4 381869.3, 748157.4 381809.3, 748217.4 381809.3))"
+    }
+   ],
+   "flood_zones": [
+    {
+     "hazard_class": "obszar szczególnego zagrożenia (1%)",
+     "wkt": "POLYGON ((748177.4 381409.3, 748177.4 381839.3, 747127.4 381839.3, 747127.4 381409.3, 748177.4 381409.3))"
+    }
+   ],
+   "jcwp": {
+    "code": "FX-RW-0002",
+    "name": "JCWP testowa B"
+   }
+  },
+  "149901_2.0001.303": {
+   "features_layer_status": "ok",
+   "flood_layer_status": "unavailable",
+   "features": [
+    {
+     "bdot_code": "SWRM",
+     "feature_type": "row_melioracyjny",
+     "name": null,
+     "wkt": "LINESTRING (701909 479980.7, 701909 480200.7)"
+    }
+   ],
+   "flood_zones": null,
+   "jcwp": null
+  },
+  "049901_2.0002.404/1": {
+   "features_layer_status": "ok",
+   "flood_layer_status": "ok",
+   "features": [
+    {
+     "bdot_code": "SWRM",
+     "feature_type": "row_melioracyjny",
+     "name": null,
+     "wkt": "LINESTRING (479674.3 572659.4, 479674.3 572889.4)"
+    }
+   ],
+   "flood_zones": [],
+   "jcwp": {
+    "code": "FX-RW-0001",
+    "name": "JCWP testowa A"
+   }
+  }
+ }
+}

@@ -1,0 +1,89 @@
+@use "tokens" as *
+
+// Zmienne CSS zostają dostępne w przeglądarce (np. do szybkich prób w DevTools).
+:root
+  --green: #{$green}
+  --green-deep: #{$green-deep}
+  --green-mid: #{$green-mid}
+  --green-pale: #{$green-pale}
+  --green-line: #{$green-line}
+  --yellow: #{$yellow}
+  --yellow-pale: #{$yellow-pale}
+  --gold: #{$gold}
+  --gold-deep: #{$gold-deep}
+  --blue: #{$blue}
+  --blue-deep: #{$blue-deep}
+  --blue-pale: #{$blue-pale}
+  --ink: #{$ink}
+  --border: #{$border}
+  --bg: #{$bg}
+
+*
+  box-sizing: border-box
+
+html
+  scroll-behavior: smooth
+
+::selection
+  background: #f6e2a6
+  color: $ink
+
+body
+  margin: 0
+  background: $bg
+  color: $ink
+  font: $font
+  caret-color: $green
+  -webkit-font-smoothing: antialiased
+  text-rendering: optimizeLegibility
+
+a
+  color: $green
+  text-underline-offset: 3px
+  text-decoration-thickness: 1px
+  &:hover
+    color: $green-deep
+
+h1, h2, h3, h4
+  text-wrap: balance
+
+button, input
+  font: inherit
+
+button
+  cursor: pointer
+
+button:focus-visible, input:focus-visible, summary:focus-visible
+  @include focus-ring
+
+code
+  font-size: .92em
+
+.icon
+  width: 20px
+  height: 20px
+  display: inline-block
+  fill: none
+  stroke: currentColor
+  stroke-width: 2
+  stroke-linecap: round
+  stroke-linejoin: round
+  flex-shrink: 0
+
+.svg-assets
+  position: absolute
+  width: 0
+  height: 0
+  overflow: hidden
+
+@keyframes appear
+  from
+    opacity: .5
+    transform: translateY(5px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+@keyframes hp-spin
+  to
+    transform: rotate(360deg)

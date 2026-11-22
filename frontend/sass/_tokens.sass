@@ -1,0 +1,57 @@
+// HydroPlon — tokeny wizualne (spec. GRAND FINALE v7 §52, zatwierdzony podgląd v4).
+// Zieleń i biel dominują; żółty = zwykłe zaznaczenia i akcenty; niebieski = WYŁĄCZNIE metoda rekomendowana.
+
+// Zieleń (header, przyciski, aktywny krok)
+$green: #0e6548
+$green-deep: #074b35
+$green-mid: #18865e
+$green-pale: #eff9f3
+$green-line: #b9dcc8
+
+// Żółty / złoty (zaznaczenia, dotacje, pytania)
+$yellow: #eac24f
+$yellow-pale: #fff9e9
+$gold: #ba830d
+$gold-deep: #805a0b
+$gold-line: #ebd492
+
+// Niebieski — tylko rekomendacje metod
+$blue: #237db8
+$blue-deep: #155c90
+$blue-pale: #eef7ff
+
+// Tekst i tła — odcienie tekstu dobrane do kontrastu WCAG AA (≥4,5:1) na każdym tle aplikacji
+$ink: #172c29
+$ink-2: #4a5e58      // tekst drugorzędny: opisy, wiersze kosztów (6,9:1 na bieli)
+$ink-3: #5a6d67      // podpowiedzi, podpisy, stany nieaktywne (≥5,0:1 na każdym tle)
+$placeholder: #687a74 // 4,5:1 na białym polu
+$gold-ink: #7a5f1c   // tekst na żółtych tłach i oznaczenie braku danych
+$green-ink: #3f6a56  // tekst drugorzędny na zielonych tłach
+$border: #e1eae6
+$bg: #fff
+$soft: #f7faf8
+
+// Statusy semantyczne (błędy) — nie do dekoracji
+$err-ink: #8a2f24
+$err-bg: #fff6f4
+$err-line: #efc9c3
+
+$radius: 19px
+$shadow: 0 10px 28px rgba(16, 68, 48, .055)
+$font-family: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif
+$font: 15px/1.5 $font-family
+$page-width: 1450px
+
+// Punkty przełamania układu
+$bp-tablet: 1050px
+$bp-narrow: 800px
+$bp-phone: 570px
+
+@mixin focus-ring($color: rgba(218, 166, 35, .48))
+  outline: 3px solid $color
+  outline-offset: 3px
+
+@mixin page-container($gutter: 72px)
+  width: min(#{$page-width}, calc(100% - #{$gutter}))
+  margin-left: auto
+  margin-right: auto

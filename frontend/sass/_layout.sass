@@ -1,0 +1,288 @@
+@use "tokens" as *
+
+// ---------- Header ----------
+.topbar
+  background: $green
+  color: #fff
+  box-shadow: 0 3px 14px rgba(2, 47, 28, .12)
+
+.topbar-inner
+  @include page-container
+  min-height: 76px
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 18px
+
+.brand
+  display: flex
+  align-items: center
+  gap: 12px
+  text-decoration: none
+  color: inherit
+
+.brand-mark
+  display: grid
+  place-items: center
+  width: 44px
+  height: 44px
+  border-radius: 14px
+  background: rgba(255, 255, 255, .14)
+  border: 1px solid rgba(255, 255, 255, .17)
+  .icon
+    width: 27px
+    height: 27px
+    color: #fff
+
+.brand-name
+  font-weight: 820
+  font-size: 24px
+  letter-spacing: -.8px
+  line-height: 1
+
+.brand-caption
+  font-size: 11px
+  opacity: .77
+  letter-spacing: .03em
+  margin-top: 6px
+
+.topbar-side
+  display: flex
+  align-items: center
+  gap: 15px
+  font-size: 13px
+  color: #e8f5ee
+  .mini-separator
+    height: 22px
+    border-left: 1px solid rgba(255, 255, 255, .24)
+
+.demo-pill
+  display: inline-flex
+  align-items: center
+  gap: 8px
+  border: 1px solid rgba(255, 255, 255, .26)
+  background: rgba(255, 255, 255, .12)
+  padding: 8px 13px
+  border-radius: 999px
+  font-size: 11px
+  font-weight: 750
+  letter-spacing: .07em
+  white-space: nowrap
+  &::before
+    content: ''
+    width: 7px
+    height: 7px
+    border-radius: 50%
+    background: $yellow
+
+// ---------- Strona i nagłówek treści ----------
+.page
+  @include page-container
+  margin-top: 30px
+  margin-bottom: 50px
+
+.headline-row
+  display: flex
+  align-items: flex-end
+  justify-content: space-between
+  gap: 22px
+  margin: 0 1px 22px
+  h1
+    margin: 0 0 6px
+    letter-spacing: -.03em
+    text-wrap: balance
+    line-height: 1.14
+    font-size: clamp(24px, 2.35vw, 34px)
+    font-weight: 790
+  p
+    margin: 0
+    color: $ink-3
+    font-size: 14px
+
+.context-pill
+  display: flex
+  align-items: center
+  gap: 8px
+  border: 1px solid $border
+  background: $soft
+  border-radius: 11px
+  padding: 10px 13px
+  color: $ink-3
+  font-size: 12px
+  white-space: nowrap
+  .icon
+    width: 16px
+    height: 16px
+    color: $green
+
+// ---------- Pasek kroków ----------
+.stepper
+  background: #fff
+  border: 1px solid #e3e9df
+  border-radius: 20px
+  box-shadow: $shadow
+  padding: 19px 28px 16px
+  display: grid
+  grid-template-columns: 1fr .46fr 1fr .46fr 1fr .46fr 1fr
+  align-items: center
+  margin-bottom: 22px
+
+.step-indicator
+  appearance: none
+  display: flex
+  flex-direction: column
+  align-items: center
+  min-width: 0
+  text-align: center
+  border: 0
+  background: transparent
+  color: $ink-3
+  padding: 2px 5px 0
+  &:disabled
+    cursor: default
+  &[data-state="active"]
+    .step-bubble
+      background: $green
+      color: #fff
+      border-color: $green
+      box-shadow: 0 5px 12px rgba(14, 101, 72, .19)
+    .step-name
+      color: $ink
+  &[data-state="done"]
+    .step-bubble
+      background: $green-pale
+      color: $green
+      border-color: $green-line
+    .step-name
+      color: $green
+
+.step-bubble
+  display: grid
+  place-items: center
+  width: 37px
+  height: 37px
+  border-radius: 50%
+  border: 1px solid #e5ece8
+  background: #f4f7f5
+  color: $ink-3
+  font-size: 14px
+  font-weight: 800
+  margin-bottom: 9px
+  transition: .15s ease
+
+.step-name
+  font-size: 11.5px
+  font-weight: 790
+  letter-spacing: .055em
+  text-transform: uppercase
+  white-space: nowrap
+
+.step-line
+  height: 2px
+  border-radius: 4px
+  background: #e4ebe7
+  transform: translateY(-11px)
+  &.done
+    background: #b4d3bb
+
+// ---------- Karta kreatora ----------
+.wizard-card
+  background: #fff
+  border: 1px solid #dfe8e5
+  border-radius: 22px
+  box-shadow: 0 12px 35px rgba(18, 65, 49, .055)
+  padding: 29px 30px 26px
+  min-height: 575px
+
+.step-screen
+  display: none
+  animation: appear .22s ease-out
+  &.active
+    display: block
+
+.step-title
+  display: flex
+  align-items: center
+  gap: 12px
+  margin-bottom: 5px
+  h2
+    font-size: 22px
+    font-weight: 790
+    line-height: 1.2
+    letter-spacing: -.5px
+    margin: 0
+    &:focus
+      outline: none
+
+.step-count
+  background: $green
+  color: #fff
+  border-radius: 9px
+  width: 34px
+  height: 34px
+  display: grid
+  place-items: center
+  font-weight: 800
+  font-size: 18px
+  flex-shrink: 0
+
+.step-desc
+  font-size: 14px
+  color: $ink-3
+  margin: 0 0 22px 47px
+  max-width: 840px
+
+// ---------- Nawigacja Wstecz / Dalej ----------
+.wizard-nav
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 15px
+  margin: 23px 1px 0
+
+.nav-note
+  display: inline-flex
+  gap: 7px
+  align-items: center
+  color: $ink-3
+  font-size: 12px
+  .icon
+    width: 16px
+    height: 16px
+
+.nav-group
+  display: flex
+  gap: 9px
+  margin-left: auto
+
+// ---------- Stopka ----------
+.footer
+  background: $green-deep
+  color: #deefe7
+  margin-top: 30px
+  strong
+    font-size: 13px
+    font-weight: 740
+  p
+    margin: 3px 0 0
+    font-size: 11px
+    color: #cfe6da
+
+.footer-inner
+  @include page-container
+  min-height: 75px
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 14px
+
+.footer-right
+  display: flex
+  gap: 7px
+  align-items: center
+  font-size: 12px
+  color: #c7e3d4
+  .icon
+    width: 15px
+    height: 15px
+    color: $yellow

@@ -1,0 +1,323 @@
+{
+  "version": "methods-0.1.0",
+  "status": "draft",
+  "valid_from": "2026-11-21",
+  "valid_to": null,
+  "known_from": "2026-11-21",
+  "known_to": null,
+  "note_pl": "Katalog 11 metod (§35, §56). Powiązania metoda→problem, warunki i ilości są decyzjami projektowymi prototypu wymagającymi walidacji agronomicznej i hydrotechnicznej. Nie zawiera procentów skuteczności.",
+  "general_evidence": [
+    "European Commission (2014). Natural Water Retention Measures Policy Document.",
+    "European Commission (2015). A Guide to Support the Selection, Design and Implementation of Natural Water Retention Measures in Europe.",
+    "FAO — Conservation Agriculture: https://www.fao.org/conservation-agriculture/",
+    "KOWR — Podstawy naukowe (materiał konkursowy): retencja glebowa i krajobrazowa przed nawadnianiem."
+  ],
+  "methods": [
+    {
+      "method_id": "crop_residues", "revision": 1, "catalog_order": 1,
+      "name_pl": "Pozostawianie resztek pożniwnych", "category": "agrotechnical",
+      "description_pl": "Ochrona powierzchni gleby i ograniczanie parowania przez pozostawienie rozdrobnionych resztek.",
+      "water_mechanisms": ["evaporation_reduction", "soil_water_retention"],
+      "benefit_overlap_group": "soil_water_retention",
+      "crop_water_relevance": true,
+      "target_problems": {"primary": ["periodic_water_deficit", "low_soil_retention"], "secondary": ["surface_runoff_erosion", "low_organic_matter"]},
+      "conditions": [
+        {"condition_id": "CR_ARABLE", "fact": "crop.is_arable", "expect": "TRUE", "severity": "hard",
+         "reason_code": "REQUIRES_ARABLE_CROP", "explanation_pl": "Metoda dotyczy uprawy polowej z resztkami po zbiorze.",
+         "verification_on_unknown": "confirm_crop_type"}
+      ],
+      "warnings_pl": ["Uwzględnić technologię uprawy i zagrożenia fitosanitarne (choroby, szkodniki przenoszone na resztkach)."],
+      "quantity_parameters": [{"quantity_kind": "work_area_ha", "unit": "ha", "derivation": "parcel_area"}],
+      "cost_components": [{"component_id": "residue_chopping_pass", "quantity_from": "work_area_ha"}],
+      "shared_scope_keys": ["field_operations"],
+      "funding_category_tags": ["soil_practice_annual"],
+      "task_template_ids": ["T_CONFIRM_WORK_AREA", "T_EXEC_RESIDUES", "T_MONITOR_SOIL_COVER", "T_MONITOR_SEASON", "T_MONITOR_COSTS"],
+      "monitoring_indicator_ids": ["soil_cover_pct_after_harvest"],
+      "mvp_scope": "full"
+    },
+    {
+      "method_id": "organic_matter", "revision": 1, "catalog_order": 2,
+      "name_pl": "Zwiększanie materii organicznej", "category": "soil",
+      "description_pl": "Poprawa struktury i pojemności wodnej gleby przez nawozy organiczne i materiał organiczny.",
+      "water_mechanisms": ["soil_water_retention", "soil_structure"],
+      "benefit_overlap_group": "soil_water_retention",
+      "crop_water_relevance": true,
+      "target_problems": {"primary": ["low_organic_matter", "low_soil_retention"], "secondary": ["periodic_water_deficit"]},
+      "conditions": [],
+      "warnings_pl": ["Dawkę i rodzaj materiału organicznego potwierdza bilans nawozowy i badanie gleby — system jej nie wyznacza."],
+      "quantity_parameters": [
+        {"quantity_kind": "work_area_ha", "unit": "ha", "derivation": "parcel_area"},
+        {"quantity_kind": "organic_material_t", "unit": "t", "derivation": "unknown", "missing_input": "dose_from_fertilization_balance"}
+      ],
+      "cost_components": [
+        {"component_id": "soil_testing_basic", "quantity_from": "fixed:1"},
+        {"component_id": "organic_material_purchase", "quantity_from": "organic_material_t"},
+        {"component_id": "organic_spreading_pass", "quantity_from": "work_area_ha"}
+      ],
+      "shared_scope_keys": ["soil_testing", "field_operations"],
+      "funding_category_tags": ["soil_practice_annual"],
+      "task_template_ids": ["T_CONFIRM_WORK_AREA", "T_SOIL_SAMPLING", "T_FERTILIZATION_BALANCE", "T_PROCURE_ORGANIC", "T_EXEC_ORGANIC", "T_MONITOR_SEASON", "T_MONITOR_COSTS"],
+      "monitoring_indicator_ids": ["soil_organic_matter_lab_pct"],
+      "mvp_scope": "full"
+    },
+    {
+      "method_id": "cover_crops", "revision": 1, "catalog_order": 3,
+      "name_pl": "Międzyplony i wsiewki", "category": "agrotechnical",
+      "description_pl": "Okrywa roślinna między uprawami głównymi: ochrona gleby i poprawa jej właściwości.",
+      "water_mechanisms": ["soil_cover", "soil_structure", "infiltration"],
+      "benefit_overlap_group": "soil_water_retention",
+      "crop_water_relevance": false,
+      "target_problems": {"primary": ["surface_runoff_erosion", "low_organic_matter"], "secondary": ["low_soil_retention"]},
+      "conditions": [
+        {"condition_id": "CC_ARABLE", "fact": "crop.is_arable", "expect": "TRUE", "severity": "hard",
+         "reason_code": "REQUIRES_ARABLE_CROP", "explanation_pl": "Międzyplon wymaga płodozmianu w uprawie polowej.",
+         "verification_on_unknown": "confirm_crop_type"},
+        {"condition_id": "CC_WATER_COMPETITION", "fact": "problem:periodic_water_deficit", "expect": "FALSE", "severity": "advisory",
+         "reason_code": "POSSIBLE_WATER_COMPETITION", "explanation_pl": "Przy okresowych niedoborach międzyplon może zużywać wodę potrzebną uprawie następczej — dobrać termin i gatunki.",
+         "verification_on_unknown": null}
+      ],
+      "warnings_pl": [],
+      "quantity_parameters": [{"quantity_kind": "work_area_ha", "unit": "ha", "derivation": "parcel_area"}],
+      "cost_components": [
+        {"component_id": "soil_testing_basic", "quantity_from": "fixed:1"},
+        {"component_id": "cover_crop_seed_mix", "quantity_from": "work_area_ha"},
+        {"component_id": "cover_crop_sowing_pass", "quantity_from": "work_area_ha"}
+      ],
+      "shared_scope_keys": ["soil_testing", "field_operations"],
+      "funding_category_tags": ["soil_practice_annual"],
+      "task_template_ids": ["T_CONFIRM_WORK_AREA", "T_SOIL_SAMPLING", "T_PROCURE_SEED", "T_EXEC_COVER", "T_MONITOR_SOIL_COVER", "T_MONITOR_SEASON", "T_MONITOR_COSTS"],
+      "monitoring_indicator_ids": ["soil_cover_pct_autumn"],
+      "mvp_scope": "full"
+    },
+    {
+      "method_id": "reduced_tillage", "revision": 1, "catalog_order": 4,
+      "name_pl": "Ograniczanie intensywności uprawy roli", "category": "agrotechnical",
+      "description_pl": "Uprawa uproszczona / bezorkowa ograniczająca naruszanie gleby i straty wody.",
+      "water_mechanisms": ["evaporation_reduction", "infiltration", "soil_structure"],
+      "benefit_overlap_group": "soil_water_retention",
+      "crop_water_relevance": true,
+      "target_problems": {"primary": ["surface_runoff_erosion", "periodic_water_deficit"], "secondary": ["low_organic_matter", "low_soil_retention"]},
+      "conditions": [
+        {"condition_id": "RT_ARABLE", "fact": "crop.is_arable", "expect": "TRUE", "severity": "hard",
+         "reason_code": "REQUIRES_ARABLE_CROP", "explanation_pl": "Dotyczy uprawy roli pod uprawy polowe.",
+         "verification_on_unknown": "confirm_crop_type"},
+        {"condition_id": "RT_TECH", "fact": "farm.technology_compatible", "expect": "TRUE", "severity": "conditional",
+         "reason_code": "FARM_TECHNOLOGY_UNVERIFIED", "explanation_pl": "Wymaga oceny warunków glebowych i zgodności z technologią oraz sprzętem gospodarstwa.",
+         "verification_on_unknown": "verify_farm_technology_compatibility"}
+      ],
+      "warnings_pl": [],
+      "quantity_parameters": [{"quantity_kind": "work_area_ha", "unit": "ha", "derivation": "parcel_area"}],
+      "cost_components": [
+        {"component_id": "soil_testing_basic", "quantity_from": "fixed:1"},
+        {"component_id": "reduced_tillage_equipment", "quantity_from": "fixed:1"}
+      ],
+      "shared_scope_keys": ["soil_testing", "field_operations"],
+      "funding_category_tags": ["soil_practice_annual"],
+      "task_template_ids": ["T_CONFIRM_WORK_AREA", "T_FARM_TECH_CHECK", "T_SOIL_SAMPLING", "T_EXEC_REDUCED_TILLAGE", "T_MONITOR_SEASON", "T_MONITOR_COSTS"],
+      "monitoring_indicator_ids": ["soil_compaction_observation"],
+      "mvp_scope": "full"
+    },
+    {
+      "method_id": "vegetative_strips", "revision": 1, "catalog_order": 5,
+      "name_pl": "Pasy roślinne i zadarnienie", "category": "landscape",
+      "description_pl": "Pasy zadarnione na drogach spływu i wzdłuż cieków ograniczające erozję i odpływ.",
+      "water_mechanisms": ["runoff_control", "erosion_control"],
+      "benefit_overlap_group": "runoff_control",
+      "crop_water_relevance": false,
+      "target_problems": {"primary": ["surface_runoff_erosion"], "secondary": []},
+      "conditions": [],
+      "warnings_pl": ["Pasy zajmują część powierzchni produkcyjnej i wymagają utrzymania."],
+      "quantity_parameters": [{"quantity_kind": "strip_area_m2", "unit": "m2", "derivation": "requires_design", "missing_input": "strip_length_and_width"}],
+      "cost_components": [
+        {"component_id": "strip_establishment", "quantity_from": "strip_area_m2"},
+        {"component_id": "strip_maintenance", "quantity_from": "strip_area_m2"}
+      ],
+      "shared_scope_keys": ["field_layout"],
+      "funding_category_tags": ["landscape_features"],
+      "task_template_ids": ["T_FIELD_RUNOFF_INSPECTION", "T_STRIP_LAYOUT", "T_EXEC_STRIPS", "T_MONITOR_SEASON", "T_MONITOR_COSTS"],
+      "monitoring_indicator_ids": ["erosion_rill_observation"],
+      "mvp_scope": "full"
+    },
+    {
+      "method_id": "contour_farming", "revision": 1, "catalog_order": 6,
+      "name_pl": "Uprawa w poprzek stoku", "category": "agrotechnical",
+      "description_pl": "Kierunek prac i siewu w poprzek stoku spowalniający spływ powierzchniowy.",
+      "water_mechanisms": ["runoff_control", "infiltration"],
+      "benefit_overlap_group": "runoff_control",
+      "crop_water_relevance": false,
+      "target_problems": {"primary": ["surface_runoff_erosion"], "secondary": ["periodic_water_deficit"]},
+      "conditions": [
+        {"condition_id": "CF_ARABLE", "fact": "crop.is_arable", "expect": "TRUE", "severity": "hard",
+         "reason_code": "REQUIRES_ARABLE_CROP", "explanation_pl": "Dotyczy kierunku uprawy roli i siewu.",
+         "verification_on_unknown": "confirm_crop_type"},
+        {"condition_id": "CF_SLOPE", "fact": "terrain.slope_present", "expect": "TRUE", "severity": "hard",
+         "reason_code": "REQUIRES_SLOPE", "explanation_pl": "Metoda ma sens tylko na działce z istotnym nachyleniem.",
+         "verification_on_unknown": "field_inspection_runoff_paths"}
+      ],
+      "warnings_pl": ["Nie każda geometria pola i technologia pozwala na pracę maszyn w poprzek stoku."],
+      "quantity_parameters": [{"quantity_kind": "work_area_ha", "unit": "ha", "derivation": "parcel_area"}],
+      "cost_components": [{"component_id": "contour_layout_service", "quantity_from": "fixed:1"}],
+      "shared_scope_keys": ["field_layout"],
+      "funding_category_tags": ["soil_practice_annual"],
+      "task_template_ids": ["T_CONFIRM_WORK_AREA", "T_FARM_TECH_CHECK", "T_FIELD_RUNOFF_INSPECTION", "T_CONTOUR_LAYOUT", "T_EXEC_CONTOUR", "T_MONITOR_SEASON", "T_MONITOR_COSTS"],
+      "monitoring_indicator_ids": ["erosion_rill_observation"],
+      "mvp_scope": "full"
+    },
+    {
+      "method_id": "windbreaks", "revision": 1, "catalog_order": 7,
+      "name_pl": "Zadrzewienia i pasy wiatrochronne", "category": "landscape",
+      "description_pl": "Zadrzewienia śródpolne ograniczające wysuszające działanie wiatru.",
+      "water_mechanisms": ["evaporation_reduction", "microclimate"],
+      "benefit_overlap_group": "microclimate",
+      "crop_water_relevance": true,
+      "target_problems": {"primary": ["wind_exposure"], "secondary": ["periodic_water_deficit", "surface_runoff_erosion"]},
+      "conditions": [
+        {"condition_id": "WB_LAND", "fact": "legal.land_available_for_planting", "expect": "TRUE", "severity": "conditional",
+         "reason_code": "LAND_AND_OWNERSHIP_UNVERIFIED", "explanation_pl": "Wymaga potwierdzenia własności, kolizji z infrastrukturą i zgody na wyłączenie pasa z uprawy.",
+         "verification_on_unknown": "verify_land_and_collisions"}
+      ],
+      "warnings_pl": ["Konkurencja drzew o wodę przy pasie, zajęcie gruntu i długi okres do uzyskania efektu."],
+      "quantity_parameters": [{"quantity_kind": "planting_length_m", "unit": "m", "derivation": "requires_design", "missing_input": "planting_line_design"}],
+      "cost_components": [
+        {"component_id": "windbreak_seedlings", "quantity_from": "planting_length_m"},
+        {"component_id": "windbreak_care", "quantity_from": "planting_length_m"}
+      ],
+      "shared_scope_keys": ["field_layout"],
+      "funding_category_tags": ["landscape_features", "afforestation_trees"],
+      "task_template_ids": ["T_FIELD_RUNOFF_INSPECTION", "T_STRIP_LAYOUT", "T_PROCURE_SEEDLINGS", "T_EXEC_WINDBREAKS", "T_MONITOR_SEASON", "T_MONITOR_COSTS"],
+      "monitoring_indicator_ids": ["seedling_survival_pct"],
+      "mvp_scope": "conditional_only"
+    },
+    {
+      "method_id": "runoff_slowing", "revision": 1, "catalog_order": 8,
+      "name_pl": "Spowalnianie odpływu powierzchniowego", "category": "hydrotechnical",
+      "description_pl": "Zastawki, progi i inne urządzenia spowalniające odpływ wód w rowach i na drogach spływu.",
+      "water_mechanisms": ["runoff_control", "water_storage"],
+      "benefit_overlap_group": "runoff_control",
+      "crop_water_relevance": false,
+      "target_problems": {"primary": ["surface_runoff_erosion", "limited_water_storage"], "secondary": ["periodic_water_deficit"]},
+      "conditions": [
+        {"condition_id": "RS_PERMITS", "fact": "legal.water_works_permits", "expect": "TRUE", "severity": "conditional",
+         "reason_code": "WATER_LAW_STATUS_UNKNOWN", "explanation_pl": "Prace na rowach i urządzeniach wodnych mogą wymagać zgłoszenia lub pozwolenia wodnoprawnego.",
+         "verification_on_unknown": "verify_water_law_requirements"},
+        {"condition_id": "RS_DESIGN", "fact": "design.hydrotechnical_available", "expect": "TRUE", "severity": "conditional",
+         "reason_code": "TECHNICAL_ASSESSMENT_REQUIRED", "explanation_pl": "Lokalizację i parametry urządzeń ustala ocena techniczna / projekt.",
+         "verification_on_unknown": "hydrotechnical_assessment"},
+        {"condition_id": "RS_DITCH", "fact": "hydrology.ditch_or_stream_adjacent", "expect": "TRUE", "severity": "advisory",
+         "reason_code": "NO_ADJACENT_DITCH", "explanation_pl": "Brak rowu/cieku przy działce — możliwe tylko rozwiązania na drogach spływu w obrębie pola.",
+         "verification_on_unknown": null}
+      ],
+      "warnings_pl": ["Obecność rowu nie oznacza prawa do jego piętrzenia ani wykonywania w nim prac."],
+      "quantity_parameters": [{"quantity_kind": "structures_count", "unit": "szt.", "derivation": "requires_design", "missing_input": "hydrotechnical_design"}],
+      "cost_components": [
+        {"component_id": "technical_assessment_hydro", "quantity_from": "fixed:1"},
+        {"component_id": "water_permit_documentation", "quantity_from": "fixed:1"},
+        {"component_id": "weir_structure", "quantity_from": "structures_count", "unless_fact": "field.existing_weir_declared"},
+        {"component_id": "existing_weir_inspection", "quantity_from": "fixed:1", "only_if_fact": "field.existing_weir_declared"}
+      ],
+      "shared_scope_keys": ["technical_assessment_hydro", "water_law_formalities"],
+      "funding_category_tags": ["water_retention_investment"],
+      "task_template_ids": ["T_VERIFY_WATER_LAW", "T_VERIFY_EXISTING_WEIR", "T_VERIFY_FLOOD_ZONE", "T_FIELD_RUNOFF_INSPECTION", "T_HYDRO_TECH_ASSESSMENT", "T_DESIGN_HYDRO", "T_PERMITS", "T_CONTRACT_HYDRO", "T_EXEC_HYDRO_WORKS", "T_COMMISSION_HYDRO", "T_MONITOR_HYDRO", "T_MONITOR_COSTS"],
+      "monitoring_indicator_ids": ["ditch_water_level_observation"],
+      "mvp_scope": "conditional_only"
+    },
+    {
+      "method_id": "controlled_drainage", "revision": 1, "catalog_order": 9,
+      "name_pl": "Regulacja odpływu drenarskiego", "category": "drainage",
+      "description_pl": "Regulatory/zastawki na istniejącej sieci drenarskiej zatrzymujące wodę w profilu glebowym.",
+      "water_mechanisms": ["water_storage", "groundwater_retention"],
+      "benefit_overlap_group": "water_supply",
+      "crop_water_relevance": true,
+      "target_problems": {"primary": ["uncontrolled_drainage_outflow"], "secondary": ["periodic_water_deficit"]},
+      "conditions": [
+        {"condition_id": "CD_DRAINAGE", "fact": "field.drainage_present", "expect": "TRUE", "severity": "hard",
+         "reason_code": "REQUIRES_EXISTING_DRAINAGE", "explanation_pl": "Metoda dotyczy wyłącznie istniejącej podziemnej instalacji drenarskiej.",
+         "verification_on_unknown": "verify_existing_drainage"},
+        {"condition_id": "CD_STATE", "fact": "field.drainage_technical_state_ok", "expect": "TRUE", "severity": "conditional",
+         "reason_code": "DRAINAGE_CONDITION_UNVERIFIED", "explanation_pl": "Wymaga sprawdzenia stanu technicznego i schematu sieci drenarskiej.",
+         "verification_on_unknown": "verify_drainage_technical_state"},
+        {"condition_id": "CD_PERMITS", "fact": "legal.water_works_permits", "expect": "TRUE", "severity": "conditional",
+         "reason_code": "WATER_LAW_STATUS_UNKNOWN", "explanation_pl": "Ustalić obowiązki prawne związane z urządzeniami melioracyjnymi.",
+         "verification_on_unknown": "verify_water_law_requirements"}
+      ],
+      "warnings_pl": ["Deklaracja rolnika o drenażu nie zastępuje inwentaryzacji i oceny technicznej."],
+      "quantity_parameters": [{"quantity_kind": "regulators_count", "unit": "szt.", "derivation": "requires_design", "missing_input": "drainage_network_layout"}],
+      "cost_components": [
+        {"component_id": "technical_assessment_hydro", "quantity_from": "fixed:1"},
+        {"component_id": "drainage_inventory", "quantity_from": "fixed:1", "only_if_fact_unknown": "field.drainage_present"},
+        {"component_id": "drainage_regulator_device", "quantity_from": "regulators_count"},
+        {"component_id": "water_permit_documentation", "quantity_from": "fixed:1"}
+      ],
+      "shared_scope_keys": ["technical_assessment_hydro", "water_law_formalities"],
+      "funding_category_tags": ["water_retention_investment"],
+      "task_template_ids": ["T_VERIFY_DRAINAGE_EXISTENCE", "T_VERIFY_DRAINAGE_CONDITION", "T_VERIFY_WATER_LAW", "T_HYDRO_TECH_ASSESSMENT", "T_DESIGN_HYDRO", "T_PERMITS", "T_CONTRACT_HYDRO", "T_EXEC_HYDRO_WORKS", "T_COMMISSION_HYDRO", "T_MONITOR_HYDRO", "T_MONITOR_COSTS"],
+      "monitoring_indicator_ids": ["drain_outlet_level_observation"],
+      "mvp_scope": "conditional_only"
+    },
+    {
+      "method_id": "retention_pond", "revision": 1, "catalog_order": 10,
+      "name_pl": "Zbiornik retencyjny", "category": "infrastructure",
+      "description_pl": "Mały zbiornik gromadzący wodę opadową lub odpływową.",
+      "water_mechanisms": ["water_storage"],
+      "benefit_overlap_group": "water_supply",
+      "crop_water_relevance": true,
+      "target_problems": {"primary": ["limited_water_storage"], "secondary": ["periodic_water_deficit", "irrigation_water_management"]},
+      "conditions": [
+        {"condition_id": "RP_DESIGN", "fact": "design.hydrotechnical_available", "expect": "TRUE", "severity": "conditional",
+         "reason_code": "DESIGN_AND_WATER_BALANCE_REQUIRED", "explanation_pl": "Wymaga projektu, bilansu wody, badań gruntu i wyznaczenia pojemności.",
+         "verification_on_unknown": "hydrotechnical_assessment"},
+        {"condition_id": "RP_PERMITS", "fact": "legal.water_works_permits", "expect": "TRUE", "severity": "conditional",
+         "reason_code": "WATER_LAW_STATUS_UNKNOWN", "explanation_pl": "Budowa zbiornika może wymagać zgłoszenia/pozwolenia i uzgodnień.",
+         "verification_on_unknown": "verify_water_law_requirements"},
+        {"condition_id": "RP_FLOOD", "fact": "hydrology.flood_zone_intersects", "expect": "FALSE", "severity": "advisory",
+         "reason_code": "FLOOD_ZONE_CONSTRAINT", "explanation_pl": "Działka przecina strefę zagrożenia powodziowego — budowle ziemne podlegają ograniczeniom Prawa wodnego.",
+         "verification_on_unknown": "verify_flood_hazard_maps"}
+      ],
+      "warnings_pl": ["Obniżenia terenu z NMT nie są projektem zbiornika ani podstawą wyznaczenia jego objętości."],
+      "quantity_parameters": [{"quantity_kind": "pond_volume_m3", "unit": "m3", "derivation": "requires_design", "missing_input": "pond_design_and_water_balance"}],
+      "cost_components": [
+        {"component_id": "technical_assessment_hydro", "quantity_from": "fixed:1"},
+        {"component_id": "water_source_assessment", "quantity_from": "fixed:1"},
+        {"component_id": "pond_design", "quantity_from": "fixed:1", "unless_fact": "field.existing_pond_declared"},
+        {"component_id": "pond_earthworks", "quantity_from": "pond_volume_m3", "unless_fact": "field.existing_pond_declared"},
+        {"component_id": "existing_pond_assessment", "quantity_from": "fixed:1", "only_if_fact": "field.existing_pond_declared"},
+        {"component_id": "water_permit_documentation", "quantity_from": "fixed:1"}
+      ],
+      "shared_scope_keys": ["technical_assessment_hydro", "water_source_assessment", "water_law_formalities"],
+      "funding_category_tags": ["water_retention_investment"],
+      "task_template_ids": ["T_VERIFY_EXISTING_POND", "T_VERIFY_WATER_LAW", "T_VERIFY_FLOOD_ZONE", "T_HYDRO_TECH_ASSESSMENT", "T_WATER_SOURCE_ASSESSMENT", "T_DESIGN_HYDRO", "T_PERMITS", "T_CONTRACT_HYDRO", "T_EXEC_HYDRO_WORKS", "T_COMMISSION_HYDRO", "T_MONITOR_HYDRO", "T_MONITOR_COSTS"],
+      "monitoring_indicator_ids": ["pond_water_level_observation"],
+      "mvp_scope": "conditional_only"
+    },
+    {
+      "method_id": "efficient_irrigation", "revision": 1, "catalog_order": 11,
+      "name_pl": "Nawadnianie ograniczające straty wody", "category": "infrastructure",
+      "description_pl": "Nawadnianie kropelkowe/precyzyjne z legalnego źródła wody; nie zwiększa zasobów wody.",
+      "water_mechanisms": ["water_use_efficiency"],
+      "benefit_overlap_group": "water_supply",
+      "crop_water_relevance": true,
+      "target_problems": {"primary": ["irrigation_water_management"], "secondary": ["periodic_water_deficit"]},
+      "conditions": [
+        {"condition_id": "EI_RIGHT", "fact": "water.abstraction_right_confirmed", "expect": "TRUE", "severity": "conditional",
+         "reason_code": "WATER_ABSTRACTION_RIGHT_UNCONFIRMED", "explanation_pl": "Brak potwierdzonego prawa do poboru wody — wymagane formalne potwierdzenie przed realizacją.",
+         "verification_on_unknown": "verify_water_abstraction_rights"},
+        {"condition_id": "EI_SOURCE", "fact": "water.source_capacity_confirmed", "expect": "TRUE", "severity": "conditional",
+         "reason_code": "WATER_SOURCE_UNCONFIRMED", "explanation_pl": "Nie potwierdzono źródła wody o wystarczającej wydajności.",
+         "verification_on_unknown": "water_source_assessment"}
+      ],
+      "warnings_pl": ["Nawadnianie nie jest samodzielnym sposobem zwiększania zasobów wodnych — priorytetem jest retencja."],
+      "quantity_parameters": [{"quantity_kind": "irrigated_area_ha", "unit": "ha", "derivation": "requires_design", "missing_input": "water_source_capacity"}],
+      "cost_components": [
+        {"component_id": "water_source_assessment", "quantity_from": "fixed:1"},
+        {"component_id": "irrigation_system", "quantity_from": "irrigated_area_ha"},
+        {"component_id": "irrigation_operating", "quantity_from": "irrigated_area_ha"},
+        {"component_id": "water_permit_documentation", "quantity_from": "fixed:1"}
+      ],
+      "shared_scope_keys": ["water_source_assessment", "water_law_formalities"],
+      "funding_category_tags": ["irrigation_investment"],
+      "task_template_ids": ["T_VERIFY_WATER_RIGHTS", "T_VERIFY_EXISTING_POND", "T_WATER_SOURCE_ASSESSMENT", "T_HYDRO_TECH_ASSESSMENT", "T_DESIGN_HYDRO", "T_PERMITS", "T_CONTRACT_HYDRO", "T_EXEC_HYDRO_WORKS", "T_COMMISSION_HYDRO", "T_MONITOR_HYDRO", "T_MONITOR_COSTS"],
+      "monitoring_indicator_ids": ["water_use_m3_per_ha"],
+      "mvp_scope": "conditional_only"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+// Druk z przeglądarki: tylko raport z rozwiniętą analizą. Oficjalny PDF generuje backend (/api/plans/{id}/pdf).
+@media print
+  .topbar, .footer, .stepper, .wizard-nav, .report-print, .layer-tabs, .map-chip, .demo-pill, .toast
+    display: none !important
+  .page
+    width: 100%
+    margin: 0
+  .wizard-card
+    border: 0
+    box-shadow: none
+    padding: 0
+  .step-screen
+    display: none !important
+  #screen-4
+    display: block !important
+  .report-top
+    grid-template-columns: 1.75fr 1fr
+  details.analysis-section > .analysis-body
+    display: block !important

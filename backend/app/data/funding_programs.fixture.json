@@ -1,0 +1,70 @@
+{
+  "version": "funding-fixture-0.1.0",
+  "source_type": "fixture",
+  "is_demonstration": true,
+  "catalog_verified_at": "2026-11-21",
+  "note_pl": "PROGRAMY FIKCYJNE do testów mechanizmu dopasowania (statusy naboru, wersjonowanie bitemporalne, kwalifikowalność). Nie są to rzeczywiste programy ARiMR/WPR i nie wolno ich przedstawiać jako ofert wsparcia.",
+  "programs": [
+    {
+      "program_id": "DEMO-RET-INV",
+      "name_pl": "[DEMO] Program inwestycji w retencję na gruntach rolnych",
+      "institution": "Instytucja testowa (fikcyjna)",
+      "support_type": "refundacja części kosztów kwalifikowanych",
+      "eligible_methods": ["runoff_slowing", "controlled_drainage", "retention_pond"],
+      "eligible_cost_categories": ["research", "design", "execution", "equipment", "formalities"],
+      "beneficiary_requirements": ["is_active_farmer", "has_producer_number", "has_legal_title_to_parcel"],
+      "conditions_pl": ["Koszty poniesione przed złożeniem wniosku mogą być niekwalifikowalne (do sprawdzenia w regulaminie naboru).",
+                         "Wymagane pozwolenia i projekt przed realizacją."],
+      "funds_same_costs_as": ["DEMO-WATER-EFF"],
+      "official_source_url": null,
+      "calls": [
+        {"call_id": "DEMO-RET-INV-2019", "valid_from": "2019-03-01", "valid_to": "2019-07-31", "known_from": "2019-02-01", "known_to": null, "published_at": "2019-02-01"},
+        {"call_id": "DEMO-RET-INV-2026", "valid_from": "2026-04-01", "valid_to": "2026-05-31", "known_from": "2026-03-01", "known_to": null, "published_at": "2026-03-01"}
+      ]
+    },
+    {
+      "program_id": "DEMO-SOIL-ANNUAL",
+      "name_pl": "[DEMO] Roczna płatność za praktyki ochrony gleby",
+      "institution": "Instytucja testowa (fikcyjna)",
+      "support_type": "płatność roczna (nie refundacja inwestycji)",
+      "eligible_methods": ["crop_residues", "organic_matter", "cover_crops", "reduced_tillage", "contour_farming"],
+      "eligible_cost_categories": ["field_operation", "materials"],
+      "beneficiary_requirements": ["is_active_farmer", "has_producer_number"],
+      "conditions_pl": ["Płatność za realizację praktyki na zadeklarowanej powierzchni, a nie zwrot poniesionych kosztów.",
+                         "Wymogi praktyki i terminy deklaracji — według aktualnych przepisów."],
+      "funds_same_costs_as": [],
+      "official_source_url": null,
+      "calls": [
+        {"call_id": "DEMO-SOIL-ANNUAL-2026", "valid_from": "2026-03-15", "valid_to": "2026-12-31", "known_from": "2026-03-01", "known_to": null, "published_at": "2026-03-01"}
+      ]
+    },
+    {
+      "program_id": "DEMO-TREES",
+      "name_pl": "[DEMO] Wsparcie zadrzewień i elementów krajobrazu",
+      "institution": "Instytucja testowa (fikcyjna)",
+      "support_type": "refundacja części kosztów założenia",
+      "eligible_methods": ["windbreaks", "vegetative_strips"],
+      "eligible_cost_categories": ["materials", "execution"],
+      "beneficiary_requirements": ["is_active_farmer", "has_legal_title_to_parcel"],
+      "conditions_pl": ["Obowiązek utrzymania nasadzeń przez okres określony w regulaminie."],
+      "funds_same_costs_as": [],
+      "official_source_url": null,
+      "calls": [
+        {"call_id": "DEMO-TREES-2027", "valid_from": "2027-02-01", "valid_to": "2027-04-30", "known_from": "2026-10-01", "known_to": null, "published_at": "2026-10-01"}
+      ]
+    },
+    {
+      "program_id": "DEMO-WATER-EFF",
+      "name_pl": "[DEMO] Program efektywnego wykorzystania wody w gospodarstwie",
+      "institution": "Instytucja testowa (fikcyjna)",
+      "support_type": "refundacja części kosztów kwalifikowanych",
+      "eligible_methods": ["efficient_irrigation", "retention_pond"],
+      "eligible_cost_categories": ["research", "design", "execution", "equipment"],
+      "beneficiary_requirements": ["is_active_farmer", "has_producer_number", "has_legal_title_to_parcel"],
+      "conditions_pl": ["Wymagane potwierdzone prawo do poboru wody."],
+      "funds_same_costs_as": ["DEMO-RET-INV"],
+      "official_source_url": null,
+      "calls": []
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "version": "analysis-rules-0.1.0",
+  "status": "draft_unvalidated",
+  "note_pl": "Progi pochodzą ze szkiców specyfikacji etapu 2 (aneksy B1–B5). Są HEURYSTYKAMI wewnętrznego modelu, wymagają walidacji eksperckiej (rejestr K10/R15). Nie są normami ani oficjalną metodyką IUNG/SMSR.",
+  "soil": {
+    "profile_depth_weights": {"0-5cm": 0.16666667, "5-15cm": 0.33333333, "15-30cm": 0.5},
+    "som_from_soc_factor": 1.724,
+    "low_humus_om_pct_lt": 1.8,
+    "retention_class_awc_mm": {"niska_lt": 32.0, "wysoka_gte": 48.0},
+    "pixel_area_ha": 6.25,
+    "awc_method": "Saxton & Rawls (2006), SSSAJ 70:1569–1578 — równania θ1500 i θ33 (bez korekty gęstości)",
+    "source": "Aneks B1 §4"
+  },
+  "terrain": {
+    "runoff_risk": {
+      "high_if_area_over_3deg_pct_gte": 40.0,
+      "high_if_area_over_6deg_pct_gte": 15.0,
+      "moderate_if_area_over_3deg_pct_gte": 15.0,
+      "moderate_if_slope_mean_deg_gte": 2.0
+    },
+    "high_insolation_south_facing_pct_gt": 40.0,
+    "depressions_flag_pct_gt": 5.0,
+    "min_pixels_for_confident_slope": 4,
+    "source": "Aneks B2 §4"
+  },
+  "hydrology": {
+    "adjacent_distance_m_lte": 15.0,
+    "search_buffer_m": 500,
+    "source": "Aneks B3 §4"
+  },
+  "weather": {
+    "dry_day_threshold_mm_lt": 1.0,
+    "veg_season_months": [4, 5, 6, 7, 8, 9],
+    "deficit_risk": {
+      "high_if_mean_veg_balance_mm_lt": -160.0,
+      "high_if_max_dry_spell_days_gte": 25,
+      "high_if_share_seasons_balance_lt_minus150_gte": 0.4,
+      "moderate_if_mean_veg_balance_mm_lt": -90.0,
+      "moderate_if_max_dry_spell_days_gte": 18
+    },
+    "season_month_min_completeness_pct": 100.0,
+    "low_completeness_pct_lt": 85.0,
+    "max_station_distance_km_for_confident": 35.0,
+    "eto_method": "Hargreaves–Samani (FAO-56, równanie 52) z promieniowaniem pozaziemskim Ra (FAO-56, równanie 21)",
+    "source": "Aneks B4 §4; nazwa 'kbw_mm' oznacza uproszczone saldo P−ET0, NIE KBW IUNG/SMSR"
+  },
+  "satellite": {
+    "valid_pixels_pct_gte": 70.0,
+    "latest_window_days": 45,
+    "baseline_window_days": 15,
+    "canopy_drop": {
+      "ndmi_anomaly_lte": -0.08,
+      "max_obs_age_days": 30,
+      "season_months": [4, 5, 6, 7, 8, 9],
+      "requires_season_balance_mm_lt": -80.0
+    },
+    "heterogeneity_ndvi_iqr_gt": 0.25,
+    "source": "Aneks B5 §4"
+  }
+}

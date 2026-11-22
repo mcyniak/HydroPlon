@@ -1,0 +1,171 @@
+@use "tokens" as *
+
+// Tablet / wąski laptop
+@media (max-width: $bp-tablet)
+  .page, .topbar-inner, .footer-inner
+    width: min(100% - 38px, #{$page-width})
+  .wizard-card
+    padding: 24px
+  .parcel-grid
+    grid-template-columns: minmax(270px, 37fr) minmax(0, 63fr)
+    gap: 17px
+  .map-panel
+    min-height: 440px
+  .crops-grid
+    gap: 15px
+
+// Wąski ekran: mapa pod formularzem, raport w jednej kolumnie (spec. §61)
+@media (max-width: $bp-narrow)
+  .headline-row
+    align-items: flex-start
+  .context-pill
+    display: none
+  .parcel-grid
+    grid-template-columns: 1fr
+  .parcel-left
+    display: grid
+    grid-template-columns: 1fr 1fr
+    gap: 15px
+    > *
+      grid-column: 1 / -1
+  .map-panel
+    min-height: 360px
+  .crops-grid
+    grid-template-columns: repeat(4, 1fr)
+  .question-grid
+    grid-template-columns: 1fr
+    gap: 19px
+  .question + .question
+    padding: 19px 0 0
+    border-left: 0
+    border-top: 1px solid #e1eae4
+  .report-top
+    grid-template-columns: 1fr
+  .analysis-chips
+    grid-template-columns: repeat(2, 1fr)
+
+// Telefon
+@media (max-width: $bp-phone)
+  .topbar-inner, .page, .footer-inner
+    width: calc(100% - 24px)
+  .topbar-inner
+    min-height: 65px
+  .brand-name
+    font-size: 20px
+  .brand-caption
+    display: none
+  .brand-mark
+    width: 38px
+    height: 38px
+  .topbar-side > span:not(.demo-pill), .topbar-side .mini-separator
+    display: none
+  .demo-pill
+    font-size: 11px
+    padding: 7px 9px
+  .page
+    margin-top: 20px
+  .headline-row
+    margin-bottom: 16px
+    h1
+      font-size: 25px
+    p
+      font-size: 12px
+  .stepper
+    border-radius: 15px
+    padding: 15px 8px 13px
+    grid-template-columns: 1fr 15px 1fr 15px 1fr 15px 1fr
+    margin-bottom: 14px
+  .step-bubble
+    width: 32px
+    height: 32px
+    margin-bottom: 7px
+  .step-name
+    font-size: 11px
+    letter-spacing: 0
+  .step-line
+    transform: translateY(-9px)
+  .wizard-card
+    padding: 21px 16px 22px
+    border-radius: 16px
+  .step-title h2
+    font-size: 19px
+  .step-desc
+    margin: 8px 0 20px
+    font-size: 12px
+  .step-count
+    width: 30px
+    height: 30px
+    font-size: 16px
+  .parcel-left
+    display: flex
+  .search-row
+    flex-direction: column
+    .action
+      width: 100%
+  .map-panel
+    min-height: 300px
+  .crops-grid
+    grid-template-columns: repeat(2, 1fr)
+    gap: 12px
+  .crop-circle
+    width: 104px
+    height: 104px
+  .question-box
+    padding: 17px 13px
+  .question-header
+    display: block
+    h3
+      font-size: 15px
+    span
+      display: block
+      margin-top: 4px
+  .method-row
+    grid-template-columns: 20px 36px minmax(0, 1fr)
+    padding: 12px
+    gap: 10px
+  .method-icon
+    width: 36px
+    height: 36px
+  .method-status
+    grid-column: 3
+    justify-self: start
+    font-size: 11px
+    padding: 4px 8px
+  .method-heading
+    font-size: 12px
+  .method-description
+    font-size: 12px
+  .benefit-card, .cost-card, .report-section
+    padding: 18px
+  .benefit-metrics
+    gap: 7px
+  .benefit-metric
+    min-width: 0
+    flex: 1 1 100px
+  .timeline
+    gap: 8px
+  .timeline-item
+    padding: 12px
+  .analysis-chips
+    grid-template-columns: 1fr
+  .wizard-nav
+    margin-top: 15px
+  .nav-note
+    display: none
+  .nav-group
+    width: 100%
+    justify-content: space-between
+    .action
+      padding-inline: 14px
+  .footer-inner
+    min-height: 92px
+    flex-direction: column
+    justify-content: center
+    gap: 8px
+    align-items: flex-start
+
+@media (prefers-reduced-motion: reduce)
+  *, *::before, *::after
+    animation-duration: .001ms !important
+    transition-duration: .001ms !important
+    scroll-behavior: auto !important

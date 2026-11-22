@@ -1,0 +1,1810 @@
+{
+ "source_type": "fixture",
+ "is_demonstration": true,
+ "note_pl": "DANE SYNTETYCZNE do testów mechanizmów — nie opisują rzeczywistego terenu.",
+ "version": "fixture-sentinel2-like-1.0",
+ "edo_background": null,
+ "parcels": {
+  "049901_2.0001.101": {
+   "status": "ok",
+   "scenes": [
+    {
+     "acquisition_date": "2016-04-17",
+     "scene_id": "FIXTURE_S2_20160417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.45,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.22,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-05-22",
+     "scene_id": "FIXTURE_S2_20160522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.75,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.3,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-06-11",
+     "scene_id": "FIXTURE_S2_20160611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.7,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.27,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-07-06",
+     "scene_id": "FIXTURE_S2_20160706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.73,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.26,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-08-20",
+     "scene_id": "FIXTURE_S2_20160820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.4,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.15,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-10-05",
+     "scene_id": "FIXTURE_S2_20161005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.35,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.17,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-04-17",
+     "scene_id": "FIXTURE_S2_20170417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.45,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.224,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-05-22",
+     "scene_id": "FIXTURE_S2_20170522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.75,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.304,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-06-11",
+     "scene_id": "FIXTURE_S2_20170611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.7,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.274,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-07-06",
+     "scene_id": "FIXTURE_S2_20170706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.73,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.264,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-08-20",
+     "scene_id": "FIXTURE_S2_20170820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.4,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.154,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-10-05",
+     "scene_id": "FIXTURE_S2_20171005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.35,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.174,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-04-17",
+     "scene_id": "FIXTURE_S2_20180417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.45,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.228,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-05-22",
+     "scene_id": "FIXTURE_S2_20180522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.75,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.308,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-06-11",
+     "scene_id": "FIXTURE_S2_20180611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.7,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.278,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-07-06",
+     "scene_id": "FIXTURE_S2_20180706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.73,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.268,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-08-20",
+     "scene_id": "FIXTURE_S2_20180820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.4,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.158,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-10-05",
+     "scene_id": "FIXTURE_S2_20181005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.35,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.178,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-04-17",
+     "scene_id": "FIXTURE_S2_20190417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.45,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.232,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-05-22",
+     "scene_id": "FIXTURE_S2_20190522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.75,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.312,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-06-11",
+     "scene_id": "FIXTURE_S2_20190611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.588,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.142,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-07-06",
+     "scene_id": "FIXTURE_S2_20190706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.73,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.272,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-08-20",
+     "scene_id": "FIXTURE_S2_20190820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.4,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.162,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-10-05",
+     "scene_id": "FIXTURE_S2_20191005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.35,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.182,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-04-17",
+     "scene_id": "FIXTURE_S2_20200417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.45,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.236,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-05-22",
+     "scene_id": "FIXTURE_S2_20200522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.75,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.316,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-06-11",
+     "scene_id": "FIXTURE_S2_20200611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.7,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.286,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-07-06",
+     "scene_id": "FIXTURE_S2_20200706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.73,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.276,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-08-20",
+     "scene_id": "FIXTURE_S2_20200820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.4,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.166,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-10-05",
+     "scene_id": "FIXTURE_S2_20201005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.35,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.186,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-04-17",
+     "scene_id": "FIXTURE_S2_20210417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.45,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.24,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-05-22",
+     "scene_id": "FIXTURE_S2_20210522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.75,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.32,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-06-11",
+     "scene_id": "FIXTURE_S2_20210611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.7,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.29,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-07-06",
+     "scene_id": "FIXTURE_S2_20210706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.73,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.28,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-08-20",
+     "scene_id": "FIXTURE_S2_20210820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.4,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.17,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-10-05",
+     "scene_id": "FIXTURE_S2_20211005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.35,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.19,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-04-17",
+     "scene_id": "FIXTURE_S2_20220417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.45,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.244,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-05-22",
+     "scene_id": "FIXTURE_S2_20220522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.75,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.324,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-06-11",
+     "scene_id": "FIXTURE_S2_20220611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.7,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.294,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-07-06",
+     "scene_id": "FIXTURE_S2_20220706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.73,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.284,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-08-20",
+     "scene_id": "FIXTURE_S2_20220820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.4,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.174,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-10-05",
+     "scene_id": "FIXTURE_S2_20221005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.35,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.194,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-04-17",
+     "scene_id": "FIXTURE_S2_20230417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.45,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.248,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-05-22",
+     "scene_id": "FIXTURE_S2_20230522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.75,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.328,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-06-11",
+     "scene_id": "FIXTURE_S2_20230611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.7,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.298,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-07-06",
+     "scene_id": "FIXTURE_S2_20230706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.73,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.288,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-08-20",
+     "scene_id": "FIXTURE_S2_20230820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.4,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.178,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-10-05",
+     "scene_id": "FIXTURE_S2_20231005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.35,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.198,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-04-17",
+     "scene_id": "FIXTURE_S2_20240417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.45,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.252,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-05-22",
+     "scene_id": "FIXTURE_S2_20240522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.75,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.332,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-06-11",
+     "scene_id": "FIXTURE_S2_20240611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.7,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.302,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-07-06",
+     "scene_id": "FIXTURE_S2_20240706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.73,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.292,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-08-20",
+     "scene_id": "FIXTURE_S2_20240820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.4,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.182,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-10-05",
+     "scene_id": "FIXTURE_S2_20241005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.35,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.202,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-04-17",
+     "scene_id": "FIXTURE_S2_20250417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.45,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.256,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-05-22",
+     "scene_id": "FIXTURE_S2_20250522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.75,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.336,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-06-11",
+     "scene_id": "FIXTURE_S2_20250611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.7,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.306,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-07-06",
+     "scene_id": "FIXTURE_S2_20250706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.73,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.296,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-08-20",
+     "scene_id": "FIXTURE_S2_20250820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.4,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.186,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-10-05",
+     "scene_id": "FIXTURE_S2_20251005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.35,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.206,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-04-17",
+     "scene_id": "FIXTURE_S2_20260417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.45,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.26,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-05-22",
+     "scene_id": "FIXTURE_S2_20260522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.75,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.34,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-06-11",
+     "scene_id": "FIXTURE_S2_20260611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.7,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.31,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-07-06",
+     "scene_id": "FIXTURE_S2_20260706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.73,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.3,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-08-20",
+     "scene_id": "FIXTURE_S2_20260820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.4,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.19,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-10-05",
+     "scene_id": "FIXTURE_S2_20261005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.35,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.21,
+     "ndmi_iqr": 0.05
+    }
+   ]
+  },
+  "069901_2.0001.202/3": {
+   "status": "ok",
+   "scenes": [
+    {
+     "acquisition_date": "2016-04-17",
+     "scene_id": "FIXTURE_S2_20160417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.49,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.26,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-05-22",
+     "scene_id": "FIXTURE_S2_20160522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.79,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.34,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-06-11",
+     "scene_id": "FIXTURE_S2_20160611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.31,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-07-06",
+     "scene_id": "FIXTURE_S2_20160706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.77,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.3,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-08-20",
+     "scene_id": "FIXTURE_S2_20160820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.19,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-10-05",
+     "scene_id": "FIXTURE_S2_20161005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.21,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-04-17",
+     "scene_id": "FIXTURE_S2_20170417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.49,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.264,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-05-22",
+     "scene_id": "FIXTURE_S2_20170522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.79,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.344,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-06-11",
+     "scene_id": "FIXTURE_S2_20170611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.314,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-07-06",
+     "scene_id": "FIXTURE_S2_20170706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.77,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.304,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-08-20",
+     "scene_id": "FIXTURE_S2_20170820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.194,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-10-05",
+     "scene_id": "FIXTURE_S2_20171005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.214,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-04-17",
+     "scene_id": "FIXTURE_S2_20180417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.49,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.268,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-05-22",
+     "scene_id": "FIXTURE_S2_20180522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.79,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.348,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-06-11",
+     "scene_id": "FIXTURE_S2_20180611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.318,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-07-06",
+     "scene_id": "FIXTURE_S2_20180706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.77,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.308,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-08-20",
+     "scene_id": "FIXTURE_S2_20180820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.198,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-10-05",
+     "scene_id": "FIXTURE_S2_20181005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.218,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-04-17",
+     "scene_id": "FIXTURE_S2_20190417",
+     "valid_parcel_pixels_pct": 35.0,
+     "ndvi_median": 0.49,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.272,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-05-22",
+     "scene_id": "FIXTURE_S2_20190522",
+     "valid_parcel_pixels_pct": 35.0,
+     "ndvi_median": 0.79,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.352,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-06-11",
+     "scene_id": "FIXTURE_S2_20190611",
+     "valid_parcel_pixels_pct": 35.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.322,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-07-06",
+     "scene_id": "FIXTURE_S2_20190706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.77,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.312,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-08-20",
+     "scene_id": "FIXTURE_S2_20190820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.202,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-10-05",
+     "scene_id": "FIXTURE_S2_20191005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.222,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-04-17",
+     "scene_id": "FIXTURE_S2_20200417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.49,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.276,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-05-22",
+     "scene_id": "FIXTURE_S2_20200522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.79,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.356,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-06-11",
+     "scene_id": "FIXTURE_S2_20200611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.326,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-07-06",
+     "scene_id": "FIXTURE_S2_20200706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.77,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.316,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-08-20",
+     "scene_id": "FIXTURE_S2_20200820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.206,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-10-05",
+     "scene_id": "FIXTURE_S2_20201005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.226,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-04-17",
+     "scene_id": "FIXTURE_S2_20210417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.49,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.28,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-05-22",
+     "scene_id": "FIXTURE_S2_20210522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.79,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.36,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-06-11",
+     "scene_id": "FIXTURE_S2_20210611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.33,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-07-06",
+     "scene_id": "FIXTURE_S2_20210706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.77,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.32,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-08-20",
+     "scene_id": "FIXTURE_S2_20210820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.21,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-10-05",
+     "scene_id": "FIXTURE_S2_20211005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.23,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-04-17",
+     "scene_id": "FIXTURE_S2_20220417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.49,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.284,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-05-22",
+     "scene_id": "FIXTURE_S2_20220522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.79,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.364,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-06-11",
+     "scene_id": "FIXTURE_S2_20220611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.334,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-07-06",
+     "scene_id": "FIXTURE_S2_20220706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.77,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.324,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-08-20",
+     "scene_id": "FIXTURE_S2_20220820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.214,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-10-05",
+     "scene_id": "FIXTURE_S2_20221005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.234,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-04-17",
+     "scene_id": "FIXTURE_S2_20230417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.49,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.288,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-05-22",
+     "scene_id": "FIXTURE_S2_20230522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.79,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.368,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-06-11",
+     "scene_id": "FIXTURE_S2_20230611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.338,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-07-06",
+     "scene_id": "FIXTURE_S2_20230706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.77,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.328,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-08-20",
+     "scene_id": "FIXTURE_S2_20230820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.218,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-10-05",
+     "scene_id": "FIXTURE_S2_20231005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.238,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-04-17",
+     "scene_id": "FIXTURE_S2_20240417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.49,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.292,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-05-22",
+     "scene_id": "FIXTURE_S2_20240522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.79,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.372,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-06-11",
+     "scene_id": "FIXTURE_S2_20240611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.342,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-07-06",
+     "scene_id": "FIXTURE_S2_20240706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.77,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.332,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-08-20",
+     "scene_id": "FIXTURE_S2_20240820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.222,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-10-05",
+     "scene_id": "FIXTURE_S2_20241005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.242,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-04-17",
+     "scene_id": "FIXTURE_S2_20250417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.49,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.296,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-05-22",
+     "scene_id": "FIXTURE_S2_20250522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.79,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.376,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-06-11",
+     "scene_id": "FIXTURE_S2_20250611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.346,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-07-06",
+     "scene_id": "FIXTURE_S2_20250706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.77,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.336,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-08-20",
+     "scene_id": "FIXTURE_S2_20250820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.226,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-10-05",
+     "scene_id": "FIXTURE_S2_20251005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.246,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-04-17",
+     "scene_id": "FIXTURE_S2_20260417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.49,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.3,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-05-22",
+     "scene_id": "FIXTURE_S2_20260522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.79,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.38,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-06-11",
+     "scene_id": "FIXTURE_S2_20260611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.35,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-07-06",
+     "scene_id": "FIXTURE_S2_20260706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.77,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.34,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-08-20",
+     "scene_id": "FIXTURE_S2_20260820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.23,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-10-05",
+     "scene_id": "FIXTURE_S2_20261005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.25,
+     "ndmi_iqr": 0.05
+    }
+   ]
+  },
+  "149901_2.0001.303": {
+   "status": "no_data",
+   "scenes": []
+  },
+  "049901_2.0002.404/1": {
+   "status": "ok",
+   "scenes": [
+    {
+     "acquisition_date": "2016-04-17",
+     "scene_id": "FIXTURE_S2_20160417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.21,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-05-22",
+     "scene_id": "FIXTURE_S2_20160522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.29,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-06-11",
+     "scene_id": "FIXTURE_S2_20160611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.69,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.26,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-07-06",
+     "scene_id": "FIXTURE_S2_20160706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.72,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.25,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-08-20",
+     "scene_id": "FIXTURE_S2_20160820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.14,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2016-10-05",
+     "scene_id": "FIXTURE_S2_20161005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.34,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.16,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-04-17",
+     "scene_id": "FIXTURE_S2_20170417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.214,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-05-22",
+     "scene_id": "FIXTURE_S2_20170522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.294,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-06-11",
+     "scene_id": "FIXTURE_S2_20170611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.69,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.264,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-07-06",
+     "scene_id": "FIXTURE_S2_20170706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.72,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.254,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-08-20",
+     "scene_id": "FIXTURE_S2_20170820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.144,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2017-10-05",
+     "scene_id": "FIXTURE_S2_20171005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.34,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.164,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-04-17",
+     "scene_id": "FIXTURE_S2_20180417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.218,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-05-22",
+     "scene_id": "FIXTURE_S2_20180522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.298,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-06-11",
+     "scene_id": "FIXTURE_S2_20180611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.69,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.268,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-07-06",
+     "scene_id": "FIXTURE_S2_20180706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.72,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.258,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-08-20",
+     "scene_id": "FIXTURE_S2_20180820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.148,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2018-10-05",
+     "scene_id": "FIXTURE_S2_20181005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.34,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.168,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-04-17",
+     "scene_id": "FIXTURE_S2_20190417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.222,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-05-22",
+     "scene_id": "FIXTURE_S2_20190522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.302,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-06-11",
+     "scene_id": "FIXTURE_S2_20190611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.69,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.272,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-07-06",
+     "scene_id": "FIXTURE_S2_20190706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.72,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.262,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-08-20",
+     "scene_id": "FIXTURE_S2_20190820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.152,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2019-10-05",
+     "scene_id": "FIXTURE_S2_20191005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.34,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.172,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-04-17",
+     "scene_id": "FIXTURE_S2_20200417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.226,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-05-22",
+     "scene_id": "FIXTURE_S2_20200522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.306,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-06-11",
+     "scene_id": "FIXTURE_S2_20200611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.69,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.276,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-07-06",
+     "scene_id": "FIXTURE_S2_20200706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.72,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.266,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-08-20",
+     "scene_id": "FIXTURE_S2_20200820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.156,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2020-10-05",
+     "scene_id": "FIXTURE_S2_20201005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.34,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.176,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-04-17",
+     "scene_id": "FIXTURE_S2_20210417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.23,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-05-22",
+     "scene_id": "FIXTURE_S2_20210522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.31,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-06-11",
+     "scene_id": "FIXTURE_S2_20210611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.69,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.28,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-07-06",
+     "scene_id": "FIXTURE_S2_20210706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.72,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.27,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-08-20",
+     "scene_id": "FIXTURE_S2_20210820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.16,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2021-10-05",
+     "scene_id": "FIXTURE_S2_20211005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.34,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.18,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-04-17",
+     "scene_id": "FIXTURE_S2_20220417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.234,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-05-22",
+     "scene_id": "FIXTURE_S2_20220522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.314,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-06-11",
+     "scene_id": "FIXTURE_S2_20220611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.69,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.284,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-07-06",
+     "scene_id": "FIXTURE_S2_20220706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.72,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.274,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-08-20",
+     "scene_id": "FIXTURE_S2_20220820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.164,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2022-10-05",
+     "scene_id": "FIXTURE_S2_20221005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.34,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.184,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-04-17",
+     "scene_id": "FIXTURE_S2_20230417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.238,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-05-22",
+     "scene_id": "FIXTURE_S2_20230522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.318,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-06-11",
+     "scene_id": "FIXTURE_S2_20230611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.69,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.288,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-07-06",
+     "scene_id": "FIXTURE_S2_20230706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.72,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.278,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-08-20",
+     "scene_id": "FIXTURE_S2_20230820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.168,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2023-10-05",
+     "scene_id": "FIXTURE_S2_20231005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.34,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.188,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-04-17",
+     "scene_id": "FIXTURE_S2_20240417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.242,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-05-22",
+     "scene_id": "FIXTURE_S2_20240522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.322,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-06-11",
+     "scene_id": "FIXTURE_S2_20240611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.69,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.292,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-07-06",
+     "scene_id": "FIXTURE_S2_20240706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.72,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.282,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-08-20",
+     "scene_id": "FIXTURE_S2_20240820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.172,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2024-10-05",
+     "scene_id": "FIXTURE_S2_20241005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.34,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.192,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-04-17",
+     "scene_id": "FIXTURE_S2_20250417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.246,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-05-22",
+     "scene_id": "FIXTURE_S2_20250522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.326,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-06-11",
+     "scene_id": "FIXTURE_S2_20250611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.69,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.296,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-07-06",
+     "scene_id": "FIXTURE_S2_20250706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.72,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.286,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-08-20",
+     "scene_id": "FIXTURE_S2_20250820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.176,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2025-10-05",
+     "scene_id": "FIXTURE_S2_20251005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.34,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.196,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-04-17",
+     "scene_id": "FIXTURE_S2_20260417",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.44,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.25,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-05-22",
+     "scene_id": "FIXTURE_S2_20260522",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.74,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.33,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-06-11",
+     "scene_id": "FIXTURE_S2_20260611",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.69,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.3,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-07-06",
+     "scene_id": "FIXTURE_S2_20260706",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.72,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.29,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-08-20",
+     "scene_id": "FIXTURE_S2_20260820",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.39,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.18,
+     "ndmi_iqr": 0.05
+    },
+    {
+     "acquisition_date": "2026-10-05",
+     "scene_id": "FIXTURE_S2_20261005",
+     "valid_parcel_pixels_pct": 95.0,
+     "ndvi_median": 0.34,
+     "ndvi_iqr": 0.07,
+     "ndmi_median": 0.2,
+     "ndmi_iqr": 0.05
+    }
+   ]
+  }
+ }
+}

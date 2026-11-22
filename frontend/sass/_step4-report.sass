@@ -1,0 +1,285 @@
+@use "tokens" as *
+
+// Krok 4 — raport: opłacalność (zielona, 2/3) obok kosztów (1/3), potem żółte dotacje,
+// plan wdrożenia i zwinięta analiza na końcu (spec. §57).
+
+.report-top
+  display: grid
+  grid-template-columns: minmax(0, 1.75fr) minmax(280px, 1fr)
+  gap: 17px
+  margin-bottom: 18px
+
+.report-heading
+  display: flex
+  flex-wrap: wrap
+  align-items: center
+  gap: 6px 9px
+  .tag-demo
+    margin-left: 0
+  font-weight: 780
+  font-size: 13px
+  letter-spacing: .015em
+  .icon
+    width: 19px
+    height: 19px
+    color: #21825b
+
+// ---------- Opłacalność ----------
+.benefit-card
+  position: relative
+  background: linear-gradient(135deg, #e9f8ee 0%, #f9fdf9 78%)
+  border: 1px solid #b7ddc7
+  border-radius: 18px
+  padding: 24px 26px
+  overflow: hidden
+  min-height: 226px
+  p
+    margin: 0
+    max-width: 475px
+    color: $green-ink
+    font-size: 12.5px
+
+.benefit-main
+  margin: 18px 0 7px
+  font-size: clamp(26px, 3vw, 38px)
+  letter-spacing: -1.1px
+  font-weight: 830
+  line-height: 1.09
+
+.benefit-metrics
+  display: flex
+  gap: 13px
+  margin-top: 21px
+  flex-wrap: wrap
+
+.benefit-metric
+  border: 1px solid #e2ede7
+  background: #f8fbf9
+  border-radius: 11px
+  padding: 9px 12px
+  min-width: 128px
+  span
+    font-size: 11px
+    color: $green-ink
+    display: block
+  b
+    display: block
+    color: #1f664b
+    font-size: 13px
+    margin-top: 4px
+
+// ---------- Koszty ----------
+.cost-card
+  background: #fff
+  border: 1px solid #dce6e2
+  padding: 23px
+  border-radius: 18px
+  min-height: 226px
+  .report-heading .icon
+    color: $ink-3
+
+.cost-main
+  font-size: 28px
+  font-weight: 800
+  letter-spacing: -.6px
+  margin: 17px 0 3px
+  font-variant-numeric: tabular-nums
+
+.cost-sub
+  color: $ink-3
+  font-size: 12px
+  margin: 0 0 13px
+
+.cost-line
+  display: flex
+  justify-content: space-between
+  align-items: center
+  font-size: 12px
+  color: $ink-2
+  padding: 7px 0
+  border-bottom: 1px solid #edf0ee
+  gap: 10px
+  strong
+    color: $ink
+    white-space: nowrap
+    text-align: right
+    font-variant-numeric: tabular-nums
+
+// ---------- Sekcje: dotacje, plan ----------
+.report-section
+  border: 1px solid #dce6e2
+  border-radius: 17px
+  padding: 22px 24px
+  margin-bottom: 17px
+  h3
+    margin: 0
+    font-size: 17px
+    letter-spacing: -.3px
+  .subline
+    font-size: 12px
+    color: $ink-3
+    margin-top: 4px
+
+.grant-box
+  background: $yellow-pale
+  border-color: #e9d18a
+  .report-heading .icon
+    color: $gold
+
+.grant-inner
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 14px
+  padding: 16px 17px
+  background: #fff
+  border: 1px solid #f0e3bc
+  border-radius: 11px
+  margin-top: 15px
+  strong
+    font-size: 13px
+  p
+    font-size: 12px
+    color: $gold-ink
+    margin: 4px 0 0
+
+.grant-status
+  color: $gold-deep
+  font-size: 11px
+  font-weight: 760
+  background: #fff4d5
+  border: 1px solid #e8d08a
+  border-radius: 999px
+  padding: 8px 10px
+  white-space: nowrap
+
+.timeline
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr))
+  gap: 12px
+  margin-top: 18px
+
+.timeline-item
+  position: relative
+  background: #f8fbf9
+  border: 1px solid #e5ece7
+  border-radius: 12px
+  padding: 16px 14px
+  .num
+    display: grid
+    place-items: center
+    width: 29px
+    height: 29px
+    border-radius: 50%
+    background: #e1f1e6
+    color: #23764d
+    font-weight: 800
+    font-size: 12px
+    margin-bottom: 10px
+  strong
+    font-size: 12px
+    display: block
+  p
+    font-size: 12px
+    color: $ink-3
+    line-height: 1.55
+    margin: 6px 0 0
+
+.task-list
+  margin: 8px 0 0
+  padding-left: 16px
+  font-size: 12px
+  color: $ink-2
+  li + li
+    margin-top: 4px
+  span
+    color: $ink-3
+
+details.more summary
+  cursor: pointer
+  font-size: 11.5px
+  font-weight: 700
+  color: $green
+  margin-top: 6px
+
+// ---------- Rozwijana analiza (zawsze na końcu) ----------
+details.analysis-section
+  border: 1px solid #dce6e2
+  border-radius: 16px
+  background: #fff
+  padding: 0
+  margin-top: 18px
+  summary
+    list-style: none
+    cursor: pointer
+    display: flex
+    justify-content: space-between
+    align-items: center
+    padding: 19px 24px
+    font-weight: 770
+    font-size: 15px
+    color: $ink
+    background: #fff
+    border-radius: 16px
+    &::-webkit-details-marker
+      display: none
+    .icon
+      width: 17px
+      height: 17px
+      color: $gold
+      transition: transform .2s
+  &[open] summary .icon
+    transform: rotate(180deg)
+
+.analysis-body
+  border-top: 1px solid #e7ede9
+  padding: 19px 24px 22px
+  color: $ink-3
+  font-size: 12px
+  h4
+    margin: 18px 0 8px
+    font-size: 13px
+    color: $ink
+    &:first-child
+      margin-top: 0
+
+.problem-list
+  margin: 0
+  padding-left: 18px
+  li
+    margin-bottom: 6px
+    color: #4d665e
+  span
+    color: $ink-3
+
+.analysis-chips
+  display: grid
+  grid-template-columns: repeat(3, 1fr)
+  gap: 10px
+  margin-top: 15px
+
+.analysis-chip
+  border: 1px solid #e3ece7
+  border-radius: 9px
+  padding: 12px
+  background: #f9fbf9
+  b
+    display: block
+    font-size: 12px
+    color: #385e4b
+    margin-bottom: 4px
+  > span
+    display: block
+    margin-top: 3px
+    font-size: 12px
+    color: $ink-3
+  &.missing
+    background: #fffaf0
+    border-color: #f1e0b5
+
+.report-print
+  display: flex
+  justify-content: flex-end
+  margin-top: 16px
+  a.action
+    text-decoration: none

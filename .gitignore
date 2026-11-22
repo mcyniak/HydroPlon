@@ -1,0 +1,29 @@
+# Środowiska i zależności (odtwarzane: pip install -r requirements.txt, npm install)
+.venv/
+venv/
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Bufory tworzone przez serwer w trakcie działania (archiwum IMGW imgw_klimat.sqlite zostaje w repozytorium)
+backend/app/data_cache/live_cache.sqlite
+backend/app/data_cache/*_cache.json
+
+# Sekrety i konfiguracja lokalna (np. CDSE_CLIENT_ID / CDSE_CLIENT_SECRET) — nigdy do repozytorium
+.env
+.env.*
+*.pem
+*.key
+
+# Narzędzia i system
+.playwright-mcp/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

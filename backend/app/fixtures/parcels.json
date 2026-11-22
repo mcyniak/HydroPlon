@@ -1,0 +1,52 @@
+{
+ "source_type": "fixture",
+ "is_demonstration": true,
+ "note_pl": "DANE SYNTETYCZNE do testów mechanizmów — nie opisują rzeczywistego terenu.",
+ "version": "fixture-parcels-1.0",
+ "parcels": {
+  "049901_2.0001.101": {
+   "label": "A",
+   "scenario_pl": "Gleba lekka, ryzyko spływu, częste niedobory opadów, rów przy granicy",
+   "uldk_response": "0\nSRID=2180;POLYGON ((474644 568271.5, 474644 568431.5, 474344 568431.5, 474344 568271.5, 474644 568271.5))|049901_2.0001.101|kujawsko-pomorskie|testowy-99 (fikcyjny)|Testowa-A|Testowo-A|101|EGIB (fixture)\n",
+   "weather_station_ids": {
+    "precip": "FX-P-A",
+    "thermal": "FX-T-A"
+   }
+  },
+  "069901_2.0001.202/3": {
+   "label": "B",
+   "scenario_pl": "Gleba pyłowa o wysokiej retencji, teren płaski, część działki w strefie zagrożenia powodziowego",
+   "uldk_response": "0\nSRID=2180;POLYGON ((747777.4 381809.3, 747777.4 382009.3, 747527.4 382009.3, 747527.4 381809.3, 747777.4 381809.3))|069901_2.0001.202/3|lubelskie|testowy-99 (fikcyjny)|Testowa-B|Testowo-B|202/3|EGIB (fixture)\n",
+   "weather_station_ids": {
+    "precip": "FX-P-B",
+    "thermal": "FX-T-B"
+   }
+  },
+  "149901_2.0001.303": {
+   "label": "C",
+   "scenario_pl": "Niekompletne dane: brak gleby, niska kompletność pogody, niedostępna warstwa powodziowa, brak satelity",
+   "uldk_response": "0\nSRID=2180;POLYGON ((701849 480030.7, 701849 480150.7, 701669 480150.7, 701669 480030.7, 701849 480030.7))|149901_2.0001.303|mazowieckie|testowy-99 (fikcyjny)|Testowa-C|Testowo-C|303|EGIB (fixture)\n",
+   "weather_station_ids": {
+    "precip": "FX-P-C",
+    "thermal": "FX-T-C"
+   }
+  },
+  "049901_2.0002.404/1": {
+   "label": "D",
+   "scenario_pl": "Działka wieloczęściowa (MultiPolygon), warunki zbliżone do A",
+   "uldk_response": "0\nSRID=2180;MULTIPOLYGON (((479872.3 572699.4, 479872.3 572849.4, 479682.3 572849.4, 479682.3 572699.4, 479872.3 572699.4)), ((480102.3 572699.4, 480102.3 572849.4, 479892.3 572849.4, 479892.3 572699.4, 480102.3 572699.4)))|049901_2.0002.404/1|kujawsko-pomorskie|testowy-99 (fikcyjny)|Testowa-A|Testowo-D|404/1|EGIB (fixture)\n",
+   "weather_station_ids": {
+    "precip": "FX-P-A",
+    "thermal": "FX-T-A"
+   }
+  }
+ },
+ "special_responses": {
+  "049901_2.0001.998": {
+   "uldk_response": "-1 brak wynikow\n"
+  },
+  "049901_2.0001.999": {
+   "uldk_response": "0\nSRID=2180;POLYGON ((474644 568271.5, 474644 568431.5, 474344 568431.5, 474344 568271.5, 474644 568271.5))|049901_2.0001.999|tylko|trzy\n"
+  }
+ }
+}

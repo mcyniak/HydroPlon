@@ -1,0 +1,196 @@
+@use "tokens" as *
+
+// Wspólne elementy: pola, przyciski, statusy, etykiety, toast.
+
+.section-label
+  font-size: 11px
+  font-weight: 820
+  color: $ink-2
+  letter-spacing: .07em
+  text-transform: uppercase
+  display: block
+  margin-bottom: 8px
+
+.input
+  display: block
+  width: 100%
+  min-height: 46px
+  background: #fff
+  border: 1px solid #d9e4df
+  border-radius: 11px
+  padding: 11px 13px
+  color: $ink
+  outline: 0
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .01)
+  &::placeholder
+    color: $placeholder
+  &:focus
+    border-color: #e1bb5a
+    box-shadow: 0 0 0 3px rgba(234, 194, 79, .16)
+
+.action
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  gap: 9px
+  border: 0
+  border-radius: 11px
+  min-height: 46px
+  padding: 11px 20px
+  background: $green
+  color: white
+  font-weight: 730
+  text-decoration: none
+  transition: transform .1s ease, background .12s ease
+  &:hover
+    background: $green-deep
+  &:active
+    transform: translateY(1px)
+  .icon
+    width: 16px
+    height: 16px
+  // drugorzędna (Wstecz)
+  &.alt
+    color: $green
+    background: white
+    border: 1px solid #cbdbd3
+    &:hover
+      background: #f5faf7
+  // akcent żółty (np. pobranie PDF) — mimo nazwy NIE jest niebieski (v4)
+  &.blue
+    background: $yellow
+    color: #493a13
+    &:hover
+      background: #e0b43b
+  &:disabled
+    background: #dce7e1
+    color: #8aa49a
+    cursor: not-allowed
+
+.link-btn
+  border: 0
+  background: none
+  padding: 0
+  color: $green
+  font-weight: 730
+  text-decoration: underline
+  text-underline-offset: 3px
+  font-size: 12px
+  &:hover
+    color: $green-deep
+
+.hint
+  font-size: 12px
+  color: $ink-3
+  line-height: 1.55
+
+// ---------- Statusy ładowania / analizy ----------
+.status-box
+  display: flex
+  gap: 10px
+  align-items: flex-start
+  border: 1px solid $border
+  background: $soft
+  border-radius: 12px
+  padding: 11px 13px
+  font-size: 12px
+  color: #4d665e
+  line-height: 1.5
+  .icon
+    width: 17px
+    height: 17px
+    margin-top: 1px
+  &.ok
+    border-color: $green-line
+    background: #f4faf6
+    color: #1f5f45
+    .icon
+      color: $green
+  &.warn
+    border-color: #ecd9a4
+    background: #fffaf0
+    color: #71613d
+    .icon
+      color: $gold
+  &.err
+    border-color: $err-line
+    background: $err-bg
+    color: $err-ink
+
+.error-box
+  border: 1px solid $err-line
+  background: $err-bg
+  color: $err-ink
+  border-radius: 12px
+  padding: 12px 15px
+  font-size: 13px
+  margin-bottom: 18px
+
+.spinner
+  display: inline-block
+  width: 15px
+  height: 15px
+  border: 2px solid #cfe3d8
+  border-top-color: $green
+  border-radius: 50%
+  animation: hp-spin .8s linear infinite
+  flex-shrink: 0
+  margin-top: 1px
+  &.light
+    border-color: rgba(255, 255, 255, .35)
+    border-top-color: #fff
+    margin: 0
+
+// ---------- Etykiety i drobny tekst ----------
+.tag-demo
+  display: inline-block
+  font-size: 10px
+  font-weight: 780
+  letter-spacing: .04em
+  color: $gold-deep
+  background: #fff4d5
+  border: 1px solid #e8d08a
+  border-radius: 999px
+  padding: 3px 8px
+  margin-left: 8px
+  vertical-align: middle
+
+.fine
+  font-size: 12px !important
+  color: $ink-3 !important
+  margin-top: 12px !important
+  max-width: none !important
+
+.fine-list
+  margin: 12px 0 0
+  padding-left: 18px
+  font-size: 12px
+  color: $ink-3
+  li + li
+    margin-top: 3px
+
+// brak danych — zawsze widoczny, nigdy nie zamieniany na 0
+.na
+  color: $gold-ink
+  font-style: italic
+
+.toast
+  position: fixed
+  bottom: 25px
+  left: 50%
+  transform: translate(-50%, 20px)
+  border: 1px solid #cbddd3
+  background: #fff
+  color: #274f3c
+  padding: 12px 17px
+  border-radius: 12px
+  font-size: 13px
+  box-shadow: 0 12px 35px #002b1426
+  pointer-events: none
+  opacity: 0
+  transition: .2s
+  z-index: 1500
+  max-width: calc(100% - 30px)
+  &.show
+    opacity: 1
+    transform: translate(-50%, 0)
