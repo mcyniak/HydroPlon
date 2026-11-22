@@ -3,10 +3,10 @@
 'use strict';
 // ---------- słowniki prezentacji (tylko etykiety; wartości zawsze z API) ----------
 const CROP_UI = {
-  maize_grain: { label: 'Kukurydza', icon: 'crop-corn' }, winter_wheat: { label: 'Pszenica ozima', icon: 'crop-wheat' },
-  winter_rapeseed: { label: 'Rzepak ozimy', icon: 'crop-rapeseed' }, potato: { label: 'Ziemniaki', icon: 'crop-potato' },
-  sugar_beet: { label: 'Buraki cukrowe', icon: 'crop-beet' }, spring_barley: { label: 'Jęczmień jary', icon: 'crop-barley' },
-  winter_triticale_rye: { label: 'Żyto / pszenżyto', icon: 'crop-rye' }, grassland: { label: 'Łąki i pastwiska', icon: 'crop-grass' },
+  maize_grain: { label: 'Kukurydza', image: 'crop-corn' }, winter_wheat: { label: 'Pszenica ozima', image: 'crop-wheat' },
+  winter_rapeseed: { label: 'Rzepak ozimy', image: 'crop-rapeseed' }, potato: { label: 'Ziemniaki', image: 'crop-potato' },
+  sugar_beet: { label: 'Buraki cukrowe', image: 'crop-beet' }, spring_barley: { label: 'Jęczmień jary', image: 'crop-barley' },
+  winter_triticale_rye: { label: 'Żyto / pszenżyto', image: 'crop-rye' }, grassland: { label: 'Łąki i pastwiska', image: 'crop-grass' },
 };
 // Ikony metod: symbole SVG #m-<method_id> w app.html.
 const methodIcon = (id) => `<svg class="icon"><use href="#m-${id}"/></svg>`;
@@ -301,18 +301,23 @@ document.addEventListener('click', (e) => {
 function renderCrops() {
   $('crop-balance-hint').hidden = !state.crops.some((c) => !c.available_for_assessment);
   $('crop-grid').innerHTML = state.crops.map((c) => {
-    const ui = CROP_UI[c.crop_id] || { label: c.name_pl, icon: 'crop-grass' };
+    const ui = CROP_UI[c.crop_id];
     const sel = state.cropId === c.crop_id;
     const missingParams = !c.available_for_assessment;
-    return `<button type="button" class="crop-button ${sel ? 'selected' : ''}" data-crop="${esc(c.crop_id)}" aria-pressed="${sel}" title="${esc(c.name_pl)}"${missingParams ? ' aria-describedby="crop-balance-hint"' : ''}>
-      <span class="crop-circle"><svg class="crop-svg" viewBox="0 0 100 100"><use href="#${ui.icon}"/></svg><span class="crop-check"><svg class="icon"><use href="#icon-check"/></svg></span></span>
-      <span class="crop-name">${esc(ui.label)}</span>${missingParams ? '<span class="crop-note">Brak parametrów do bilansu</span>' : ''}</button>`;
+    return `<button type="button" class="crop-button" data-crop="${esc(c.crop_id)}" aria-pressed="${sel}" title="${esc(c.name_pl)}"${missingParams ? ' aria-describedby="crop-balance-hint"' : ''}>
+      <span class="crop-preview" aria-hidden="true">${ui?.image ? `<span class="crop-thumbnail ${ui.image}"></span>` : ''}</span>
+      <span class="crop-caption"><span class="crop-name">${esc(ui?.label || c.name_pl)}</span><span class="crop-check" aria-hidden="true"><svg class="icon"><use href="#icon-check"/></svg></span></span>
+      ${missingParams ? '<span class="crop-note">Brak parametrów do bilansu</span>' : ''}</button>`;
   }).join('');
 }
 $('crop-grid').addEventListener('click', (e) => {
   const b = e.target.closest('[data-crop]'); if (!b || state.busy) return;
-  if (state.cropId !== b.dataset.crop) { state.cropId = b.dataset.crop; invalidate(2); }
-  renderCrops(); updateStep();
+  if (state.cropId === b.dataset.crop) return;
+  $('crop-grid').querySelector('[aria-pressed="true"]')?.setAttribute('aria-pressed', 'false');
+  b.setAttribute('aria-pressed', 'true');
+  state.cropId = b.dataset.crop;
+  invalidate(2);
+  updateStep();
 });
 function readFieldContext() {
   const drainage = document.querySelector('input[name="drainage"]:checked').value;

@@ -930,95 +930,107 @@ details.notes ul {
 .crops-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 17px 22px;
+  gap: 14px;
   margin: 2px 0 29px;
 }
 
 .crop-button {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  align-items: center;
-  border: 0;
-  background: transparent;
-  color: #172c29;
+  align-items: stretch;
+  gap: 9px;
   min-width: 0;
-  padding: 6px 4px;
+  padding: 8px 8px 9px;
+  border: 1px solid #e1eae6;
+  border-radius: 11px;
+  background: #fff;
+  color: #172c29;
+  text-align: left;
 }
-.crop-button:hover .crop-circle {
-  border-color: #9ecfb2;
-  transform: translateY(-2px);
-  box-shadow: 0 7px 17px rgba(22, 91, 56, 0.1);
+.crop-button:hover {
+  border-color: #18865e;
+  background: #f7faf8;
 }
-.crop-button.selected .crop-circle {
-  border-color: #dfb341;
-  box-shadow: 0 0 0 4px rgba(229, 182, 58, 0.15), 0 5px 14px rgba(83, 67, 11, 0.05);
-  background: radial-gradient(circle at 30% 23%, #fff, #fff6d8 84%);
+.crop-button:focus-visible {
+  outline: 3px solid #0e6548;
+  outline-offset: 3px;
 }
-.crop-button.selected .crop-name {
-  color: #805a0b;
+.crop-button[aria-pressed=true] {
+  border-color: #805a0b;
+  background: #fff9e9;
 }
-.crop-button.selected .crop-check {
-  opacity: 1;
-  transform: scale(1);
+.crop-button[aria-pressed=true] .crop-check {
+  border-color: #805a0b;
+  background: #805a0b;
+  color: #fff;
+}
+.crop-button[aria-pressed=true] .crop-check .icon {
+  visibility: visible;
 }
 
-.crop-circle {
-  width: 114px;
-  height: 114px;
-  border-radius: 50%;
+.crop-preview {
   display: grid;
   place-items: center;
-  position: relative;
-  background: radial-gradient(circle at 33% 20%, #fff, #f0f8ed 82%);
-  border: 2px solid #e0ece2;
-  transition: 0.18s ease;
+  height: 124px;
+  border-radius: 6px;
+  background: #f4f5f1;
 }
 
-.crop-svg {
-  width: 86px;
-  height: 86px;
+.crop-thumbnail {
+  width: min(100%, 124px);
+  aspect-ratio: 1;
+  background: url("crops/atlas.webp") var(--crop-column, 0%) var(--crop-row, 0%)/400% 200% no-repeat;
+}
+.crop-thumbnail.crop-wheat, .crop-thumbnail.crop-barley {
+  --crop-column: 33.3333%;
+}
+.crop-thumbnail.crop-rapeseed, .crop-thumbnail.crop-rye {
+  --crop-column: 66.6667%;
+}
+.crop-thumbnail.crop-potato, .crop-thumbnail.crop-grass {
+  --crop-column: 100%;
+}
+.crop-thumbnail.crop-beet, .crop-thumbnail.crop-barley, .crop-thumbnail.crop-rye, .crop-thumbnail.crop-grass {
+  --crop-row: 100%;
+}
+
+.crop-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  min-height: 34px;
+  padding-inline: 3px;
 }
 
 .crop-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 730;
-  text-align: center;
   line-height: 1.3;
-  min-height: 34px;
-  max-width: 150px;
-}
-
-.crop-note {
-  font-size: 11px;
-  color: #7a5f1c;
-  font-weight: 650;
-  margin-top: -6px;
-  text-align: center;
-  max-width: 150px;
-  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .crop-check {
-  position: absolute;
-  width: 25px;
-  height: 25px;
-  right: 0;
-  bottom: 8px;
-  border-radius: 50%;
-  background: #d6a626;
-  color: #fff;
-  border: 3px solid #fff;
   display: grid;
   place-items: center;
-  opacity: 0;
-  transform: scale(0.6);
-  transition: 0.18s;
+  flex: 0 0 19px;
+  height: 19px;
+  border: 1px solid #829890;
+  border-radius: 50%;
 }
 .crop-check .icon {
+  visibility: hidden;
   width: 13px;
   height: 13px;
-  stroke-width: 3;
+  stroke-width: 2.6;
+}
+
+.crop-note {
+  padding-inline: 3px;
+  font-size: 11px;
+  color: #7a5f1c;
+  font-weight: 650;
+  line-height: 1.3;
 }
 
 .question-box {
@@ -2006,9 +2018,6 @@ details.analysis-section[open] summary .icon {
   .map-panel {
     min-height: 360px;
   }
-  .crops-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
   .question-grid {
     grid-template-columns: 1fr;
     gap: 19px;
@@ -2108,12 +2117,14 @@ details.analysis-section[open] summary .icon {
     min-height: 300px;
   }
   .crops-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
-  .crop-circle {
-    width: 104px;
+  .crop-preview {
     height: 104px;
+  }
+  .crop-thumbnail {
+    width: min(100%, 104px);
   }
   .question-box {
     padding: 17px 13px;
