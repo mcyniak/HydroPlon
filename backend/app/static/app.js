@@ -101,17 +101,18 @@ function updateMapChip() {
 map.on('zoomend', updateMapChip);
 
 // ---------- krok 1: działka ----------
-const addressInput = $('address-input');
-const addressButton = $('address-search');
+const searchForm = $('parcel-search-form');
+const searchButton = $('parcel-search');
+const parcelInput = $('parcel-input');
 const addressStatus = $('address-status');
 const addressResults = $('address-results');
+let addressRequest = null;
+let parcelLoading = false;
 
+function updateSearchButton() {
+  searchButton.disabled = addressRequest !== null || parcelLoading;
+}
 function showAddress(place) {
-  if ($('parcel-search').disabled) {
-    ++parcelSeq;
-    $('parcel-search').disabled = false;
-    renderParcelCard();
-  }
   const point = [place.lat, place.lon];
   const zoom = { address: 17, street: 16, city: MIN_CLICK_ZOOM }[place.kind];
   addressLayer.clearLayers();
@@ -123,17 +124,23 @@ function showAddress(place) {
   $('map-panel').scrollIntoView({ block: 'nearest' });
 }
 
-$('address-form').addEventListener('submit', async (e) => {
+searchForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  if (addressButton.disabled) return;
-  const query = addressInput.value.trim();
+  if (searchButton.disabled) return;
+  const query = parcelInput.value.trim();
   if (query.length < 3) {
-    addressStatus.textContent = 'Wpisz co najmniej 3 znaki adresu lub nazwy miejscowości.';
-    addressInput.focus();
+    addressStatus.textContent = 'Wpisz adres lub pełny identyfikator działki.';
+    parcelInput.focus();
     return;
   }
-  const parcelRequest = parcelSeq;
-  addressButton.disabled = true;
+  const id = query.replace(/\s/g, '');
+  if (/^\d{6}[_-]\d(?:\.|$)/.test(id)) {
+    loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(id)}`);
+    return;
+  }
+  const request = Symbol();
+  addressRequest = request;
+  updateSearchButton();
   addressLayer.clearLayers();
   updateMapChip();
   addressResults.replaceChildren();
@@ -141,7 +148,7 @@ $('address-form').addEventListener('submit', async (e) => {
   addressStatus.textContent = 'Szukam adresu w Geoportalu…';
   try {
     const results = await api('GET', `/api/parcels/address-search?q=${encodeURIComponent(query)}`);
-    if (parcelRequest !== parcelSeq) { addressStatus.textContent = ''; return; }
+    if (addressRequest !== request) return;
     if (results.length === 1) {
       showAddress(results[0]);
     } else if (results.length > 1) {
@@ -161,16 +168,23 @@ $('address-form').addEventListener('submit', async (e) => {
       addressStatus.textContent = 'Brak wyników. Sprawdź nazwę miejscowości, ulicę i numer.';
     }
   } catch (error) {
-    addressStatus.textContent = parcelRequest === parcelSeq ? error.message : '';
+    if (addressRequest === request) addressStatus.textContent = error.message;
   } finally {
-    addressButton.disabled = addressInput.disabled;
+    if (addressRequest === request) {
+      addressRequest = null;
+      updateSearchButton();
+    }
   }
 });
 async function loadParcel(url, msg) {
   const my = ++parcelSeq;
+  addressRequest = null;
+  addressStatus.textContent = '';
+  addressResults.hidden = true;
+  parcelLoading = true;
+  updateSearchButton();
   hideError();
   $('parcel-detail-slot').innerHTML = `<div class="status-box"><span class="spinner"></span><span>${esc(msg || 'Pobieram działkę z GUGiK…')}</span></div>`;
-  $('parcel-search').disabled = true;
   try {
     const p = await api('GET', url);
     if (my !== parcelSeq) return;
@@ -178,19 +192,21 @@ async function loadParcel(url, msg) {
   } catch (e) {
     if (my !== parcelSeq) return;
     $('parcel-detail-slot').innerHTML = `<div class="status-box err"><svg class="icon"><use href="#icon-info"/></svg><span><b>Nie udało się pobrać działki.</b><br>${esc(e.message)}</span></div>`;
-  } finally { if (my === parcelSeq) $('parcel-search').disabled = false; }
+  } finally {
+    if (my === parcelSeq) {
+      parcelLoading = false;
+      updateSearchButton();
+    }
+  }
 }
 function setParcel(p) {
   const changed = !state.parcel || state.parcel.parcel_id !== p.parcel_id;
   state.parcel = p;
-  $('parcel-input').value = p.parcel_id;
+  parcelInput.value = p.parcel_id;
   parcelLayer.clearLayers(); parcelLayer.addData(p.geojson_feature);
   map.invalidateSize();
   map.fitBounds(parcelLayer.getBounds(), { maxZoom: 17, padding: [40, 40] });
-  if (addressLayer.getLayers().length) {
-    addressLayer.clearLayers();
-    addressStatus.textContent = '';
-  }
+  addressLayer.clearLayers();
   updateMapChip();
   renderParcelCard();
   if (changed) { invalidate(1); }
@@ -215,12 +231,6 @@ function renderParcelCard() {
     </div>
     <details class="notes"><summary>Uwagi do danych ewidencyjnych (${p.notices.length})</summary><ul>${p.notices.map((n) => `<li>${esc(n)}</li>`).join('')}</ul></details>`;
 }
-$('parcel-search').addEventListener('click', () => {
-  const v = $('parcel-input').value.trim();
-  if (!v) { toast('Wpisz identyfikator działki.'); $('parcel-input').focus(); return; }
-  loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(v)}`);
-});
-$('parcel-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('parcel-search').click(); } });
 const dateInput = $('date-input');
 const dateError = $('date-error');
 function updateAnalysisDate() {
@@ -430,7 +440,7 @@ function renderImplementation(impl) {
 
   const phaseHtml = ([, phase], index) => `<li class="implementation-stage">
     <span class="implementation-step" aria-hidden="true">${index + 1}</span>
-    <details class="implementation-phase"${index === 0 ? ' open' : ''}>
+    <details class="implementation-phase" name="implementation-stages"${index === 0 ? ' open' : ''}>
       <summary>
         <span><span class="implementation-phase-title">${esc(phase.label)}</span>
           <span class="implementation-phase-count">${taskCount(phase.tasks.length)}</span></span>
@@ -697,9 +707,8 @@ document.querySelectorAll('.step-indicator').forEach((b) => b.addEventListener('
     const h = await api('GET', '/api/health'); state.health = h;
     const live = h.data_mode === 'live';
     if (!live) {
-      addressInput.disabled = true;
-      addressButton.disabled = true;
-      addressStatus.textContent = 'Wyszukiwanie adresów jest dostępne w trybie z danymi rzeczywistymi.';
+      parcelInput.placeholder = 'Wpisz identyfikator działki';
+      $('parcel-search-hint').textContent = 'W trybie testowym wpisz identyfikator działki lub wybierz przykład.';
     }
     $('mode-pill').textContent = live ? 'DANE RZECZYWISTE' : 'DANE TESTOWE';
     $('context-text').textContent = live ? 'Źródła: GUGiK, SoilGrids, IMGW-PIB, Wody Polskie, Sentinel-2' : 'Tryb testowy — dane syntetyczne';
@@ -707,7 +716,7 @@ document.querySelectorAll('.step-indicator').forEach((b) => b.addEventListener('
     if (parcelSeq === 0) {
       renderParcelCard();
       if (parcelId) {
-        $('parcel-input').value = parcelId;
+        parcelInput.value = parcelId;
         loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(parcelId)}`);
       }
     }
@@ -715,6 +724,7 @@ document.querySelectorAll('.step-indicator').forEach((b) => b.addEventListener('
     const fx = await api('GET', '/api/system/fixture-parcels');
     if (fx.features?.length) {
       fixtureLayer.addData(fx);
+      $('fixture-links').hidden = false;
       $('fixture-links').innerHTML = '<span class="hint">Działki testowe:</span> ' + fx.features.map((f) => `<button type="button" class="link-btn" data-id="${esc(f.properties.parcel_id)}" title="${esc(f.properties.scenario_pl)}">${esc(f.properties.label)}</button>`).join(' ');
       $('fixture-links').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(b.dataset.id)}`)));
     }

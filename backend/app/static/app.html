@@ -75,19 +75,20 @@
 
     <section class="step-screen" id="screen-1" aria-labelledby="title-1">
       <div class="step-title"><span class="step-count">1</span><h2 id="title-1" tabindex="-1">Wybór działki</h2></div>
-      <p class="step-desc">Wyszukaj adres, aby przybliżyć mapę. Wybierz działkę kliknięciem lub wpisz jej identyfikator.</p>
+      <p class="step-desc">Wyszukaj działkę lub wybierz ją bezpośrednio na mapie.</p>
       <div class="parcel-grid">
         <div class="parcel-left">
-          <form class="field-group" id="address-form" role="search">
-            <label class="section-label" for="address-input">ADRES LUB MIEJSCOWOŚĆ</label>
+          <form class="field-group parcel-search" id="parcel-search-form" role="search" aria-label="Wyszukiwanie działki">
+            <label class="section-label" for="parcel-input">ADRES LUB IDENTYFIKATOR DZIAŁKI</label>
             <div class="search-row">
-              <input class="input" type="search" id="address-input" placeholder="np. Marki, Andersa 1" required minlength="3" maxlength="160" autocomplete="off" spellcheck="false"/>
-              <button type="submit" class="action" id="address-search"><svg class="icon" aria-hidden="true"><use href="#icon-search"/></svg>Pokaż na mapie</button>
+              <input class="input" type="search" id="parcel-input" placeholder="Wpisz adres lub identyfikator" required minlength="3" maxlength="160" autocomplete="off" spellcheck="false" aria-describedby="parcel-search-hint"/>
+              <button type="submit" class="action" id="parcel-search"><svg class="icon" aria-hidden="true"><use href="#icon-search"/></svg>Szukaj</button>
             </div>
+            <div class="hint parcel-search-hint" id="parcel-search-hint">Np. Marki, Andersa 1 lub 120404_2.0006.131</div>
             <div class="hint address-status" id="address-status" role="status"></div>
             <ul class="address-results" id="address-results" hidden></ul>
+            <div class="fixture-links" id="fixture-links" hidden></div>
           </form>
-          <div class="field-group"><label class="section-label" for="parcel-input">IDENTYFIKATOR DZIAŁKI</label><div class="search-row"><input class="input" type="text" id="parcel-input" placeholder="np. 120404_2.0006.131" autocomplete="off" spellcheck="false"/><button type="button" class="action alt" id="parcel-search"><svg class="icon"><use href="#icon-search"/></svg>Szukaj</button></div><div class="hint" style="margin-top:8px">Format TERYT: <code>WWPPGG_R.OOOO.NR</code>.</div><div class="fixture-links" id="fixture-links"></div></div>
           <div class="field-group"><label class="section-label" for="date-input">DATA ANALIZY</label><div class="date-ctrl"><svg class="icon"><use href="#icon-calendar"/></svg><input class="input" type="date" id="date-input" min="2016-01-01" required aria-describedby="date-hint date-error"/></div><div class="hint" id="date-hint" style="margin-top:7px">Dla daty historycznej pogoda i zdjęcia satelitarne są sprawdzane do wybranego dnia. Granice pochodzą z bieżącej ewidencji.</div><div class="hint" id="date-error" role="status" hidden></div></div>
           <div id="parcel-detail-slot"></div>
           <div id="an-status-1"></div>

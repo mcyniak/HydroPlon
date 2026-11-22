@@ -689,6 +689,14 @@ code {
   display: block;
 }
 
+.parcel-search [hidden] {
+  display: none;
+}
+
+.parcel-search-hint {
+  margin-top: 8px;
+}
+
 .search-row {
   display: flex;
   gap: 9px;
