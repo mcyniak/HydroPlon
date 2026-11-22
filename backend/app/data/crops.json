@@ -1,16 +1,17 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
   "parameter_status_legend": {
-    "provisional": "dane demonstracyjne do walidacji",
+    "provisional": "parametry robocze do lokalnej walidacji",
     "pending_validation": "brak danych do obliczen",
     "validated": "przyjete i zweryfikowane parametry"
   },
   "methodology_reference": [
     "https://www.fao.org/4/x0490e/x0490e0b.htm",
     "https://www.fao.org/4/x0490e/x0490e0e.htm",
-    "https://susza.iung.pulawy.pl/system/"
+    "https://susza.iung.pulawy.pl/system/",
+    "https://doi.org/10.4060/cd6621en"
   ],
-  "note": "Osiem pozycji katalogowych, trzy z parametrami roboczymi z materialow zespolu, piec wymaga uzupelnienia. Uzycie progu IUNG do wlasnego P-ETc jest zabronione.",
+  "note": "Osiem pozycji ma parametry robocze. Pięć nowych profili oparto na FAO-56 i polskich źródłach fenologicznych. Progi IUNG nie mają zastosowania do wskaźnika P−ETc.",
   "crops": [
     {
       "crop_id": "maize_grain",
@@ -91,18 +92,52 @@
       "crop_id": "winter_rapeseed",
       "name_pl": "Rzepak ozimy",
       "category": "oleista ozima",
-      "parameter_status": "pending_validation",
+      "parameter_status": "provisional",
       "water_sensitivity_class": "nieustalona",
-      "root_depth_m": null,
-      "depletion_fraction_p": null,
-      "critical_months": [],
-      "critical_stage_label_pl": "wymaga walidacji",
-      "phenology_calendar_pl": null,
-      "kc_values": null,
-      "agronomic_notes_pl": "Uprawa w katalogu; analiza liczbowa wymaga zweryfikowanych parametrow.",
-      "field_model_version": "2026.11-draft",
+      "root_depth_m": 0.8,
+      "depletion_fraction_p": 0.5,
+      "critical_months": [
+        4,
+        5
+      ],
+      "critical_stage_label_pl": "kwitnienie i początek wiązania łuszczyn (kwiecień–maj)",
+      "phenology_calendar_pl": {
+        "start_month": 3,
+        "start_day": 5,
+        "end_month": 7,
+        "end_day": 26,
+        "stage_lengths_days": {
+          "initial": 15,
+          "development": 32,
+          "mid_season": 76,
+          "late_season": 21
+        }
+      },
+      "kc_values": {
+        "kc_ini": 0.5,
+        "kc_mid": 1.1,
+        "kc_end": 0.35
+      },
+      "agronomic_notes_pl": "Okno wrażliwości obejmuje kwitnienie i początek tworzenia łuszczyn.",
+      "field_model_version": "2026.11-reference-v1",
       "limitations": [
-        "Brak potwierdzonych parametrow dla obliczen; nie nalezy imputowac z innych gatunkow."
+        "Profil obejmuje wiosnę i lato. Granice faz dopasowano do średnich terminów wznowienia wegetacji, początku kwitnienia, dojrzałości technicznej i zbioru z doświadczeń PDO w 2025 r.",
+        "Głębokość korzeni jest dolną granicą zakresu referencyjnego FAO 0,8–1,3 m."
+      ],
+      "parameter_basis_pl": "Współczynniki Kc dla rzepaku z FAO-56 Rev.1. Orientacyjny sezon od wznowienia wegetacji wiosną do zbioru, na podstawie doświadczeń COBORU.",
+      "parameter_sources": [
+        {
+          "label": "FAO-56 Rev.1 (2025), tabele 6.2 i 8.2: Kc, korzenie, p",
+          "url": "https://doi.org/10.4060/cd6621en"
+        },
+        {
+          "label": "COBORU, Oleiste 2025: terminy rozwoju rzepaku ozimego",
+          "url": "https://coboru.gov.pl/Publikacje_COBORU/Wyniki_PDO/WPDO_234_Oleiste_2025.pdf"
+        },
+        {
+          "label": "IUNG-PIB, E. A. Czyż: okres krytyczny",
+          "url": "https://iung.pl/images/pdf/habilitacje/Czyz-hab.pdf"
+        }
       ]
     },
     {
@@ -147,72 +182,221 @@
       "crop_id": "sugar_beet",
       "name_pl": "Burak cukrowy",
       "category": "okopowa",
-      "parameter_status": "pending_validation",
+      "parameter_status": "provisional",
       "water_sensitivity_class": "nieustalona",
-      "root_depth_m": null,
-      "depletion_fraction_p": null,
-      "critical_months": [],
-      "critical_stage_label_pl": "wymaga walidacji",
-      "phenology_calendar_pl": null,
-      "kc_values": null,
-      "agronomic_notes_pl": "Uprawa w katalogu; analiza liczbowa wymaga zweryfikowanych parametrow.",
-      "field_model_version": "2026.11-draft",
+      "root_depth_m": 0.7,
+      "depletion_fraction_p": 0.55,
+      "critical_months": [
+        7,
+        8
+      ],
+      "critical_stage_label_pl": "intensywne grubienie korzenia (lipiec–sierpień)",
+      "phenology_calendar_pl": {
+        "start_month": 4,
+        "start_day": 9,
+        "end_month": 10,
+        "end_day": 18,
+        "stage_lengths_days": {
+          "initial": 25,
+          "development": 37,
+          "mid_season": 81,
+          "late_season": 50
+        }
+      },
+      "kc_values": {
+        "kc_ini": 0.35,
+        "kc_mid": 1.1,
+        "kc_end": 0.75
+      },
+      "agronomic_notes_pl": "Największa wrażliwość na niedobór wody przypada na intensywne grubienie korzenia.",
+      "field_model_version": "2026.11-reference-v1",
       "limitations": [
-        "Brak potwierdzonych parametrow dla obliczen; nie nalezy imputowac z innych gatunkow."
+        "Daty siewu i zbioru to średnie z PDO 2025. Zwarcie łanu przyjęto na początek czerwca na podstawie IUNG. Fazy początkową i końcową przyjęto z przykładu FAO, a środkowe dopasowano do polskiego kalendarza.",
+        "Głębokość korzeni jest dolną granicą zakresu referencyjnego FAO 0,7–1,2 m."
+      ],
+      "parameter_basis_pl": "Współczynniki Kc z FAO-56 Rev.1. Sezon od siewu do zbioru według terminów COBORU, z przybliżonym okresem zwarcia łanu i dojrzewania.",
+      "parameter_sources": [
+        {
+          "label": "FAO-56 Rev.1 (2025), tabele 6.2 i 8.2: Kc, korzenie, p",
+          "url": "https://doi.org/10.4060/cd6621en"
+        },
+        {
+          "label": "COBORU, Burak cukrowy 2025: średnie daty siewu i zbioru",
+          "url": "https://coboru.gov.pl/Publikacje_COBORU/Wyniki_PDO/WPDO_223_2025_Burak_cukrowy.pdf"
+        },
+        {
+          "label": "IUNG-PIB, Gospodarowanie wodą w rolnictwie: zwarcie łanu i okres krytyczny",
+          "url": "https://woda.cdr.gov.pl/images/woda-w-produkcji/Gospodarowanie%20woda%20w%20rolnictwie.pdf"
+        },
+        {
+          "label": "FAO-56 (1998), tabela 11: przykładowe długości faz",
+          "url": "https://www.fao.org/4/x0490e/x0490e0b.htm"
+        }
       ]
     },
     {
       "crop_id": "spring_barley",
-      "name_pl": "Jeczmien jary",
+      "name_pl": "Jęczmień jary",
       "category": "zboze jare",
-      "parameter_status": "pending_validation",
+      "parameter_status": "provisional",
       "water_sensitivity_class": "nieustalona",
-      "root_depth_m": null,
-      "depletion_fraction_p": null,
-      "critical_months": [],
-      "critical_stage_label_pl": "wymaga walidacji",
-      "phenology_calendar_pl": null,
-      "kc_values": null,
-      "agronomic_notes_pl": "Uprawa w katalogu; analiza liczbowa wymaga zweryfikowanych parametrow.",
-      "field_model_version": "2026.11-draft",
+      "root_depth_m": 0.6,
+      "depletion_fraction_p": 0.55,
+      "critical_months": [
+        5,
+        6
+      ],
+      "critical_stage_label_pl": "strzelanie w źdźbło, kłoszenie i kwitnienie (maj–czerwiec)",
+      "phenology_calendar_pl": {
+        "start_month": 4,
+        "start_day": 1,
+        "end_month": 8,
+        "end_day": 1,
+        "stage_lengths_days": {
+          "initial": 20,
+          "development": 34,
+          "mid_season": 37,
+          "late_season": 32
+        }
+      },
+      "kc_values": {
+        "kc_ini": 0.3,
+        "kc_mid": 1.1,
+        "kc_end": 0.25
+      },
+      "agronomic_notes_pl": "Do oceny niedoboru wody istotny jest okres od strzelania w źdźbło do kwitnienia.",
+      "field_model_version": "2026.11-reference-v1",
       "limitations": [
-        "Brak potwierdzonych parametrow dla obliczen; nie nalezy imputowac z innych gatunkow."
+        "Kalendarz faz dopasowano do terminów siewu, kłoszenia, dojrzałości woskowej i zbioru obserwowanych przez COBORU. Początkowe 20 dni przyjęto z przykładu FAO dla zbóż jarych.",
+        "Głębokość korzeni jest dolną granicą zakresu referencyjnego FAO 0,6–1,2 m."
+      ],
+      "parameter_basis_pl": "Współczynniki Kc dla jęczmienia z FAO-56 Rev.1. Kalendarz formy jarej przybliżony na podstawie polskich doświadczeń COBORU.",
+      "parameter_sources": [
+        {
+          "label": "FAO-56 Rev.1 (2025), tabele 6.2 i 8.2: Kc, korzenie, p",
+          "url": "https://doi.org/10.4060/cd6621en"
+        },
+        {
+          "label": "COBORU, Jęczmień jary 2024: warunki polowe i fazy rozwojowe",
+          "url": "https://coboru.gov.pl/PlikiWynikow/48_2024_WPDO_7_JEZJ.pdf"
+        },
+        {
+          "label": "IUNG-PIB, E. A. Czyż: okres krytyczny",
+          "url": "https://iung.pl/images/pdf/habilitacje/Czyz-hab.pdf"
+        },
+        {
+          "label": "FAO-56 (1998), tabela 11: przykładowe długości faz",
+          "url": "https://www.fao.org/4/x0490e/x0490e0b.htm"
+        }
       ]
     },
     {
       "crop_id": "winter_triticale_rye",
-      "name_pl": "Pszenzyto ozime / zyto",
+      "name_pl": "Pszenżyto ozime / żyto ozime",
       "category": "zboze ozime",
-      "parameter_status": "pending_validation",
+      "parameter_status": "provisional",
       "water_sensitivity_class": "nieustalona",
-      "root_depth_m": null,
-      "depletion_fraction_p": null,
-      "critical_months": [],
-      "critical_stage_label_pl": "wymaga walidacji",
-      "phenology_calendar_pl": null,
-      "kc_values": null,
-      "agronomic_notes_pl": "Uprawa w katalogu; analiza liczbowa wymaga zweryfikowanych parametrow.",
-      "field_model_version": "2026.11-draft",
+      "root_depth_m": 0.6,
+      "depletion_fraction_p": 0.55,
+      "critical_months": [
+        5,
+        6
+      ],
+      "critical_stage_label_pl": "strzelanie w źdźbło, kłoszenie i wczesne nalewanie ziarna (maj–czerwiec)",
+      "phenology_calendar_pl": {
+        "start_month": 3,
+        "start_day": 25,
+        "end_month": 7,
+        "end_day": 25,
+        "stage_lengths_days": {
+          "initial": 15,
+          "development": 35,
+          "mid_season": 48,
+          "late_season": 25
+        }
+      },
+      "kc_values": {
+        "kc_ini": 0.3,
+        "kc_mid": 1.0,
+        "kc_end": 0.25
+      },
+      "agronomic_notes_pl": "Okno analizy obejmuje wiosenne fazy wzrostu i nalewanie ziarna.",
+      "field_model_version": "2026.11-reference-v1",
       "limitations": [
-        "Brak potwierdzonych parametrow dla obliczen; nie nalezy imputowac z innych gatunkow."
+        "Kalendarz obejmuje wznowienie wegetacji wiosną do zbioru. Początek sezonu i kłoszenie oparto na średnich IUNG z doświadczeń COBORU. Granice pozostałych faz są orientacyjne.",
+        "Głębokość korzeni jest dolną granicą zakresu referencyjnego FAO dla żyta 0,6–1,2 m. Pszenżyto i żyto mogą różnić się terminami rozwoju i zużyciem wody."
+      ],
+      "parameter_basis_pl": "Wspólna pozycja używa referencyjnego profilu żyta ozimego z FAO-56 Rev.1. Dla pszenżyta bilans jest przybliżeniem na podstawie tego profilu.",
+      "parameter_sources": [
+        {
+          "label": "FAO-56 Rev.1 (2025), tabele 6.2 i 8.2: Kc, korzenie i p dla żyta",
+          "url": "https://doi.org/10.4060/cd6621en"
+        },
+        {
+          "label": "IUNG-PIB, J. Kozyra: średnie terminy fenologiczne żyta ozimego w doświadczeniach COBORU",
+          "url": "https://iung.pl/images/pdf/habilitacje/Kozyra-hab.pdf"
+        },
+        {
+          "label": "IUNG-PIB, B. Jaśkiewicz: wymagania wodne i fazy pszenżyta ozimego",
+          "url": "https://iung.pl/sir/zeszyt44_3.pdf"
+        }
       ]
     },
     {
       "crop_id": "grassland",
-      "name_pl": "Trwale uzytki zielone",
+      "name_pl": "Trwałe użytki zielone",
       "category": "uzytek zielony",
-      "parameter_status": "pending_validation",
+      "parameter_status": "provisional",
       "water_sensitivity_class": "nieustalona",
-      "root_depth_m": null,
-      "depletion_fraction_p": null,
-      "critical_months": [],
-      "critical_stage_label_pl": "wymaga walidacji",
-      "phenology_calendar_pl": null,
-      "kc_values": null,
-      "agronomic_notes_pl": "Uprawa w katalogu; analiza liczbowa wymaga zweryfikowanych parametrow.",
-      "field_model_version": "2026.11-draft",
+      "root_depth_m": 0.5,
+      "depletion_fraction_p": 0.6,
+      "critical_months": [
+        6,
+        7,
+        8
+      ],
+      "critical_stage_label_pl": "letnie okno oceny niedoboru wody (czerwiec–sierpień)",
+      "phenology_calendar_pl": {
+        "start_month": 4,
+        "start_day": 1,
+        "end_month": 9,
+        "end_day": 30,
+        "stage_lengths_days": {
+          "initial": 10,
+          "development": 20,
+          "mid_season": 123,
+          "late_season": 30
+        }
+      },
+      "kc_values": {
+        "kc_ini": 0.55,
+        "kc_mid": 0.95,
+        "kc_end": 0.5
+      },
+      "agronomic_notes_pl": "Termin pokosów, skład runi i zasilanie przez wody gruntowe wpływają na rzeczywiste potrzeby wodne.",
+      "field_model_version": "2026.11-reference-v1",
       "limitations": [
-        "Brak potwierdzonych parametrow dla obliczen; nie nalezy imputowac z innych gatunkow."
+        "Ogólny sezon kwiecień–wrzesień pochodzi z poradnika melioracyjnego. Początkowe fazy oparto na przykładzie FAO dla pastwiska. Początek wygaszania w sezonie przyjęto orientacyjnie na 1 września.",
+        "Głębokość korzeni jest dolną granicą przedziału FAO dla pastwisk 0,5–1,5 m."
+      ],
+      "parameter_basis_pl": "Profil referencyjny nienawadnianego pastwiska z FAO-56 Rev.1. Dla łąki wynik jest orientacyjny i zależy od terminów pokosów.",
+      "parameter_sources": [
+        {
+          "label": "FAO-56 Rev.1 (2025), tabela 6.4: Kc nienawadnianego pastwiska",
+          "url": "https://doi.org/10.4060/cd6621en"
+        },
+        {
+          "label": "FAO-56 (1998), tabela 11: długość wczesnych faz pastwiska",
+          "url": "https://www.fao.org/4/x0490e/x0490e0b.htm"
+        },
+        {
+          "label": "FAO-56 (1998), tabela 22: korzenie i p pastwisk",
+          "url": "https://www.fao.org/4/x0490e/x0490e0e.htm"
+        },
+        {
+          "label": "CDR / KSOW+, Melioracje wodne, retencja i gospodarka wodna (2025): długość sezonu i wpływ pokosów",
+          "url": "https://www.ksowplus.pl/files/portal/Publikacje/Melioracje_retencja_wodna_e-poradnik_2025.pdf"
+        }
       ]
     }
   ]

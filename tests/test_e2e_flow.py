@@ -158,7 +158,7 @@ def test_api_full_chain(client):
     an = client.post("/api/analysis", json={"teryt_id": PARCEL_A, "target_date": "2019-06-15"}).json()
     assert an["time_context"]["as_of_date"] == "2019-06-15"  # aliasy teryt_id/target_date
     crops = client.get("/api/crops").json()
-    assert crops["count"] == 8 and crops["assessable_count"] == 3
+    assert crops["count"] == 8 and crops["assessable_count"] == 8
     ca = client.post("/api/crops/assess", json={"analysis_id": an["analysis_id"], "crop_id": "maize_grain"}).json()
     rk = client.post("/api/recommendations", json={"analysis_id": an["analysis_id"],
                                                    "crop_assessment_id": ca["crop_assessment_id"],

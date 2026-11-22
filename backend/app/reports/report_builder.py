@@ -216,6 +216,11 @@ def render_blocks(plan: FinalPlan) -> list[tuple[str, str]]:
     b.append((P, f"Ocena uprawy: status {ca['status']}; saldo P−ETc w oknie krytycznym: "
                  f"{_fmt(cwb.get('indicative_critical_window_p_minus_etc_mm'), 'mm')}; sezon: "
                  f"{_fmt(cwb.get('indicative_season_p_minus_etc_mm'), 'mm')} (wskaźnik orientacyjny, nie KBW IUNG)."))
+    crop = ca.get("crop") or {}
+    if crop.get("parameter_basis_pl"):
+        b.append((P, crop["parameter_basis_pl"]))
+    for source in crop.get("parameter_sources") or []:
+        b.append((L, f"{source['label']} · {source['url']}"))
     for s in a["method_screening"]:
         b.append((L, f"{s['name_pl']}: {STATUS_PL[s['screening_status']]} — {' '.join(s['explanation_pl'][:2])}"))
     for mod, info in a["modules"].items():

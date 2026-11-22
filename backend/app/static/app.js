@@ -17,7 +17,8 @@ const PROBLEM_PL = { periodic_water_deficit: 'Okresowe niedobory wody', surface_
 const LEVEL_PL = { high: 'wysokie', medium: 'średnie', low: 'niskie', unknown: 'nieustalone' };
 const CONF_PL = { high: 'wysoka', medium: 'średnia', low: 'niska', unknown: 'nieustalona' };
 const MODULE_PL = { soil: 'Gleba', terrain: 'Teren (NMT)', hydrology: 'Hydrologia', weather: 'Pogoda (IMGW)', satellite: 'Satelity (Sentinel-2)' };
-const MSTATUS_PL = { ok: 'dane dostępne', partial: 'dane częściowe', unavailable: 'dane niedostępne', unknown: 'brak oceny', error: 'błąd źródła' };
+const MSTATUS_PL = { ok: 'dane dostępne', partial: 'dane częściowe', unavailable: 'dane niedostępne', unknown: 'brak oceny', error: 'błąd źródła',
+  parameters_pending_validation: 'Brak parametrów uprawy do bilansu', no_data: 'Brak danych działki do obliczenia bilansu' };
 const MATCH_PL = { possible: 'Możliwe', eligible: 'Kwalifikuje się', likely_eligible: 'Prawdopodobnie kwalifikuje się', needs_verification: 'Do weryfikacji', not_eligible: 'Nie kwalifikuje się' };
 const ID_PL = { wind_exposure: 'narażenie na wiatr', low_soil_retention: 'niska retencja gleby', low_organic_matter: 'niska zawartość materii organicznej',
   surface_runoff_erosion: 'spływ powierzchniowy i erozja', periodic_water_deficit: 'okresowe niedobory wody', drainage_context: 'kontekst drenażu', flood_hazard: 'zagrożenie powodziowe' };
@@ -288,12 +289,14 @@ document.addEventListener('click', (e) => {
 
 // ---------- krok 2: uprawa i deklaracje ----------
 function renderCrops() {
+  $('crop-balance-hint').hidden = !state.crops.some((c) => !c.available_for_assessment);
   $('crop-grid').innerHTML = state.crops.map((c) => {
     const ui = CROP_UI[c.crop_id] || { label: c.name_pl, icon: 'crop-grass' };
     const sel = state.cropId === c.crop_id;
-    return `<button type="button" class="crop-button ${sel ? 'selected' : ''}" data-crop="${esc(c.crop_id)}" aria-pressed="${sel}" title="${esc(c.name_pl)}">
+    const missingParams = !c.available_for_assessment;
+    return `<button type="button" class="crop-button ${sel ? 'selected' : ''}" data-crop="${esc(c.crop_id)}" aria-pressed="${sel}" title="${esc(c.name_pl)}"${missingParams ? ' aria-describedby="crop-balance-hint"' : ''}>
       <span class="crop-circle"><svg class="crop-svg" viewBox="0 0 100 100"><use href="#${ui.icon}"/></svg><span class="crop-check"><svg class="icon"><use href="#icon-check"/></svg></span></span>
-      <span class="crop-name">${esc(ui.label)}</span>${c.available_for_assessment ? '' : '<span class="crop-note" title="Parametry uprawy (fazy, Kc) są w weryfikacji agronomicznej — metody dobierzemy bez bilansu wodnego uprawy.">bez bilansu wodnego</span>'}</button>`;
+      <span class="crop-name">${esc(ui.label)}</span>${missingParams ? '<span class="crop-note">Brak parametrów do bilansu</span>' : ''}</button>`;
   }).join('');
 }
 $('crop-grid').addEventListener('click', (e) => {
@@ -519,10 +522,11 @@ function analysisDetailsHtml(an, ca, fp) {
       `Ostatnie czyste zdjęcie: ${or(ob.acquisition_date)}`, `NDVI: ${or(num(ob.ndvi_median, 2))} · NDMI: ${or(num(ob.ndmi_median, 2))}`,
       `Odchylenie od lat poprzednich (NDVI / NDMI): ${or(num(bl.ndvi_anomaly, 2))} / ${or(num(bl.ndmi_anomaly, 2))}`,
       bl.canopy_rule?.interpretation_pl ? esc(bl.canopy_rule.interpretation_pl) : null]),
-    chip(`Uprawa: ${CROP_UI[state.cropId]?.label || ca?.crop?.name_pl || ''}`, ca?.assessable ? 'ok' : 'unavailable', [
+    chip(`Uprawa: ${CROP_UI[state.cropId]?.label || ca?.crop?.name_pl || ''}`, ca?.status_raw, [
       `Orientacyjne P−ETc w oknie krytycznym: ${or(num(wb.indicative_critical_window_p_minus_etc_mm, 0))} mm`,
       `P−ETc całego sezonu: ${or(num(wb.indicative_season_p_minus_etc_mm, 0))} mm`,
       ca?.crop?.critical_stage_label_pl ? `Okres krytyczny: ${esc(ca.crop.critical_stage_label_pl)}` : null,
+      ca?.crop?.parameter_basis_pl ? esc(ca.crop.parameter_basis_pl) : null,
       'Wskaźnik własny — nie jest oficjalnym KBW IUNG.']),
   ].join('');
   const problems = d.problems || [], constraints = d.constraints || [];

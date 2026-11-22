@@ -1,9 +1,4 @@
-"""Etap 3.1 — odczyt i walidacja katalogu ośmiu upraw (crops.json) oraz ocena uprawy.
-
-Parametry pięciu upraw ``pending_validation`` NIE są uzupełniane. Ocena takiej
-uprawy zwraca status ``unavailable`` (bez liczb), a nie błąd blokujący kreator —
-część VIII wymaga, by wszystkie 8 upraw były wybieralne (rejestr R28).
-"""
+"""Odczyt i walidacja katalogu upraw oraz ocena ich potrzeb wodnych."""
 from __future__ import annotations
 
 import json

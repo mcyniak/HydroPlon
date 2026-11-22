@@ -2,6 +2,8 @@ from datetime import date
 import json
 from pathlib import Path
 
+import pytest
+
 from app.engine.crop_water_demand import evaluate_crop_water_demand, get_daily_kc_fao56
 
 DATA = Path(__file__).resolve().parents[1] / "backend" / "app" / "data" / "crops.json"
@@ -67,17 +69,10 @@ def test_kc_uses_real_dates_including_29_february():
     assert get_daily_kc_fao56(date(2024,1,31),crop) == (None,"off_season")
 
 
-def test_catalog_contains_8_but_only_3_have_provisional_parameters():
-    assert len(CATALOG["crops"]) == 8
-    assert len({x["crop_id"] for x in CATALOG["crops"]}) == 8
-    assert sum(x["parameter_status"] == "provisional" for x in CATALOG["crops"]) == 3
-    incomplete = next(x for x in CATALOG["crops"] if x["crop_id"] == "grassland")
-    try:
+def test_unverified_profile_does_not_produce_numbers():
+    incomplete = dict(CROP, parameter_status="pending_validation", kc_values=None)
+    with pytest.raises(ValueError, match="Brak kompletnych parametrow"):
         evaluate_crop_water_demand(sample_snapshot(), incomplete)
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("Brak parametrow nie moze powodowac fikcyjnych obliczen")
 
 
 def test_satellite_anomaly_not_called_confirmed_drought():

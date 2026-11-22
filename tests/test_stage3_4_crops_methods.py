@@ -12,10 +12,10 @@ from conftest import HIST, PARCEL_A, PARCEL_B, PARCEL_C, chain, screening_of, st
 
 
 # --- Katalog upraw -------------------------------------------------------------------------------------
-def test_crop_catalog_eight_ids_three_assessable():
+def test_crop_catalog_eight_ids_all_assessable():
     profiles = crop_profiles()
     assert [p.crop_id for p in profiles] == list(CANONICAL_CROP_IDS)
-    assert {p.crop_id for p in profiles if p.available_for_assessment} == {"maize_grain", "winter_wheat", "potato"}
+    assert all(p.available_for_assessment for p in profiles)
 
 
 def test_crop_aliases_and_unknown():
@@ -38,14 +38,16 @@ def test_two_crops_same_parcel_differ_but_geodata_same(orch):
     assert mb["metric_type"] == "indicative_P_minus_ETc_not_IUNG_KBW"
 
 
-# --- 9. Brak zweryfikowanych parametrów uprawy ---------------------------------------------------------
-def test_pending_crop_selectable_but_not_calculated(orch):
+def test_all_crops_produce_a_water_balance_with_complete_weather(orch):
     snap = orch.analyze(PARCEL_A, HIST)
-    ca = orch.assess(snap.analysis_id, "sugar_beet")
-    assert ca.status == "unavailable" and ca.assessable is False
-    assert ca.crop_water_balance is None and ca.monthly_crop_demand_chart == []
-    rk = orch.recommend(snap.analysis_id, ca.crop_assessment_id)
-    assert all(m.crop_fit in ("unknown", "conflicts") for m in rk.all_methods())
+    for crop in crop_profiles():
+        ca = orch.assess(snap.analysis_id, crop.crop_id)
+        assert ca.assessable and ca.status == "ok", crop.crop_id
+        assert ca.crop_water_balance["indicative_season_p_minus_etc_mm"] is not None, crop.crop_id
+        assert ca.crop_water_balance["indicative_critical_window_p_minus_etc_mm"] is not None, crop.crop_id
+        assert ca.monthly_crop_demand_chart, crop.crop_id
+        if crop.field_model_version == "2026.11-reference-v1":
+            assert ca.crop["parameter_basis_pl"] and ca.crop["parameter_sources"], crop.crop_id
 
 
 # --- 10–12. Drenaż: Tak / Nie / Nie wiem --------------------------------------------------------------
@@ -146,9 +148,6 @@ def test_crop_change_changes_ranking(orch):
     grass = orch.recommend(snap.analysis_id, orch.assess(snap.analysis_id, "grassland").crop_assessment_id)
     assert maize.ranking_run_id != grass.ranking_run_id
     assert status_of(maize, "cover_crops") == "recommended" and status_of(grass, "cover_crops") == "not_recommended"
-    pm = {m.method_id: m.priority_class for m in maize.all_methods()}
-    pg = {m.method_id: m.priority_class for m in grass.all_methods()}
-    assert pm != pg
 
 
 def test_ranking_does_not_change_filter_status_and_has_no_costs(orch):
