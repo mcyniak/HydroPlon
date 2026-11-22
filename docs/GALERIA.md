@@ -33,7 +33,7 @@ Na początku raportu znajdziesz diagnozę, daty ostatnich obserwacji i zalecane 
 
 ### Opłacalność i koszty
 
-[![Karta opłacalności i zestawienie znanych kosztów wdrożenia](assets/kreator/04a-oplacalnosc-i-koszty.webp)](assets/kreator/04a-oplacalnosc-i-koszty.webp)
+[![Próg opłacalności, trzy warianty rocznej korzyści, formularz własnych założeń i kosztorys](assets/kreator/04a-oplacalnosc-i-koszty.webp)](assets/kreator/04a-oplacalnosc-i-koszty.webp)
 
 ### Możliwe dofinansowania
 

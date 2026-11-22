@@ -29,7 +29,7 @@ Kliknij miniaturę, aby otworzyć pełny zrzut.
 | **3. Metody** | **4. Raport** |
 | [![Lista metod z zaznaczonymi rekomendacjami](docs/assets/kreator/miniatury/03-metody.webp)](docs/assets/kreator/03-metody.webp) | [![Diagnoza niedoboru wody i zalecenia w raporcie](docs/assets/kreator/miniatury/04-raport.webp)](docs/assets/kreator/04-raport.webp) |
 
-[Zobacz też koszty, dofinansowania i plan wdrożenia](docs/GALERIA.md#4-raport).
+Zobacz też [warianty opłacalności i kosztorys](docs/assets/kreator/04a-oplacalnosc-i-koszty.webp) oraz [dofinansowania i plan wdrożenia](docs/GALERIA.md#4-raport).
 
 ## Od działki do raportu
 
