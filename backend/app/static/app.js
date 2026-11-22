@@ -9,7 +9,7 @@ const CROP_UI = {
   winter_triticale_rye: { label: 'Żyto / pszenżyto', image: 'crop-rye' }, grassland: { label: 'Łąki i pastwiska', image: 'crop-grass' },
 };
 // Ikony metod: symbole SVG #m-<method_id> w app.html.
-const methodIcon = (id) => `<svg class="icon"><use href="#m-${id}"/></svg>`;
+const methodIcon = (id) => `<svg class="icon" aria-hidden="true"><use href="#m-${id}"/></svg>`;
 const MIN_CLICK_ZOOM = 14; // poniżej tego przybliżenia kliknięcie nie wskazuje konkretnej działki
 const PROBLEM_PL = { periodic_water_deficit: 'Okresowe niedobory wody', surface_runoff_erosion: 'Spływ powierzchniowy i erozja',
   low_soil_retention: 'Niska retencja wodna gleby', low_organic_matter: 'Niska zawartość materii organicznej' };
@@ -78,14 +78,28 @@ window.hpMap = map;
 // Mapa może powstać zanim zewnętrzny CSS nada panelowi wymiary (albo gdy krok 1 jest ukryty) — przeliczamy rozmiar przy każdej zmianie.
 if ('ResizeObserver' in window) new ResizeObserver(() => map.invalidateSize()).observe($('map-panel'));
 document.querySelectorAll('[data-map-mode]').forEach((btn) => btn.addEventListener('click', () => {
-  document.querySelectorAll('[data-map-mode]').forEach((b) => b.classList.toggle('active', b === btn));
+  document.querySelectorAll('[data-map-mode]').forEach((b) => {
+    b.classList.toggle('active', b === btn);
+    b.setAttribute('aria-pressed', String(b === btn));
+  });
   if (btn.dataset.mapMode === 'sat') { map.removeLayer(baseMap); baseOrto.addTo(map); } else { map.removeLayer(baseOrto); baseMap.addTo(map); }
   parcelLayer.bringToFront();
 }));
-map.on('click', (e) => {
-  // Przy widoku kraju kliknięcie trafiłoby w przypadkową działkę — najpierw przybliżamy w kliknięte miejsce.
-  if (map.getZoom() < MIN_CLICK_ZOOM) { map.setView(e.latlng, Math.min(map.getZoom() + 4, MIN_CLICK_ZOOM + 1)); return; }
-  loadParcel(`/api/parcels/by-point?lat=${e.latlng.lat.toFixed(7)}&lon=${e.latlng.lng.toFixed(7)}`, 'Szukam działki w klikniętym miejscu…');
+function loadParcelAt(lat, lon) {
+  return loadParcel(`/api/parcels/by-point?lat=${lat.toFixed(7)}&lon=${lon.toFixed(7)}`, 'Szukam działki w wybranym miejscu…');
+}
+function chooseMapPoint(point) {
+  if (map.getZoom() < MIN_CLICK_ZOOM) {
+    map.setView(point, Math.min(map.getZoom() + 4, MIN_CLICK_ZOOM + 1));
+    return;
+  }
+  loadParcelAt(point.lat, point.lng);
+}
+map.on('click', (event) => chooseMapPoint(event.latlng));
+$('map').addEventListener('keydown', (event) => {
+  if (event.key !== 'Enter' || event.target !== $('map')) return;
+  event.preventDefault();
+  chooseMapPoint(map.getCenter());
 });
 function updateMapChip() {
   if (addressLayer.getLayers().length) {
@@ -105,6 +119,9 @@ const searchButton = $('parcel-search');
 const parcelInput = $('parcel-input');
 const addressStatus = $('address-status');
 const addressResults = $('address-results');
+const addressParcelAction = $('address-parcel-action');
+const parcelAnnouncement = $('parcel-announcement');
+let addressPoint = null;
 let addressRequest = null;
 let parcelLoading = false;
 
@@ -119,9 +136,20 @@ function showAddress(place) {
   map.invalidateSize({ pan: false });
   map.setView(point, zoom, { animate: false });
   updateMapChip();
-  addressStatus.textContent = `${place.label}. Kliknij działkę na mapie.`;
-  $('map-panel').scrollIntoView({ block: 'nearest' });
+  addressPoint = place.kind === 'address' ? place : null;
+  addressParcelAction.hidden = !addressPoint;
+  addressStatus.textContent = addressPoint
+    ? `${place.label}. Możesz wybrać działkę pod adresem lub wskazać ją na mapie.`
+    : `${place.label}. Wpisz dokładny adres lub wskaż działkę na mapie.`;
+  if (addressPoint && addressResults.contains(document.activeElement)) addressParcelAction.focus();
+  if (!addressPoint) $('map-panel').scrollIntoView({ block: 'nearest' });
 }
+addressParcelAction.addEventListener('click', () => {
+  if (!addressPoint || parcelLoading) return;
+  const { lat, lon } = addressPoint;
+  parcelInput.focus({ preventScroll: true });
+  loadParcelAt(lat, lon);
+});
 
 searchForm.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -137,6 +165,8 @@ searchForm.addEventListener('submit', async (e) => {
     loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(id)}`);
     return;
   }
+  addressPoint = null;
+  addressParcelAction.hidden = true;
   const request = Symbol();
   addressRequest = request;
   updateSearchButton();
@@ -178,19 +208,24 @@ searchForm.addEventListener('submit', async (e) => {
 async function loadParcel(url, msg) {
   const my = ++parcelSeq;
   addressRequest = null;
+  addressPoint = null;
+  addressParcelAction.hidden = true;
   addressStatus.textContent = '';
   addressResults.hidden = true;
   parcelLoading = true;
   updateSearchButton();
   hideError();
-  $('parcel-detail-slot').innerHTML = `<div class="status-box"><span class="spinner"></span><span>${esc(msg || 'Pobieram działkę z GUGiK…')}</span></div>`;
+  const loadingMessage = msg || 'Pobieram działkę z GUGiK…';
+  parcelAnnouncement.textContent = loadingMessage;
+  $('parcel-detail-slot').innerHTML = `<div class="status-box"><span class="spinner"></span><span>${esc(loadingMessage)}</span></div>`;
   try {
     const p = await api('GET', url);
     if (my !== parcelSeq) return;
     setParcel(p);
   } catch (e) {
     if (my !== parcelSeq) return;
-    $('parcel-detail-slot').innerHTML = `<div class="status-box err"><svg class="icon"><use href="#icon-info"/></svg><span><b>Nie udało się pobrać działki.</b><br>${esc(e.message)}</span></div>`;
+    parcelAnnouncement.textContent = `Nie udało się pobrać działki. ${e.message}`;
+    $('parcel-detail-slot').innerHTML = `<div class="status-box err"><svg class="icon" aria-hidden="true"><use href="#icon-info"/></svg><span><b>Nie udało się pobrać działki.</b><br>${esc(e.message)}</span></div>`;
   } finally {
     if (my === parcelSeq) {
       parcelLoading = false;
@@ -208,6 +243,7 @@ function setParcel(p) {
   addressLayer.clearLayers();
   updateMapChip();
   renderParcelCard(p);
+  parcelAnnouncement.textContent = `Wybrano działkę ${p.parcel_id}. Powierzchnia ${num(p.metrics.area_ha, 2)} hektara.`;
   if (changed) { invalidate(1); }
   startAnalysis();
   updateStep();
@@ -216,7 +252,7 @@ function renderParcelCard(p) {
   const m = p.metrics, s = p.source, a = p.administrative_location;
   const loc = [a.region && `obręb ${a.region}`, a.commune && `gm. ${a.commune}`, a.county && `pow. ${a.county}`, a.voivodeship && `woj. ${a.voivodeship}`].filter(Boolean).join(', ');
   $('parcel-detail-slot').innerHTML = `<div class="parcel-detail">
-      <div class="parcel-detail-top"><svg class="icon"><use href="#icon-check"/></svg>DZIAŁKA WYBRANA${s.is_demonstration ? ' <span class="tag-demo">DANE TESTOWE</span>' : ''}</div>
+      <div class="parcel-detail-top"><svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>DZIAŁKA WYBRANA${s.is_demonstration ? ' <span class="tag-demo">DANE TESTOWE</span>' : ''}</div>
       <div class="parcel-id">${esc(p.parcel_id)}</div>
       <div class="parcel-location">${esc(loc || a.full_label || '')}</div>
       <div class="parcel-stats"><div><small>Powierzchnia</small><b>${esc(num(m.area_ha, 2))} ha</b>${m.is_multipart ? `<small>${esc(m.part_count)} części</small>` : ''}</div>
@@ -269,16 +305,23 @@ function analysisStatusHtml() {
     return `<div class="status-box"><span class="spinner"></span><span>Trwa analiza. Możesz już wybrać uprawę.</span></div>`;
   }
   if (state.analysisErr) {
-    return `<div class="status-box err"><svg class="icon"><use href="#icon-info"/></svg><span><b>Analiza nie powiodła się.</b> ${esc(state.analysisErr.message)}<br><button type="button" class="link-btn" data-retry-analysis>Ponów analizę</button></span></div>`;
+    return `<div class="status-box err"><svg class="icon" aria-hidden="true"><use href="#icon-info"/></svg><span><b>Analiza nie powiodła się.</b> ${esc(state.analysisErr.message)}<br><button type="button" class="link-btn" data-retry-analysis>Ponów analizę</button></span></div>`;
   }
   const an = state.analysis; if (!an) return '';
   const missing = unavailableModules(an);
-  if (!missing.length) return `<div class="status-box ok"><svg class="icon"><use href="#icon-check"/></svg><span>Analiza gotowa.</span></div>`;
-  return `<div class="status-box warn"><svg class="icon"><use href="#icon-info"/></svg><span><b>Analiza częściowa</b> · ${missing.map((m) => `${esc(MODULE_PL[m.k] || m.k)} — ${esc(MSTATUS_PL[m.v] || m.v)}`).join(', ')}.<br><button type="button" class="link-btn" data-retry-analysis>Ponów pobieranie</button></span></div>`;
+  if (!missing.length) return `<div class="status-box ok"><svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg><span>Analiza gotowa.</span></div>`;
+  return `<div class="status-box warn"><svg class="icon" aria-hidden="true"><use href="#icon-info"/></svg><span><b>Analiza częściowa</b> · ${missing.map((m) => `${esc(MODULE_PL[m.k] || m.k)} — ${esc(MSTATUS_PL[m.v] || m.v)}`).join(', ')}.<br><button type="button" class="link-btn" data-retry-analysis>Ponów pobieranie</button></span></div>`;
 }
 function renderAnalysisStatus() {
   const html = analysisStatusHtml();
-  $('an-status-1').innerHTML = html; $('an-status-2').innerHTML = html;
+  const status = $('an-status-1');
+  status.innerHTML = html;
+  $('an-status-2').innerHTML = html;
+  const announcement = status.querySelector('.status-box > span:last-child');
+  const message = announcement
+    ? Array.from(announcement.childNodes).filter((node) => node.nodeName !== 'BUTTON').map((node) => node.textContent).join(' ')
+    : '';
+  if ($('analysis-announcement').textContent !== message) $('analysis-announcement').textContent = message;
   if (state.step === 3) renderPartialNote();
 }
 document.addEventListener('click', (e) => {
@@ -295,7 +338,7 @@ function renderCrops() {
     const missingParams = !c.available_for_assessment;
     return `<button type="button" class="crop-button" data-crop="${esc(c.crop_id)}" aria-pressed="${sel}" title="${esc(c.name_pl)}"${missingParams ? ' aria-describedby="crop-balance-hint"' : ''}>
       <span class="crop-preview" aria-hidden="true">${ui?.image ? `<span class="crop-thumbnail ${ui.image}"></span>` : ''}</span>
-      <span class="crop-caption"><span class="crop-name">${esc(ui?.label || c.name_pl)}</span><span class="crop-check" aria-hidden="true"><svg class="icon"><use href="#icon-check"/></svg></span></span>
+      <span class="crop-caption"><span class="crop-name">${esc(ui?.label || c.name_pl)}</span><span class="crop-check" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg></span></span>
       ${missingParams ? '<span class="crop-note">Brak parametrów do bilansu</span>' : ''}</button>`;
   }).join('');
 }
@@ -349,7 +392,7 @@ function allMethods() {
 }
 function renderPartialNote() {
   const an = state.analysis; const missing = an ? unavailableModules(an) : [];
-  $('methods-partial').innerHTML = missing.length ? `<div class="status-box warn" style="margin-bottom:16px"><svg class="icon"><use href="#icon-info"/></svg><span><b>Ranking na niepełnych danych</b> · ${missing.map((m) => esc(MODULE_PL[m.k] || m.k)).join(', ')}.</span></div>` : '';
+  $('methods-partial').innerHTML = missing.length ? `<div class="status-box warn" style="margin-bottom:16px"><svg class="icon" aria-hidden="true"><use href="#icon-info"/></svg><span><b>Ranking na niepełnych danych</b> · ${missing.map((m) => esc(MODULE_PL[m.k] || m.k)).join(', ')}.</span></div>` : '';
 }
 function renderMethods() {
   const list = allMethods();
@@ -359,23 +402,32 @@ function renderMethods() {
   $('method-list').innerHTML = list.map((m) => {
     const st = m.screening_status, sel = state.selected.has(m.method_id), blocked = st === 'not_recommended';
     const cls = st === 'recommended' ? 'recommended' : st === 'conditional' ? 'conditional' : 'not-recommended';
-    const badge = st === 'recommended' ? '<span class="method-status rec">✓ Rekomendowana</span>' : st === 'conditional' ? '<span class="method-status cond">Wymaga weryfikacji</span>' : '<span class="method-status not">Niezalecana</span>';
+    const id = esc(m.method_id);
+    const badgeClass = st === 'recommended' ? 'rec' : st === 'conditional' ? 'cond' : 'not';
+    const badge = st === 'recommended' ? 'Rekomendowana' : st === 'conditional' ? 'Wymaga weryfikacji' : 'Niezalecana';
     const expl = human((m.scr.explanation_pl || m.rationale_pl || []).slice(0, 2).join(' '));
     const verif = (m.scr.required_verifications || []).length;
     return `<label class="method-row ${cls} ${sel ? 'selected' : ''}">
-      <input type="checkbox" class="method-check" data-method="${esc(m.method_id)}" ${sel ? 'checked' : ''} ${blocked ? 'disabled' : ''} aria-label="${esc(m.name_pl)}"/>
+      <input type="checkbox" class="method-check" data-method="${id}" ${sel ? 'checked' : ''} ${blocked ? 'disabled' : ''} aria-labelledby="method-title-${id}" aria-describedby="method-status-${id} method-description-${id}"/>
       <span class="method-icon" aria-hidden="true">${methodIcon(m.method_id)}</span>
-      <span><span class="method-heading">${esc(m.name_pl)}</span><span class="method-description" style="display:block">${esc(expl)}${verif ? ` <i>Weryfikacje do planu: ${verif}.</i>` : ''}</span></span>
-      ${badge}</label>`;
+      <span><span class="method-heading" id="method-title-${id}">${esc(m.name_pl)}</span><span class="method-description" id="method-description-${id}" style="display:block">${esc(expl)}${verif ? ` <i>Weryfikacje do planu: ${verif}.</i>` : ''}</span></span>
+      <span class="method-status ${badgeClass}" id="method-status-${id}">${badge}</span></label>`;
   }).join('');
+  updateMethodCount();
+}
+function updateMethodCount() {
   const n = state.selected.size;
   $('selected-counter').textContent = `Wybrano ${n} ${plural(n, 'metodę', 'metody', 'metod')}`;
 }
 $('method-list').addEventListener('change', (e) => {
-  const ch = e.target.closest('[data-method]'); if (!ch || state.busy) return;
+  const ch = e.target.closest('[data-method]');
+  if (!ch) return;
+  if (state.busy) { ch.checked = state.selected.has(ch.dataset.method); return; }
   ch.checked ? state.selected.add(ch.dataset.method) : state.selected.delete(ch.dataset.method);
+  ch.closest('.method-row').classList.toggle('selected', ch.checked);
   state.selection = null; state.plan = null;
-  renderMethods(); updateStep();
+  updateMethodCount();
+  updateStep();
 });
 
 async function computePlan() {
@@ -497,7 +549,7 @@ function renderReport() {
   const be = pr.break_even || {};
   const benefit = pr.annual_net_benefit_pln;
   const hero = benefit != null ? `${zl(benefit)} / rok` : 'Do oszacowania';
-  const benefitHtml = `<div class="benefit-card"><div class="report-heading"><svg class="icon"><use href="#icon-chart"/></svg>OPŁACALNOŚĆ I POTENCJALNE KORZYŚCI</div>
+  const benefitHtml = `<div class="benefit-card"><h3 class="report-heading"><svg class="icon" aria-hidden="true"><use href="#icon-chart"/></svg>OPŁACALNOŚĆ I POTENCJALNE KORZYŚCI</h3>
     <div class="benefit-main">${esc(hero)}</div><p>${esc(pr.headline_pl)}</p>
     <div class="benefit-metrics">
       <div class="benefit-metric"><span>Roczna korzyść netto</span><b>${benefit != null ? esc(zl(benefit)) : 'Do oszacowania'}</b></div>
@@ -513,7 +565,7 @@ function renderReport() {
   const sharedOpex = shared.filter((i) => i.cost_type !== 'CAPEX' && i.total_net_pln != null).reduce((a, i) => a + i.total_net_pln, 0);
   const sharedUnpriced = shared.filter((i) => i.total_net_pln == null).length;
   const capexMain = t.capex_known_net_pln != null ? `${zl(t.capex_known_net_pln)}${t.capex_is_complete ? '' : ' +'}` : (t.capex_is_complete ? '0 zł' : 'Do wyceny');
-  const costHtml = `<div class="cost-card"><div class="report-heading"><svg class="icon"><use href="#icon-wallet"/></svg>KOSZTY WDROŻENIA</div>
+  const costHtml = `<div class="cost-card"><h3 class="report-heading"><svg class="icon" aria-hidden="true"><use href="#icon-wallet"/></svg>KOSZTY WDROŻENIA</h3>
     <div class="cost-main">${esc(capexMain)}</div>
     <p class="cost-sub">Nakłady inwestycyjne netto (znane pozycje)${t.opex_annual_known_net_pln != null ? ` · utrzymanie ${esc(zl(t.opex_annual_known_net_pln))}/rok${t.opex_is_complete ? '' : ' +'}` : ''}${t.unpriced_item_ids.length ? ` · <b>${t.unpriced_item_ids.length} ${plural(t.unpriced_item_ids.length, 'pozycja', 'pozycje', 'pozycji')} do wyceny</b>` : ''}</p>
     ${methods.map((m) => `<div class="cost-line"><span>${esc(m.name_pl)}</span><strong>${esc(costLabel(costPerMethod(costs, m.method_id)))}</strong></div>`).join('')}
@@ -544,7 +596,7 @@ function renderReport() {
       ${(m.source_urls || []).length ? `<p class="grant-src">Źródło: ${m.source_urls.map((u) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(host(u))}</a>`).join(', ')}${m.verified_at ? ` · stan na ${esc(fmtDate(m.verified_at))}` : ''}</p>` : ''}
     </div><span class="grant-status">${esc(MATCH_PL[m.match_status] || m.match_status)}</span></div>`;
   const unmatched = (fund.unmatched_method_ids || []).map(methodName);
-  const fundHtml = `<div class="report-section grant-box"><div class="report-heading"><svg class="icon"><use href="#icon-bank"/></svg>MOŻLIWE DOFINANSOWANIA${fund.catalog_is_demonstration ? '<span class="tag-demo">KATALOG DEMONSTRACYJNY</span>' : ''}</div>
+  const fundHtml = `<div class="report-section grant-box"><h3 class="report-heading"><svg class="icon" aria-hidden="true"><use href="#icon-bank"/></svg>MOŻLIWE DOFINANSOWANIA${fund.catalog_is_demonstration ? '<span class="tag-demo">KATALOG DEMONSTRACYJNY</span>' : ''}</h3>
     ${matches.length ? matches.map(grantHtml).join('') : '<div class="grant-inner"><div><strong>Brak dopasowanych programów</strong><p>Dla wybranych metod nie znaleziono programu w katalogu.</p></div></div>'}
     ${unmatched.length ? `<p class="fine">Bez programu wsparcia w katalogu: ${esc(unmatched.join(', '))}.</p>` : ''}
     ${[...(fund.double_funding_warnings || []), ...(fund.warnings || [])].length ? `<ul class="fine-list">${[...(fund.double_funding_warnings || []), ...(fund.warnings || [])].map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}
@@ -606,7 +658,7 @@ function analysisDetailsHtml(an, ca, fp) {
   ].join('');
   const problems = d.problems || [], constraints = d.constraints || [];
   const warnings = [...new Set([...(an.warnings || []), ...(fp.warnings || [])])];
-  return `<details class="analysis-section" id="analysis-details"><summary><span>Szczegóły analizy działki i uprawy</span><svg class="icon"><use href="#icon-chevron"/></svg></summary><div class="analysis-body">
+  return `<details class="analysis-section" id="analysis-details"><summary><span>Szczegóły analizy działki i uprawy</span><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg></summary><div class="analysis-body">
     <h4>Diagnoza działki</h4>
     ${problems.length ? `<ul class="problem-list">${problems.map((p) => `<li><b>${esc(PROBLEM_PL[p.problem_id] || p.problem_id)}</b> — nasilenie ${esc(LEVEL_PL[p.severity] || p.severity)}, pewność ${esc(CONF_PL[p.confidence] || p.confidence)}<br><span>${esc(human((p.reasons_pl || p.reasons || []).join(' ')))}</span></li>`).join('')}</ul>` : '<p>Na podstawie dostępnych danych nie stwierdzono problemów — nie oznacza to braku ryzyka.</p>'}
     ${constraints.length ? `<h4>Ograniczenia do sprawdzenia</h4><ul class="problem-list">${constraints.map((c) => `<li>${esc(c.reason_pl || c.constraint_id)}</li>`).join('')}</ul>` : ''}
@@ -620,6 +672,7 @@ function analysisDetailsHtml(an, ca, fp) {
 function setNavNote(text = '') {
   const note = $('nav-note');
   note.hidden = !text;
+  $('progress-announcement').textContent = text;
   note.innerHTML = text ? `<span class="spinner"></span><span>${esc(text)}</span>` : '';
 }
 function showError(msg) { const el = $('error-box'); el.innerHTML = `<b>Coś poszło nie tak.</b> ${esc(msg)}`; el.hidden = false; }
@@ -630,6 +683,7 @@ function updateStep() {
     const n = Number(el.dataset.step);
     el.dataset.state = n === state.step ? 'active' : (n < state.step && reachable(n)) ? 'done' : 'future';
     el.setAttribute('aria-current', n === state.step ? 'step' : 'false');
+    el.setAttribute('aria-controls', `screen-${n}`);
     el.disabled = state.busy || (n !== state.step && !reachable(n));
   });
   document.querySelectorAll('.step-line').forEach((el) => el.classList.toggle('done', Number(el.dataset.after) < state.step));
@@ -642,8 +696,8 @@ function updateStep() {
   $('nav-back').disabled = state.step === 1 || state.busy;
   next.disabled = state.busy || (state.step === 1 && (!state.parcel || !state.date)) || (state.step === 2 && !state.cropId) || (state.step === 3 && state.selected.size === 0);
   if (state.busy) next.innerHTML = '<span class="spinner light"></span>Liczę…';
-  else if (state.step === 3) next.innerHTML = 'Utwórz plan<svg class="icon"><use href="#icon-right"/></svg>';
-  else next.innerHTML = 'Dalej<svg class="icon"><use href="#icon-right"/></svg>';
+  else if (state.step === 3) next.innerHTML = 'Utwórz plan<svg class="icon" aria-hidden="true"><use href="#icon-right"/></svg>';
+  else next.innerHTML = 'Dalej<svg class="icon" aria-hidden="true"><use href="#icon-right"/></svg>';
   if (!state.busy) setNavNote();
   document.title = `HydroPlon — ${['Działka', 'Uprawa', 'Metody', 'Raport'][state.step - 1]}`;
 }

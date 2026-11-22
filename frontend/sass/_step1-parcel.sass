@@ -32,7 +32,7 @@
     padding-inline: 16px
     flex-shrink: 0
 
-.address-status:not(:empty)
+.address-status:not(:empty), .address-parcel-action
   margin-top: 8px
 
 .address-results
@@ -54,30 +54,154 @@
 
 .date-ctrl
   position: relative
+  &:has(.date-picker-toggle:not([hidden])) input
+    padding-right: 53px
+    &::-webkit-calendar-picker-indicator
+      display: none
+
+.date-picker-toggle, .calendar-control
+  display: inline-grid
+  place-items: center
+  border: 1px solid $border
+  border-radius: $radius
+  background: $bg
+  color: $green-text-deep
+  padding: 0
+  &:hover:not(:disabled)
+    background: $green-pale
+  &:disabled
+    color: $ink-3
+    cursor: default
+    opacity: .6
+
+.date-picker-toggle
+  position: absolute
+  inset: 1px 1px 1px auto
+  width: 44px
+  border-width: 0 0 0 1px
+  border-radius: 0 $radius $radius 0
+  &[hidden]
+    display: none
+
+.date-picker
+  width: min(380px, calc(100% - 24px))
+  max-height: calc(100dvh - 24px)
+  padding: 16px
+  border: 1px solid $control-line
+  border-radius: $radius
+  background: $bg
+  color: $ink
+  box-shadow: 0 13px 36px rgba(0, 0, 0, .25)
+  overflow: auto
+  &::backdrop
+    background: rgba(7, 26, 17, .58)
+
+.date-picker-header
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 10px
+  margin-bottom: 14px
+  h2
+    color: $green-text-deep
+    margin: 0
+    font-size: 18px
+    line-height: 1.3
+
+.calendar-control
+  width: 36px
+  height: 36px
+  flex-shrink: 0
   .icon
-    position: absolute
-    top: 13px
-    left: 12px
-    width: 19px
-    height: 19px
-    color: $gold
-    pointer-events: none
-  input
-    padding-left: 42px
+    width: 16px
+    height: 16px
+  &.previous-month .icon
+    transform: rotate(90deg)
+  &.next-month .icon
+    transform: rotate(-90deg)
+
+.date-picker-month
+  display: grid
+  grid-template-columns: auto minmax(0, 1fr) 72px auto
+  align-items: center
+  gap: 6px
+  .input
+    min-height: 36px
+    padding: 4px 6px
+    font-size: 14px
+    background: $bg
+    color: $ink
+    font-family: inherit
+    min-width: 0
+
+.calendar-caption
+  margin: 12px 0 3px
+  color: $green-text-deep
+  font-size: 15px
+  font-weight: 750
+  &::first-letter
+    text-transform: uppercase
+
+.calendar-grid
+  table-layout: fixed
+  width: 100%
+  border-spacing: 3px
+  th
+    color: $ink-3
+    font-size: 11px
+    padding: 3px 0
+    text-align: center
+  td
+    padding: 0
+  button
+    width: 100%
+    min-height: 34px
+    padding: 2px
+    border: 1px solid transparent
+    border-radius: $radius
+    background: $soft
+    color: $ink
+    &:hover:not(:disabled)
+      background: $green-pale
+    &[aria-current="date"]
+      border-color: $green-text
+      font-weight: 750
+    &:disabled
+      opacity: .5
+      cursor: default
+    &:focus-visible
+      outline: 3px solid $blue-deep
+      outline-offset: -3px
+  [aria-selected="true"] button
+    background: $action-green
+    color: #fff
+    font-weight: 750
+    &:hover
+      background: $green-deep
+    &:focus-visible
+      outline-color: #fff
+
+.date-picker-footer
+  display: flex
+  justify-content: flex-end
+  margin-top: 10px
+  .action
+    min-height: 38px
+    padding: 6px 13px
 
 // Karta znalezionej działki
 .parcel-detail
   margin-top: 4px
   padding: 17px 18px
   border: 1px solid $green-line
-  background: #f4faf6
+  background: $green-pale
   border-radius: $radius
 
 .parcel-detail-top
   display: flex
   align-items: center
   gap: 7px
-  color: $green
+  color: $green-text
   font-size: 12px
   font-weight: 780
   margin-bottom: 12px
@@ -101,7 +225,7 @@
   justify-content: space-between
   gap: 10px
   margin-top: 18px
-  border-top: 1px solid #d9e8df
+  border-top: 1px solid $green-line
   padding-top: 14px
   b
     font-size: 17px
@@ -124,8 +248,8 @@ details.notes
 
 // Mapa
 .map-panel
-  border: 1px solid #dedfd2
-  background: #deead9
+  border: 1px solid $border
+  background: $green-pale
   min-height: 495px
   height: 100%
   border-radius: $radius
@@ -138,10 +262,16 @@ details.notes
     position: absolute
     inset: 0
     z-index: 0
+    &:focus-visible
+      outline: 4px solid $blue-deep
+      outline-offset: -4px
+
+:root[data-theme="dark"] .leaflet-tile-pane
+  filter: brightness(.8)
 
 .leaflet-container
   font: inherit
-  background: #e3edd9
+  background: $green-pale
   cursor: crosshair
 
 .map-overlay-top
@@ -157,9 +287,9 @@ details.notes
     pointer-events: auto
 
 .map-chip
-  background: rgba(255, 255, 255, .95)
-  color: #44615b
-  border: 1px solid rgba(205, 225, 215, .85)
+  background: $bg
+  color: $ink-2
+  border: 1px solid $border
   border-radius: $radius
   font-size: 12px
   font-weight: 750
@@ -169,12 +299,12 @@ details.notes
   gap: 7px
 
 .layer-tabs
-  background: #fff
+  background: $bg
   display: flex
   padding: 4px
   gap: 2px
   border-radius: $radius
-  border: 1px solid #e1eae4
+  border: 1px solid $border
   button
     border: 0
     border-radius: $radius
@@ -184,29 +314,33 @@ details.notes
     font-size: 11px
     font-weight: 730
     &.active
-      background: #fff5d8
+      background: $yellow-pale
       color: $gold-deep
 
 // Kontrolki Leaflet w barwach aplikacji (domyślne style biblioteki nie należą do systemu)
 .map-panel
   .leaflet-bar
-    border: 1px solid #d9e5dc
+    border: 1px solid $border
     border-radius: $radius
     overflow: hidden
     a
       width: 36px
       height: 34px
       line-height: 34px
-      color: $green-deep
+      color: $green-text-deep
+      background: $bg
+      border-color: $border
+      &:focus-visible
+        outline-offset: -3px
       font-weight: 600
       &:hover
         background: $green-pale
-        color: $green
+        color: $green-text
   .leaflet-control-attribution
     font-size: 11px
     color: $ink-3
-    background: rgba(255, 255, 255, .88)
+    background: $bg
     border-top-left-radius: 8px
     padding: 2px 8px
     a
-      color: $green
+      color: $green-text

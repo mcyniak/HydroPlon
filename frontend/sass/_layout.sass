@@ -23,7 +23,7 @@
   &:hover
     color: inherit
   &:focus-visible
-    @include focus-ring($bg)
+    @include focus-ring(#fff)
 
 .brand-mark
   display: block
@@ -31,13 +31,45 @@
   width: 44px
   height: 44px
   border-radius: $radius
-  background: $bg
+  background: #fff
 
 .brand-name
   font-weight: 820
   font-size: 24px
   letter-spacing: -.8px
   line-height: 1
+
+.header-controls
+  display: flex
+  flex-wrap: wrap
+  align-items: center
+  justify-content: flex-end
+  gap: 6px 12px
+
+.theme-toggle
+  display: inline-grid
+  place-items: center
+  width: 44px
+  height: 44px
+  padding: 0
+  border: 1px solid rgba(255, 255, 255, .7)
+  border-radius: $radius
+  background: transparent
+  color: #fff
+  &[hidden], .theme-sun
+    display: none
+  &:hover
+    background: rgba(255, 255, 255, .12)
+  &[aria-pressed="true"]
+    border-color: $yellow
+    background: $yellow
+    color: $green-deep
+    .theme-moon
+      display: none
+    .theme-sun
+      display: block
+  &:focus-visible
+    @include focus-ring($yellow)
 
 .demo-pill
   display: inline-flex
@@ -78,7 +110,7 @@
 
 // ---------- Pasek kroków ----------
 .stepper
-  background: #fff
+  background: $bg
   border: 1px solid $border
   border-radius: $radius
   padding: 19px 28px 16px
@@ -102,18 +134,18 @@
     cursor: default
   &[data-state="active"]
     .step-bubble
-      background: $green
+      background: $action-green
       color: #fff
-      border-color: $green
+      border-color: $action-green
     .step-name
       color: $ink
   &[data-state="done"]
     .step-bubble
       background: $green-pale
-      color: $green-deep
+      color: $green-text-deep
       border-color: $green-line
     .step-name
-      color: $green-deep
+      color: $green-text-deep
 
 .step-bubble
   display: grid
@@ -146,7 +178,7 @@
 
 // ---------- Karta kreatora ----------
 .wizard-card
-  background: #fff
+  background: $bg
   border: 1px solid $border
   border-radius: $radius
   padding: 29px 30px 26px
@@ -172,7 +204,7 @@
       outline: none
 
 .step-count
-  background: $green
+  background: $action-green
   color: #fff
   border-radius: $radius
   width: 34px

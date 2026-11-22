@@ -10,6 +10,7 @@
   margin-bottom: 18px
 
 .report-heading
+  margin: 0
   display: flex
   flex-wrap: wrap
   align-items: center
@@ -22,7 +23,7 @@
   .icon
     width: 19px
     height: 19px
-    color: #21825b
+    color: $green-text
 
 // ---------- Opłacalność ----------
 .benefit-card
@@ -53,8 +54,8 @@
   flex-wrap: wrap
 
 .benefit-metric
-  border: 1px solid #e2ede7
-  background: #f8fbf9
+  border: 1px solid $green-line
+  background: $bg
   border-radius: $radius
   padding: 9px 12px
   min-width: 128px
@@ -64,13 +65,13 @@
     display: block
   b
     display: block
-    color: #1f664b
+    color: $green-text-deep
     font-size: 13px
     margin-top: 4px
 
 // ---------- Koszty ----------
 .cost-card
-  background: #fff
+  background: $bg
   border: 1px solid $border
   padding: 23px
   border-radius: $radius
@@ -97,7 +98,7 @@
   font-size: 12px
   color: $ink-2
   padding: 7px 0
-  border-bottom: 1px solid #edf0ee
+  border-bottom: 1px solid $border
   gap: 10px
   strong
     color: $ink
@@ -111,7 +112,7 @@
   border-radius: $radius
   padding: 22px 24px
   margin-bottom: 17px
-  h3
+  h3:not(.report-heading)
     margin: 0
     font-size: 17px
     letter-spacing: -.3px
@@ -122,7 +123,7 @@
 
 .grant-box
   background: $yellow-pale
-  border-color: #e9d18a
+  border-color: $gold-line
   .report-heading .icon
     color: $gold
 
@@ -132,8 +133,8 @@
   justify-content: space-between
   gap: 14px
   padding: 16px 17px
-  background: #fff
-  border: 1px solid #f0e3bc
+  background: $bg
+  border: 1px solid $gold-line
   border-radius: $radius
   margin-top: 15px
   strong
@@ -147,8 +148,8 @@
   color: $gold-deep
   font-size: 11px
   font-weight: 760
-  background: #fff4d5
-  border: 1px solid #e8d08a
+  background: $yellow-pale
+  border: 1px solid $gold-line
   border-radius: $radius
   padding: 8px 10px
   white-space: nowrap
@@ -171,7 +172,7 @@
   border-bottom: 1px solid $green-line
   margin-bottom: 19px
   h3
-    color: $green-deep
+    color: $green-text-deep
     font-size: clamp(21px, 2.5vw, 27px)
     font-weight: 800
     letter-spacing: -.025em
@@ -187,8 +188,8 @@
   height: 43px
   place-items: center
   border-radius: $radius
-  background: $green
-  color: $bg
+  background: $action-green
+  color: #fff
   .icon
     width: 23px
     height: 23px
@@ -232,14 +233,14 @@
   border: 1px solid $green-line
   border-radius: 50%
   background: $green-pale
-  color: $green-deep
+  color: $green-text-deep
   font-size: 12px
   font-weight: 800
 
 .implementation-stage:first-child .implementation-step
-  background: $green
-  border-color: $green
-  color: $bg
+  background: $action-green
+  border-color: $action-green
+  color: #fff
 
 .implementation-phase
   min-width: 0
@@ -269,7 +270,7 @@
       flex: 0 0 17px
       width: 17px
       height: 17px
-      color: $green
+      color: $green-text
   &[open]
     border-color: $green-line
     > summary
@@ -280,7 +281,7 @@
         transform: rotate(180deg)
 
 .implementation-phase-title
-  color: $green-deep
+  color: $green-text-deep
   font-size: 15px
   font-weight: 750
 
@@ -328,7 +329,7 @@
 
 .implementation-program
   background: $green-pale
-  color: $green-deep
+  color: $green-text-deep
 
 .implementation-task-meta, .implementation-completion, .implementation-agenda p
   color: $ink-2
@@ -377,7 +378,7 @@
     text-decoration-color: $gold
     text-underline-offset: 3px
     &:hover
-      color: $green
+      color: $green-text
       text-decoration-color: currentColor
 
 .implementation-date
@@ -404,7 +405,7 @@
   overflow-wrap: anywhere
   summary
     cursor: pointer
-    color: $green-deep
+    color: $green-text-deep
     font-size: 14px
     font-weight: 750
   ul
@@ -436,14 +437,14 @@ details.more summary
   cursor: pointer
   font-size: 11.5px
   font-weight: 700
-  color: $green
+  color: $green-text
   margin-top: 6px
 
 // ---------- Rozwijana analiza (zawsze na końcu) ----------
 details.analysis-section
   border: 1px solid $border
   border-radius: $radius
-  background: #fff
+  background: $bg
   padding: 0
   margin-top: 18px
   summary
@@ -456,7 +457,7 @@ details.analysis-section
     font-weight: 770
     font-size: 15px
     color: $ink
-    background: #fff
+    background: $bg
     border-radius: $radius
     &::-webkit-details-marker
       display: none
@@ -469,7 +470,7 @@ details.analysis-section
     transform: rotate(180deg)
 
 .analysis-body
-  border-top: 1px solid #e7ede9
+  border-top: 1px solid $border
   padding: 19px 24px 22px
   color: $ink-3
   font-size: 12px
@@ -485,7 +486,7 @@ details.analysis-section
   padding-left: 18px
   li
     margin-bottom: 6px
-    color: #4d665e
+    color: $ink-3
   span
     color: $ink-3
 
@@ -496,14 +497,14 @@ details.analysis-section
   margin-top: 15px
 
 .analysis-chip
-  border: 1px solid #e3ece7
+  border: 1px solid $border
   border-radius: $radius
   padding: 12px
-  background: #f9fbf9
+  background: $soft
   b
     display: block
     font-size: 12px
-    color: #385e4b
+    color: $green-text-deep
     margin-bottom: 4px
   > span
     display: block
@@ -511,8 +512,8 @@ details.analysis-section
     font-size: 12px
     color: $ink-3
   &.missing
-    background: #fffaf0
-    border-color: #f1e0b5
+    background: $yellow-pale
+    border-color: $gold-line
 
 // ---------- Dofinansowania: szczegóły programu ----------
 .grant-inner
@@ -526,8 +527,8 @@ details.analysis-section
   font-size: 11px
   font-weight: 800
   color: $gold-deep
-  background: #fff4d5
-  border: 1px solid #e8d08a
+  background: $yellow-pale
+  border: 1px solid $gold-line
   border-radius: $radius
   padding: 1px 6px
   margin-right: 7px
@@ -554,4 +555,4 @@ details.analysis-section
   font-size: 12px !important
   color: $ink-3 !important
   a
-    color: $green
+    color: $green-text

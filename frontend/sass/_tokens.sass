@@ -1,40 +1,92 @@
-// HydroPlon — kolory interfejsu i semantyczne stany raportu.
-$control-line: #63786c
-
-// Zieleń — główne akcje, nawigacja i warstwy mapy.
+// Wartości motywu i tokeny używane przez komponenty.
 $green: #0e6548
 $green-deep: #074b35
-$green-mid: #18865e
-$green-pale: #eff9f3
-$green-line: #b9dcc8
-
-// Żółty / złoty (zaznaczenia, dotacje, pytania)
 $yellow: #eac24f
-$yellow-pale: #fff9e9
 $gold: #ba830d
-$gold-deep: #805a0b
-$gold-line: #ebd492
+$gold-fill: #805a0b
 
-// Niebieski — linki, fokus i rekomendacje metod.
-$blue: #237db8
-$blue-deep: #155c90
-$blue-pale: #eef7ff
+$bg: var(--bg)
+$soft: var(--soft)
+$ink: var(--ink)
+$ink-2: var(--ink-2)
+$ink-3: var(--ink-3)
+$border: var(--border)
+$control-line: var(--control-line)
+$placeholder: var(--placeholder)
+$action-green: var(--action-green)
+$green-text: var(--green-text)
+$green-text-deep: var(--green-text-deep)
+$green-mid: var(--green-mid)
+$green-ink: var(--green-ink)
+$green-pale: var(--green-pale)
+$green-line: var(--green-line)
+$yellow-pale: var(--yellow-pale)
+$gold-deep: var(--gold-deep)
+$gold-ink: var(--gold-ink)
+$gold-line: var(--gold-line)
+$blue: var(--blue)
+$blue-deep: var(--blue-deep)
+$blue-pale: var(--blue-pale)
+$blue-line: var(--blue-line)
+$err-bg: var(--err-bg)
+$err-ink: var(--err-ink)
+$err-line: var(--err-line)
 
-// Tekst i tła — odcienie tekstu dobrane do kontrastu WCAG AA (≥4,5:1) na każdym tle aplikacji
-$ink: #182638
-$ink-2: #34485e
-$ink-3: #4c6075
-$placeholder: #55697e
-$gold-ink: #7a5f1c   // tekst na żółtych tłach i oznaczenie braku danych
-$green-ink: #3f6a56  // tekst drugorzędny na zielonych tłach
-$border: #cbd8d0
-$bg: #fff
-$soft: #f4f7f5
+@mixin light-colors
+  --bg: #fff
+  --soft: #f4f7f5
+  --ink: #182638
+  --ink-2: #34485e
+  --ink-3: #4c6075
+  --border: #cbd8d0
+  --control-line: #63786c
+  --placeholder: #55697e
+  --action-green: #0e6548
+  --green-text: #0e6548
+  --green-text-deep: #074b35
+  --green-mid: #18865e
+  --green-ink: #3f6a56
+  --green-pale: #eff9f3
+  --green-line: #b9dcc8
+  --yellow-pale: #fff9e9
+  --gold-deep: #805a0b
+  --gold-ink: #7a5f1c
+  --gold-line: #ebd492
+  --blue: #237db8
+  --blue-deep: #155c90
+  --blue-pale: #eef7ff
+  --blue-line: #80b6e0
+  --err-bg: #fff6f4
+  --err-ink: #8a2f24
+  --err-line: #efc9c3
 
-// Statusy semantyczne (błędy) — nie do dekoracji
-$err-ink: #8a2f24
-$err-bg: #fff6f4
-$err-line: #efc9c3
+@mixin dark-colors
+  --bg: #17241e
+  --soft: #101b16
+  --ink: #edf5f0
+  --ink-2: #d5e6dc
+  --ink-3: #b6cbbf
+  --border: #405b4c
+  --control-line: #789081
+  --placeholder: #adbfbb
+  --action-green: #167451
+  --green-text: #8bd7b1
+  --green-text-deep: #b0ead0
+  --green-mid: #75c7a0
+  --green-ink: #b6daca
+  --green-pale: #203a2e
+  --green-line: #526f60
+  --yellow-pale: #30291b
+  --gold-deep: #ffe099
+  --gold-ink: #efd191
+  --gold-line: #806b38
+  --blue: #70b3e5
+  --blue-deep: #a2d7ff
+  --blue-pale: #19313e
+  --blue-line: #4a7794
+  --err-bg: #392622
+  --err-ink: #ffc2b9
+  --err-line: #a16155
 
 $radius: 4px
 $font-family: "Literata", Georgia, "Times New Roman", serif

@@ -7,11 +7,15 @@
   <meta name="description" content="HydroPlon — plan gospodarowania wodą na działce rolnej: analiza, uprawa, metody, raport." />
   <title>HydroPlon</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="/static/theme.js"></script>
   <link rel="stylesheet" href="/static/app.css" />
   <link rel="icon" href="/static/logo-hydroplon.svg" type="image/svg+xml" />
 </head>
 <body>
+<a class="skip-link" href="#wizard-start">Przejdź do kreatora</a>
 <svg class="svg-assets" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.8 14.2A9 9 0 0 1 9.8 3.2a9 9 0 1 0 11 11Z"/></symbol>
+  <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M19 5l-1.5 1.5m-11 11L5 19"/></symbol>
   <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
   <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.6" cy="10.6" r="6.7"/><path d="m16 16 4.5 4.5"/></symbol>
   <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v5m10-5v5M3 10h18"/></symbol>
@@ -45,10 +49,16 @@
       <img class="brand-mark" src="/static/logo-hydroplon.svg" width="44" height="44" alt="" />
       <span class="brand-name">HydroPlon</span>
     </a>
-    <span class="demo-pill" id="mode-pill" hidden>DANE TESTOWE</span>
+    <div class="header-controls">
+      <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Ciemny motyw" aria-pressed="false" hidden>
+        <svg class="icon theme-moon" aria-hidden="true"><use href="#icon-moon"/></svg>
+        <svg class="icon theme-sun" aria-hidden="true"><use href="#icon-sun"/></svg>
+      </button>
+      <span class="demo-pill" id="mode-pill" hidden>DANE TESTOWE</span>
+    </div>
   </div>
 </header>
-<main class="page">
+<main class="page" id="wizard-start" tabindex="-1">
   <div class="headline-row"><h1>Plan gospodarowania wodą</h1></div>
   <nav class="stepper" aria-label="Etapy tworzenia planu">
     <button type="button" class="step-indicator" data-step="1"><span class="step-bubble">1</span><span class="step-name">Działka</span></button>
@@ -61,9 +71,11 @@
   </nav>
   <div class="wizard-card">
     <div class="error-box" id="error-box" role="alert" hidden></div>
+    <div class="visually-hidden" id="analysis-announcement" role="status"></div>
+    <div class="visually-hidden" id="progress-announcement" role="status"></div>
 
     <section class="step-screen" id="screen-1" aria-labelledby="title-1">
-      <div class="step-title"><span class="step-count">1</span><h2 id="title-1" tabindex="-1">Wybór działki</h2></div>
+      <div class="step-title"><span class="step-count" aria-hidden="true">1</span><h2 id="title-1" tabindex="-1">Wybór działki</h2></div>
       <p class="step-desc">Wyszukaj działkę lub wskaż ją na mapie.</p>
       <div class="parcel-grid">
         <div class="parcel-left">
@@ -75,54 +87,100 @@
             </div>
             <div class="hint parcel-search-hint" id="parcel-search-hint">Identyfikator np. <code>040301_1.0005.124/2</code></div>
             <div class="hint address-status" id="address-status" role="status"></div>
-            <ul class="address-results" id="address-results" hidden></ul>
+            <ul class="address-results" id="address-results" role="list" aria-label="Znalezione adresy" hidden></ul>
+            <button type="button" class="action alt address-parcel-action" id="address-parcel-action" hidden>Wybierz działkę pod adresem</button>
             <div class="fixture-links" id="fixture-links" hidden></div>
           </form>
-          <div class="field-group"><label class="section-label" for="date-input">DATA ANALIZY</label><div class="date-ctrl"><svg class="icon"><use href="#icon-calendar"/></svg><input class="input" type="date" id="date-input" min="2016-01-01" required aria-describedby="date-hint date-error"/></div><div class="hint" id="date-hint" style="margin-top:7px">Dla dat historycznych używamy aktualnych granic działki.</div><div class="hint" id="date-error" role="status" hidden></div></div>
+          <div class="field-group">
+            <label class="section-label" for="date-input">DATA ANALIZY</label>
+            <div class="date-ctrl">
+              <input class="input" type="date" id="date-input" min="2016-01-01" required aria-describedby="date-hint date-error"/>
+              <button type="button" class="date-picker-toggle" id="date-picker-toggle" aria-label="Otwórz kalendarz" aria-haspopup="dialog" aria-controls="date-picker" hidden>
+                <svg class="icon" aria-hidden="true"><use href="#icon-calendar"/></svg>
+              </button>
+            </div>
+            <div class="hint" id="date-hint" style="margin-top:7px">Dla dat historycznych używamy aktualnych granic działki.</div>
+            <div class="hint" id="date-error" role="status" hidden></div>
+          </div>
+          <div class="visually-hidden" id="parcel-announcement" role="status"></div>
           <div id="parcel-detail-slot"></div>
           <div id="an-status-1"></div>
         </div>
         <div class="map-panel" id="map-panel">
-          <div id="map" aria-label="Mapa wyboru działki"></div>
-          <div class="map-overlay-top"><div class="map-chip" id="map-chip"><svg class="icon" style="width:15px;height:15px;color:#198456"><use href="#icon-pin"/></svg><span id="map-chip-text">Przybliż mapę do swojej działki</span></div><div class="layer-tabs"><button type="button" class="active" data-map-mode="map">Mapa</button><button type="button" data-map-mode="sat">Orto</button></div></div>
+          <p class="visually-hidden" id="map-keyboard-help">Strzałki przesuwają mapę, a plus i minus zmieniają przybliżenie. Enter wybiera punkt pośrodku mapy. Możesz też wyszukać działkę w formularzu.</p>
+          <div id="map" role="region" aria-label="Mapa wyboru działki" aria-describedby="map-keyboard-help"></div>
+          <div class="map-overlay-top"><div class="map-chip" id="map-chip"><svg class="icon" aria-hidden="true" style="width:15px;height:15px;color:#198456"><use href="#icon-pin"/></svg><span id="map-chip-text">Przybliż mapę do swojej działki</span></div><div class="layer-tabs"><button type="button" class="active" data-map-mode="map" aria-pressed="true">Mapa</button><button type="button" data-map-mode="sat" aria-pressed="false" aria-label="Ortofotomapa">Orto</button></div></div>
         </div>
       </div>
     </section>
 
     <section class="step-screen" id="screen-2" aria-labelledby="title-2">
-      <div class="step-title"><span class="step-count">2</span><h2 id="title-2" tabindex="-1">Wybierz uprawę</h2></div>
+      <div class="step-title"><span class="step-count" aria-hidden="true">2</span><h2 id="title-2" tabindex="-1">Wybierz uprawę</h2></div>
       <div id="an-status-2"></div>
       <p class="hint" id="crop-balance-hint" hidden>Uprawy bez bilansu wciąż można wybrać i dobrać dla nich metody.</p>
       <div class="crops-grid" id="crop-grid"></div>
       <div class="question-box">
         <div class="question-header"><h3>Warunki na działce</h3><span>Opcjonalnie</span></div>
         <div class="question-grid">
-          <div class="question"><p class="question-title">Czy na działce jest drenaż podziemny?</p><p class="question-helper">Rury odprowadzające wodę z gleby.</p><div class="radio-pills"><label class="radio-pill"><input type="radio" name="drainage" value="yes"><span>Tak</span></label><label class="radio-pill"><input type="radio" name="drainage" value="no"><span>Nie</span></label><label class="radio-pill"><input type="radio" name="drainage" value="unknown" checked><span>Nie wiem</span></label></div></div>
-          <div class="question"><p class="question-title">Czy masz urządzenia do zatrzymywania wody?</p><p class="question-helper">Np. zbiornik lub zastawka.</p><div class="radio-pills"><label class="radio-pill"><input type="radio" name="retention" value="yes"><span>Tak</span></label><label class="radio-pill"><input type="radio" name="retention" value="no"><span>Nie</span></label><label class="radio-pill"><input type="radio" name="retention" value="unknown" checked><span>Nie wiem</span></label></div><div class="retention-types" id="retention-types"><label class="type-label"><input type="checkbox" value="pond"> Zbiornik</label><label class="type-label"><input type="checkbox" value="weir"> Zastawka na rowie</label><label class="type-label"><input type="checkbox" value="other"> Inne rozwiązanie</label></div></div>
+          <fieldset class="question" aria-describedby="drainage-help"><legend class="question-title">Czy na działce jest drenaż podziemny?</legend><p class="question-helper" id="drainage-help">Rury odprowadzające wodę z gleby.</p><div class="radio-pills"><label class="radio-pill"><input type="radio" name="drainage" value="yes"><span>Tak</span></label><label class="radio-pill"><input type="radio" name="drainage" value="no"><span>Nie</span></label><label class="radio-pill"><input type="radio" name="drainage" value="unknown" checked><span>Nie wiem</span></label></div></fieldset>
+          <fieldset class="question" aria-describedby="retention-help"><legend class="question-title">Czy masz urządzenia do zatrzymywania wody?</legend><p class="question-helper" id="retention-help">Np. zbiornik lub zastawka.</p><div class="radio-pills"><label class="radio-pill"><input type="radio" name="retention" value="yes"><span>Tak</span></label><label class="radio-pill"><input type="radio" name="retention" value="no"><span>Nie</span></label><label class="radio-pill"><input type="radio" name="retention" value="unknown" checked><span>Nie wiem</span></label></div><div class="retention-types" id="retention-types" role="group" aria-label="Rodzaje urządzeń do zatrzymywania wody"><label class="type-label"><input type="checkbox" value="pond"> Zbiornik</label><label class="type-label"><input type="checkbox" value="weir"> Zastawka na rowie</label><label class="type-label"><input type="checkbox" value="other"> Inne rozwiązanie</label></div></fieldset>
         </div>
       </div>
     </section>
 
     <section class="step-screen" id="screen-3" aria-labelledby="title-3">
-      <div class="step-title"><span class="step-count">3</span><h2 id="title-3" tabindex="-1">Wybierz metody</h2></div>
+      <div class="step-title"><span class="step-count" aria-hidden="true">3</span><h2 id="title-3" tabindex="-1">Wybierz metody</h2></div>
       <p class="step-desc">Możesz zmienić zaznaczone rekomendacje.</p>
       <div id="methods-partial"></div>
-      <div class="method-toolbar"><div class="method-note"><svg class="icon"><use href="#icon-shield"/></svg><span id="methods-context"></span></div><div class="selected-counter" id="selected-counter">Wybrano 0 metod</div></div>
+      <div class="method-toolbar"><div class="method-note"><svg class="icon" aria-hidden="true"><use href="#icon-shield"/></svg><span id="methods-context"></span></div><div class="selected-counter" id="selected-counter" role="status">Wybrano 0 metod</div></div>
       <div class="method-list" id="method-list"></div>
       <div class="summary-hint">Rekomendacje uwzględniają warunki działki i uprawy. Opłacalność sprawdzisz w raporcie.</div>
     </section>
 
     <section class="step-screen" id="screen-4" aria-labelledby="title-4">
-      <div class="step-title"><span class="step-count">4</span><h2 id="title-4" tabindex="-1">Raport dla działki</h2></div>
+      <div class="step-title"><span class="step-count" aria-hidden="true">4</span><h2 id="title-4" tabindex="-1">Raport dla działki</h2></div>
       <p class="step-desc" id="report-context"></p>
       <div id="report"></div>
     </section>
   </div>
-  <div class="wizard-nav"><div class="nav-note" id="nav-note" hidden></div><div class="nav-group"><button type="button" class="action alt" id="nav-back"><svg class="icon"><use href="#icon-left"/></svg>Wstecz</button><button type="button" class="action" id="nav-next">Dalej<svg class="icon"><use href="#icon-right"/></svg></button><a class="action" id="nav-pdf" download hidden><svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg>Pobierz PDF</a></div></div>
+  <div class="wizard-nav"><div class="nav-note" id="nav-note" hidden></div><div class="nav-group"><button type="button" class="action alt" id="nav-back"><svg class="icon" aria-hidden="true"><use href="#icon-left"/></svg>Wstecz</button><button type="button" class="action" id="nav-next">Dalej<svg class="icon" aria-hidden="true"><use href="#icon-right"/></svg></button><a class="action" id="nav-pdf" download hidden><svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg>Pobierz PDF</a></div></div>
 </main>
 <footer class="footer"><div class="footer-inner"><p>Wyniki analiz są orientacyjne.</p></div></footer>
+<dialog class="date-picker" id="date-picker" aria-labelledby="date-picker-title">
+  <form class="date-picker-header" method="dialog">
+    <h2 id="date-picker-title">Wybierz datę analizy</h2>
+    <button type="submit" class="calendar-control" aria-label="Zamknij kalendarz">
+      <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+    </button>
+  </form>
+  <div class="date-picker-month">
+    <button type="button" class="calendar-control previous-month" id="calendar-prev" aria-label="Poprzedni miesiąc">
+      <svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg>
+    </button>
+    <select class="input" id="calendar-month" aria-label="Miesiąc"></select>
+    <input class="input" id="calendar-year" type="number" aria-label="Rok" required/>
+    <button type="button" class="calendar-control next-month" id="calendar-next" aria-label="Następny miesiąc">
+      <svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg>
+    </button>
+  </div>
+  <div class="calendar-caption" id="calendar-caption" aria-live="polite" aria-atomic="true"></div>
+  <p class="visually-hidden" id="calendar-help">Strzałki zmieniają dzień. Page Up i Page Down zmieniają miesiąc. Enter zatwierdza datę.</p>
+  <table class="calendar-grid" id="calendar-grid" role="grid" aria-labelledby="calendar-caption" aria-describedby="calendar-help">
+    <thead><tr>
+      <th scope="col" abbr="Poniedziałek">Pn</th><th scope="col" abbr="Wtorek">Wt</th>
+      <th scope="col" abbr="Środa">Śr</th><th scope="col" abbr="Czwartek">Cz</th>
+      <th scope="col" abbr="Piątek">Pt</th><th scope="col" abbr="Sobota">So</th>
+      <th scope="col" abbr="Niedziela">Nd</th>
+    </tr></thead>
+    <tbody></tbody>
+  </table>
+  <div class="date-picker-footer">
+    <button type="button" class="action alt" id="calendar-today">Dzisiaj</button>
+  </div>
+</dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="/static/app.js"></script>
+<script src="/static/date-picker.js"></script>
 </body>
 </html>
