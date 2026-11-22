@@ -1,6 +1,6 @@
 # Instrukcja obsługi HydroPlon
 
-[Strona projektu](../README.md) · [Instalacja i uruchomienie](INSTALACJA.md)
+[Strona projektu](../README.md) · [Instalacja i uruchomienie](INSTALACJA.md) · [Zrzuty ekranów](GALERIA.md)
 
 Otwórz [kreator HydroPlon](http://127.0.0.1:8000/app). Do pierwszej próby możesz użyć [działki testowej](INSTALACJA.md#tryb-testowy).
 
