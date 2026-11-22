@@ -133,6 +133,13 @@ class FundingMatch(StrictModel):
     verified_at: str | None
     is_demonstration: bool
     disclaimer_pl: str
+    code: str | None = None
+    rates_pl: list[str] = Field(default_factory=list)
+    estimate_pl: list[str] = Field(default_factory=list)
+    method_practices_pl: dict[str, str] = Field(default_factory=dict)
+    how_to_apply_pl: str | None = None
+    call_basis_pl: str | None = None
+    source_urls: list[str] = Field(default_factory=list)
 
 
 class FundingMatchResult(StrictModel):
@@ -171,6 +178,10 @@ class PlanTask(StrictModel):
     monitoring_indicator: str | None
     status: Literal["ready_to_consider", "requires_verification"]
     source_rule: str
+    program_ids: list[str] = Field(default_factory=list)
+    window_from: date | None = None
+    window_to: date | None = None
+    window_note_pl: str | None = None
 
 
 class ImplementationPlan(StrictModel):

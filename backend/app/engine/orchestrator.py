@@ -139,7 +139,7 @@ class Orchestrator:
         ce: CostEstimate = self.store.get(cost_estimate_id, "cost_estimate")
         if ce.selection_id != selection_id:
             raise ConsistencyError("Kosztorys dotyczy innego zestawu metod.")
-        fm = match_funding(sel, ce, snap.time_context, profile or BeneficiaryProfile())
+        fm = match_funding(sel, ce, snap.time_context, profile or BeneficiaryProfile(), mode=self.adapters.mode)
         self.store.put(fm.funding_match_id, "funding", fm, parents=(selection_id, cost_estimate_id))
         return fm
 

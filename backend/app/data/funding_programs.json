@@ -1,0 +1,258 @@
+{
+  "version": "funding-pswpr-2026-11-22",
+  "source_type": "official_documents",
+  "is_demonstration": false,
+  "catalog_verified_at": "2026-11-22",
+  "note_pl": "Interwencje Planu Strategicznego WPR 2023–2027 dopasowane do metod HydroPlon, opisane na podstawie dokumentów ARiMR, CDR i MRiRW (stan na 2026-11-22). Stawki są szacunkowe lub z rozporządzeń na 2026 r.; nabory i warunki mogą się zmienić — przed złożeniem wniosku sprawdź aktualny komunikat ARiMR.",
+  "sources": {
+    "cdr_ekoschematy_2026": "https://www.cdr.gov.pl/images/Brwinow/do_pobrania/platnosci_bezposrednie_2026/Ekoschematy_obszarowe_wydanie_03.2026.pdf",
+    "arimr_harmonogram_2026": "https://www.gov.pl/web/arimr/harmonogram-naborow-wnioskow-ps-wpr-na-lata-2023-2027",
+    "mrirw_zadrzewienia": "https://www.gov.pl/web/rolnictwo/tworzenie-zadrzewien-srodpolnych",
+    "cdr_nabor_zadrzewienia_2024": "https://cdr.gov.pl/en/aktualnosci-instytucje/4787-nabor-wnioskow-na-zalesienie-systemy-rolno-lesne-zadrzewienia-srodpolne",
+    "arimr_stawki_rsk_2026": "https://www.gov.pl/web/arimr/stawki-platnosci-rsk-2026",
+    "bgk_agromax": "https://www.bgk.pl/male-i-srednie-przedsiebiorstwa/zabezpieczenie-finansowania/gwarancja-agromax/",
+    "arimr_ewniosekplus": "https://www.gov.pl/web/arimr/ewniosekplus-system"
+  },
+  "programs": [
+    {
+      "program_id": "PSWPR-I.4.2",
+      "code": "I.4.2",
+      "name_pl": "Ekoschemat „Rolnictwo węglowe i zarządzanie składnikami odżywczymi”",
+      "institution": "ARiMR (PS WPR 2023–2027)",
+      "support_type": "płatność roczna do powierzchni — system punktowy (1 pkt ≈ 22,47 EUR ≈ 100 zł)",
+      "eligible_methods": ["cover_crops", "reduced_tillage", "crop_residues", "organic_matter"],
+      "eligible_cost_categories": [],
+      "beneficiary_requirements": ["has_producer_number", "has_legal_title_to_parcel"],
+      "method_details": {
+        "cover_crops": {"practice_pl": "Międzyplony ozime lub wsiewki śródplonowe", "practice_code": "4_2_2", "points_per_ha": 5},
+        "reduced_tillage": {"practice_pl": "Uproszczone systemy uprawy", "practice_code": "4_2_7", "points_per_ha": 3},
+        "crop_residues": {"practice_pl": "Wymieszanie słomy z glebą", "practice_code": "4_2_8", "points_per_ha": 1},
+        "organic_matter": {"practice_pl": "Wymieszanie obornika na gruntach ornych w terminie 12 godzin od jego aplikacji (tylko obornik, pomiot ptasi lub produkt pofermentacyjny)", "practice_code": "4_2_5", "points_per_ha": 2}
+      },
+      "estimate": {"kind": "points_per_ha", "pln_per_point": 100, "basis_pl": "1 pkt ≈ 22,47 EUR ≈ 100 zł; stawki w EUR przeliczane kursem z ostatniego dnia roboczego września (CDR, wyd. 03.2026)"},
+      "rates_pl": [
+        "Punkty za hektar: międzyplony ozime lub wsiewki 5, uproszczone systemy uprawy 3, wymieszanie obornika w 12 h 2, wymieszanie słomy z glebą 1 (1 pkt ≈ 100 zł)."
+      ],
+      "conditions_pl": [
+        "Płatność roczna — praktykę trzeba zadeklarować i zrealizować w danym roku; nie jest to zwrot kosztów inwestycji.",
+        "Warunek wejścia: minimum punktów = 25% powierzchni użytków rolnych gospodarstwa (do 300 ha) × 5 pkt/ha — liczone od całego gospodarstwa, nie tylko tej działki.",
+        "Obowiązek prowadzenia rejestru zabiegów agrotechnicznych (formularz ARiMR lub równoważne dokumenty)."
+      ],
+      "how_to_apply_pl": "We wniosku o przyznanie płatności w eWniosekPlus (ARiMR), co do zasady od 15 marca do 15 maja; złożenie do 25 dni po terminie obniża płatność o 1% za każdy dzień roboczy.",
+      "funds_same_costs_as": [],
+      "official_source_url": "https://www.cdr.gov.pl/images/Brwinow/do_pobrania/platnosci_bezposrednie_2026/Ekoschematy_obszarowe_wydanie_03.2026.pdf",
+      "source_urls": [
+        "https://www.cdr.gov.pl/images/Brwinow/do_pobrania/platnosci_bezposrednie_2026/Ekoschematy_obszarowe_wydanie_03.2026.pdf",
+        "https://www.gov.pl/web/arimr/harmonogram-naborow-wnioskow-ps-wpr-na-lata-2023-2027"
+      ],
+      "calls": [
+        {"call_id": "ARIMR-KAMPANIA-2026", "valid_from": "2026-03-15", "valid_to": "2026-05-15", "known_from": "2026-03-01", "known_to": null, "published_at": "2026-03-01",
+         "basis_pl": "Kampania wniosków 2026 (CDR, wyd. 03.2026)."},
+        {"call_id": "ARIMR-KAMPANIA-2027", "valid_from": "2027-03-15", "valid_to": "2027-05-15", "known_from": "2026-03-01", "known_to": null, "published_at": "2026-03-01",
+         "basis_pl": "Termin coroczny „co do zasady” 15.03–15.05 wg CDR (wyd. 03.2026); dokładny termin 2027 do potwierdzenia w komunikacie ARiMR."}
+      ],
+      "plan_steps": [
+        {"step_id": "ARIMR_CAMPAIGN_APPLY", "phase": 3, "title_pl": "Złożyć wniosek o płatności w eWniosekPlus i zadeklarować wybrane praktyki ekoschematów",
+         "purpose_pl": "Płatność za ekoschemat przysługuje tylko za praktyki zadeklarowane we wniosku w danym roku.",
+         "timing_pl": "co roku 15 marca – 15 maja (do 25 dni później z obniżką 1% za każdy dzień roboczy)", "window": {"from": "03-15", "to": "05-15", "certainty": "rule"},
+         "completion_check_pl": "potwierdzenie złożenia wniosku w eWniosekPlus", "resources_pl": ["dostęp do PUE/eWniosekPlus", "numer identyfikacyjny ARiMR", "doradca ODR (opcjonalnie)"]},
+        {"step_id": "ECO_RECORDS", "phase": 6, "title_pl": "Prowadzić rejestr zabiegów agrotechnicznych dla zadeklarowanych praktyk",
+         "purpose_pl": "Wymóg ekoschematu „Rolnictwo węglowe” — podstawa kontroli ARiMR.",
+         "timing_pl": "na bieżąco przez cały rok, w którym złożono wniosek", "method_ids": ["cover_crops", "reduced_tillage", "crop_residues"],
+         "completion_check_pl": "rejestr zgodny z formularzem ARiMR", "resources_pl": ["formularz rejestru ARiMR"]},
+        {"step_id": "ECO_COVER_SOW", "phase": 6, "title_pl": "Wysiać międzyplon ozimy: mieszanka min. 2 gatunków (nie same zboża) po plonie głównym",
+         "purpose_pl": "Warunek praktyki „Międzyplony ozime” (5 pkt/ha). Alternatywa: wsiewka roślin bobowatych drobnonasiennych w plon główny.",
+         "timing_pl": "siew od 1 lipca do 1 października", "window": {"from": "07-01", "to": "10-01", "certainty": "rule"}, "method_ids": ["cover_crops"],
+         "completion_check_pl": "zasiew mieszanki odnotowany w rejestrze", "resources_pl": ["mieszanka nasion", "siewnik"]},
+        {"step_id": "ECO_COVER_KEEP", "phase": 6, "title_pl": "Utrzymać międzyplon do 15 lutego, bez środków ochrony roślin",
+         "purpose_pl": "Mulczowanie dopuszczalne najwcześniej po 15 listopada; międzyplon nie może być uprawą główną w kolejnym roku.",
+         "timing_pl": "od wysiewu do 15 lutego następnego roku", "window": {"from": "10-01", "to": "02-15", "certainty": "rule", "after_step": "ECO_COVER_SOW"},
+         "depends_on": ["ECO_COVER_SOW"], "method_ids": ["cover_crops"],
+         "completion_check_pl": "międzyplon na polu 15 lutego (zdjęcie / rejestr)", "resources_pl": []},
+        {"step_id": "ECO_NO_PLOUGH", "phase": 6, "title_pl": "Uprawa bez pługa w roku wniosku; całe resztki pożniwne zostawić jako mulcz",
+         "purpose_pl": "Warunek praktyki „Uproszczone systemy uprawy” (3 pkt/ha): bezorkowo lub pasowo (strip-till); bez uprawy zerowej i bez traw na gruntach ornych.",
+         "timing_pl": "uprawki pożniwne i przedsiewne w roku kalendarzowym wniosku", "method_ids": ["reduced_tillage"],
+         "completion_check_pl": "brak orki w rejestrze zabiegów", "resources_pl": ["gruber / brona talerzowa / zestaw strip-till"]},
+        {"step_id": "ECO_STRAW_MIX", "phase": 6, "title_pl": "Rozdrobnić całą słomę po zbiorze i wymieszać ją z glebą (lub przyorać)",
+         "purpose_pl": "Warunek praktyki „Wymieszanie słomy z glebą” (1 pkt/ha). Przy uprawie uproszczonej mieszać bez orki.",
+         "timing_pl": "po zbiorze plonu głównego", "method_ids": ["crop_residues"],
+         "completion_check_pl": "zabieg w rejestrze", "resources_pl": ["rozdrabniacz / kombajn z sieczkarnią", "brona talerzowa"]},
+        {"step_id": "ECO_MANURE_12H", "phase": 6, "title_pl": "Obornik (pomiot, poferment) wymieszać z glebą w ciągu 12 godzin od aplikacji",
+         "purpose_pl": "Warunek praktyki 4_2_5 (2 pkt/ha). Zdjęcie lub oświadczenie przesłać w ciągu 14 dni od zabiegu, najpóźniej do 7 listopada.",
+         "timing_pl": "przy każdej aplikacji; dokumentacja w 14 dni, najpóźniej do 7 listopada", "method_ids": ["organic_matter"],
+         "completion_check_pl": "zdjęcie / oświadczenie przesłane do ARiMR", "resources_pl": ["rozrzutnik", "agregat do wymieszania"]}
+      ]
+    },
+    {
+      "program_id": "PSWPR-I.4.5",
+      "code": "I.4.5",
+      "name_pl": "Ekoschemat „Retencjonowanie wody na trwałych użytkach zielonych”",
+      "institution": "ARiMR (PS WPR 2023–2027)",
+      "support_type": "płatność roczna do zalanej lub podtopionej powierzchni TUZ",
+      "eligible_methods": ["runoff_slowing", "controlled_drainage", "retention_pond"],
+      "crop_ids": ["grassland"],
+      "eligible_cost_categories": [],
+      "beneficiary_requirements": ["has_producer_number", "has_legal_title_to_parcel"],
+      "estimate": {"kind": "eur_per_ha", "eur_per_ha": 63.15, "basis_pl": "szacowana stawka ok. 63,15 EUR/ha (CDR, wyd. 03.2026)"},
+      "rates_pl": ["Szacowana stawka ok. 63,15 EUR/ha zalanej lub podtopionej powierzchni TUZ."],
+      "conditions_pl": [
+        "Dotyczy TUZ objętych m.in. praktyką ekstensywnego użytkowania TUZ, zobowiązaniami rolno-środowiskowo-klimatycznymi lub ekologicznymi albo normą GAEC 2.",
+        "Zalanie lub podtopienie: wysycenie profilu glebowego wodą ≥ 80% przez co najmniej 12 kolejnych dni w okresie 1 maja – 30 września.",
+        "Rolnik nie wskazuje działek — zaznacza chęć ubiegania się o płatność; zalanie ocenia IUNG-PIB na podstawie danych satelitarnych."
+      ],
+      "how_to_apply_pl": "Zaznaczyć ekoschemat we wniosku o przyznanie płatności w eWniosekPlus (co do zasady 15 marca – 15 maja).",
+      "funds_same_costs_as": [],
+      "official_source_url": "https://www.cdr.gov.pl/images/Brwinow/do_pobrania/platnosci_bezposrednie_2026/Ekoschematy_obszarowe_wydanie_03.2026.pdf",
+      "source_urls": ["https://www.cdr.gov.pl/images/Brwinow/do_pobrania/platnosci_bezposrednie_2026/Ekoschematy_obszarowe_wydanie_03.2026.pdf"],
+      "calls": [
+        {"call_id": "ARIMR-KAMPANIA-2026", "valid_from": "2026-03-15", "valid_to": "2026-05-15", "known_from": "2026-03-01", "known_to": null, "published_at": "2026-03-01",
+         "basis_pl": "Kampania wniosków 2026 (CDR, wyd. 03.2026)."},
+        {"call_id": "ARIMR-KAMPANIA-2027", "valid_from": "2027-03-15", "valid_to": "2027-05-15", "known_from": "2026-03-01", "known_to": null, "published_at": "2026-03-01",
+         "basis_pl": "Termin coroczny „co do zasady” 15.03–15.05 wg CDR; termin 2027 do potwierdzenia w komunikacie ARiMR."}
+      ],
+      "plan_steps": [
+        {"step_id": "ARIMR_CAMPAIGN_APPLY", "phase": 3, "title_pl": "Złożyć wniosek o płatności w eWniosekPlus i zadeklarować wybrane praktyki ekoschematów",
+         "purpose_pl": "Płatność za ekoschemat przysługuje tylko za praktyki zadeklarowane we wniosku w danym roku.",
+         "timing_pl": "co roku 15 marca – 15 maja (do 25 dni później z obniżką 1% za każdy dzień roboczy)", "window": {"from": "03-15", "to": "05-15", "certainty": "rule"},
+         "completion_check_pl": "potwierdzenie złożenia wniosku w eWniosekPlus", "resources_pl": ["dostęp do PUE/eWniosekPlus", "numer identyfikacyjny ARiMR", "doradca ODR (opcjonalnie)"]},
+        {"step_id": "ECO_TUZ_FLOOD_CHECK", "phase": 8, "title_pl": "Sprawdzić, czy TUZ była zalana lub podtopiona ≥ 12 kolejnych dni",
+         "purpose_pl": "Ocenę robi IUNG-PIB z danych satelitarnych i przekazuje ARiMR do 2 października; warto prowadzić własne obserwacje poziomu wody.",
+         "timing_pl": "okres oceny 1 maja – 30 września; dane IUNG do 2 października", "window": {"from": "05-01", "to": "09-30", "certainty": "rule"},
+         "completion_check_pl": "notatki / zdjęcia z okresów podtopienia", "resources_pl": ["obserwacja terenowa"]}
+      ]
+    },
+    {
+      "program_id": "PSWPR-I.8.7.1",
+      "code": "I.8.7 (wariant 7.1)",
+      "name_pl": "Bioróżnorodność na gruntach ornych — Wieloletnie pasy kwietne",
+      "institution": "ARiMR (PS WPR 2023–2027)",
+      "support_type": "płatność rolno-środowiskowo-klimatyczna do powierzchni pasa (zobowiązanie wieloletnie)",
+      "eligible_methods": ["vegetative_strips"],
+      "eligible_cost_categories": [],
+      "beneficiary_requirements": ["has_producer_number", "has_legal_title_to_parcel"],
+      "estimate": {"kind": "pln_per_ha_unknown_area", "pln_per_ha": 3501, "basis_pl": "stawka 2026: 3501 zł/ha (ARiMR, stawki RSK 2026)"},
+      "rates_pl": ["Stawka 2026: 3501 zł/ha powierzchni pasa kwietnego (wariant 7.1)."],
+      "conditions_pl": [
+        "Pas kwietny to mieszanka roślin kwitnących — inna niż zadarnienie trawiaste; metoda HydroPlon musi spełnić wymogi wariantu 7.1.",
+        "Zobowiązanie wieloletnie — szczegółowe wymogi (szerokość, powierzchnia, mieszanka, okres) sprawdzić w warunkach ARiMR przed deklaracją."
+      ],
+      "how_to_apply_pl": "W kampanii wniosków ARiMR (eWniosekPlus) jako interwencja rolno-środowiskowo-klimatyczna; termin sprawdzić w komunikacie ARiMR.",
+      "funds_same_costs_as": [],
+      "official_source_url": "https://www.gov.pl/web/arimr/stawki-platnosci-rsk-2026",
+      "source_urls": ["https://www.gov.pl/web/arimr/stawki-platnosci-rsk-2026", "https://www.gov.pl/web/arimr/harmonogram-naborow-wnioskow-ps-wpr-na-lata-2023-2027"],
+      "calls": [],
+      "plan_steps": [
+        {"step_id": "RSK_FLOWER_STRIPS_APPLY", "phase": 3, "title_pl": "Sprawdzić wymogi wariantu 7.1 „Wieloletnie pasy kwietne” i zgłosić zobowiązanie we wniosku ARiMR",
+         "purpose_pl": "Płatność 3501 zł/ha (2026) wymaga spełnienia wymogów wariantu i zobowiązania wieloletniego.",
+         "timing_pl": "w kampanii wniosków ARiMR — termin do potwierdzenia w komunikacie", "method_ids": ["vegetative_strips"],
+         "completion_check_pl": "zobowiązanie zadeklarowane we wniosku", "resources_pl": ["doradca rolnośrodowiskowy ODR"]}
+      ]
+    },
+    {
+      "program_id": "PSWPR-I.10.12",
+      "code": "I.10.12",
+      "name_pl": "Tworzenie zadrzewień śródpolnych",
+      "institution": "ARiMR (PS WPR 2023–2027)",
+      "support_type": "zryczałtowane wsparcie na założenie i zabezpieczenie zadrzewienia + premia zadrzewieniowa przez 5 lat",
+      "eligible_methods": ["windbreaks"],
+      "eligible_cost_categories": ["materials", "execution", "maintenance"],
+      "beneficiary_requirements": ["has_legal_title_to_parcel"],
+      "estimate": {"kind": "pln_per_ha_unknown_area", "pln_per_ha": 10892, "basis_pl": "stawki z rozporządzenia MRiRW z 10 marca 2026 r. (Dz.U. poz. 332)"},
+      "rates_pl": [
+        "Założenie: 10 892 zł/ha (warunki korzystne) lub 13 664 zł/ha (nachylenie terenu > 12°).",
+        "Premia zadrzewieniowa: 2 494 zł/ha rocznie przez 5 lat od założenia.",
+        "Zabezpieczenie: ogrodzenie siatką 2 m 19,7 zł/mb; osłonki 2 362 zł/ha; 3 paliki 2 210 zł/ha; repelenty 1 708 zł/ha; wełna owcza 944 zł/ha."
+      ],
+      "conditions_pl": [
+        "Dla rolników będących właścicielami lub współwłaścicielami gruntu (lub gdy grunt jest własnością małżonka) oraz JST.",
+        "Grunty orne; zadrzewienie min. 0,1 ha; przy powierzchni > 0,5 ha szerokość nie większa niż 20 m; do 40 ha rocznie.",
+        "Co najmniej 3 gatunki drzew lub krzewów, min. 90% liściastych, 1 500–2 500 szt./ha; obowiązkowe zabezpieczenie nasadzeń."
+      ],
+      "how_to_apply_pl": "Wniosek o wsparcie na zadrzewienie w eWniosekPlus w naborze ARiMR (w 2026 r.: 1 czerwca – 31 lipca); wniosek o premię co roku od 15 marca.",
+      "funds_same_costs_as": [],
+      "official_source_url": "https://www.gov.pl/web/rolnictwo/tworzenie-zadrzewien-srodpolnych",
+      "source_urls": ["https://www.gov.pl/web/rolnictwo/tworzenie-zadrzewien-srodpolnych", "https://cdr.gov.pl/en/aktualnosci-instytucje/4787-nabor-wnioskow-na-zalesienie-systemy-rolno-lesne-zadrzewienia-srodpolne"],
+      "calls": [
+        {"call_id": "I.10.12-2024", "valid_from": "2024-06-01", "valid_to": "2024-07-31", "known_from": "2024-06-01", "known_to": null, "published_at": "2024-06-01",
+         "basis_pl": "Nabór 2024 (CDR, 03.06.2024)."},
+        {"call_id": "I.10.12-2026", "valid_from": "2026-06-01", "valid_to": "2026-07-31", "known_from": "2026-06-01", "known_to": null, "published_at": "2026-06-01",
+         "basis_pl": "Nabór 1 czerwca – 31 lipca (MRiRW); kolejny nabór nieogłoszony."}
+      ],
+      "plan_steps": [
+        {"step_id": "TREES_APPLY", "phase": 3, "title_pl": "Złożyć wniosek o wsparcie na zadrzewienie śródpolne (eWniosekPlus)",
+         "purpose_pl": "Wsparcie zryczałtowane: 10 892 zł/ha (13 664 zł/ha na stoku > 12°) + zabezpieczenie; kolejny nabór nie jest jeszcze ogłoszony.",
+         "timing_pl": "w naborze ARiMR — w 2026 r. 1 czerwca – 31 lipca", "window": {"from": "06-01", "to": "07-31", "certainty": "pattern"}, "method_ids": ["windbreaks"],
+         "completion_check_pl": "wniosek złożony; decyzja ARiMR", "resources_pl": ["mapa działki", "doradca rolnośrodowiskowy (opcjonalnie)"]},
+        {"step_id": "TREES_PLANT_RULES", "phase": 6, "title_pl": "Nasadzenia zgodne z warunkami: ≥ 3 gatunki, ≥ 90% liściastych, 1 500–2 500 szt./ha, zabezpieczone",
+         "purpose_pl": "Niespełnienie warunków nasadzeń może oznaczać zwrot wsparcia.",
+         "timing_pl": "w sezonie sadzenia po decyzji ARiMR", "method_ids": ["windbreaks"],
+         "completion_check_pl": "protokół / zdjęcia nasadzeń i zabezpieczeń", "resources_pl": ["sadzonki", "osłonki / ogrodzenie"]},
+        {"step_id": "TREES_PREMIUM", "phase": 8, "title_pl": "Co roku składać wniosek o premię zadrzewieniową (2 494 zł/ha, 5 lat)",
+         "purpose_pl": "Premia za utrzymanie zadrzewienia przez 5 lat od założenia.",
+         "timing_pl": "co roku od 15 marca, przez 5 lat od założenia", "window": {"from": "03-15", "to": "05-15", "certainty": "rule"}, "method_ids": ["windbreaks"],
+         "completion_check_pl": "wniosek o premię złożony", "resources_pl": ["eWniosekPlus"]}
+      ]
+    },
+    {
+      "program_id": "PSWPR-I.10.4",
+      "code": "I.10.4",
+      "name_pl": "Inwestycje przyczyniające się do ochrony środowiska i klimatu",
+      "institution": "ARiMR (PS WPR 2023–2027)",
+      "support_type": "dotacja do inwestycji (refundacja części kosztów kwalifikowalnych)",
+      "eligible_methods": ["retention_pond", "efficient_irrigation", "reduced_tillage", "windbreaks"],
+      "eligible_cost_categories": ["equipment", "execution", "design"],
+      "beneficiary_requirements": ["has_producer_number"],
+      "method_details": {
+        "retention_pond": {"practice_pl": "Infrastruktura do pozyskiwania i magazynowania wody deszczowej w ZAMKNIĘTYCH zbiornikach — otwarty zbiornik ziemny nie jest wymieniony"},
+        "efficient_irrigation": {"practice_pl": "Instalacje do powtórnego obiegu wody lub oszczędnego gospodarowania wodą"},
+        "reduced_tillage": {"practice_pl": "Nowe maszyny lub urządzenia do uprawy pasowej lub bezorkowej (bezpłużnej)"},
+        "windbreaks": {"practice_pl": "Nowe maszyny lub urządzenia do utrzymania zadrzewień śródpolnych"}
+      },
+      "rates_pl": ["Poziom i limity dofinansowania określa regulamin naboru — w dokumentach na 2026 r. nie podano."],
+      "conditions_pl": [
+        "Rolnik w rozumieniu art. 3 pkt 1 rozporządzenia o planach strategicznych WPR lub grupa co najmniej 3 rolników (inwestycja zbiorowa).",
+        "Koszty poniesione przed złożeniem wniosku mogą być niekwalifikowalne — sprawdzić regulamin naboru."
+      ],
+      "how_to_apply_pl": "Wniosek w naborze ARiMR — w harmonogramie na 2026 r. brak naboru tej interwencji; kolejny termin nieogłoszony.",
+      "funds_same_costs_as": ["PSWPR-I.10.1.2"],
+      "official_source_url": "https://www.gov.pl/web/arimr/harmonogram-naborow-wnioskow-ps-wpr-na-lata-2023-2027",
+      "source_urls": ["https://www.gov.pl/web/arimr/harmonogram-naborow-wnioskow-ps-wpr-na-lata-2023-2027"],
+      "calls": [],
+      "plan_steps": [
+        {"step_id": "INVEST_WATCH_I104", "phase": 4, "title_pl": "Obserwować ogłoszenie naboru I.10.4 przed zakupem sprzętu lub budową",
+         "purpose_pl": "W harmonogramie ARiMR na 2026 r. nie ma naboru; zakup przed złożeniem wniosku może wykluczyć koszty z dofinansowania.",
+         "timing_pl": "przed zakupami i zleceniem robót", "method_ids": ["retention_pond", "efficient_irrigation", "reduced_tillage", "windbreaks"],
+         "completion_check_pl": "sprawdzony aktualny harmonogram ARiMR", "resources_pl": ["harmonogram naborów ARiMR"]}
+      ]
+    },
+    {
+      "program_id": "PSWPR-I.10.1.2",
+      "code": "I.10.1.2",
+      "name_pl": "Inwestycje w gospodarstwach rolnych zwiększające konkurencyjność — instrumenty finansowe (kredyt z gwarancją BGK)",
+      "institution": "Bank Gospodarstwa Krajowego (przez banki komercyjne)",
+      "support_type": "bezpłatna gwarancja i dotacja do oprocentowania kredytu komercyjnego (nie dotacja do kosztów)",
+      "eligible_methods": ["efficient_irrigation", "retention_pond"],
+      "eligible_cost_categories": ["equipment", "execution", "design"],
+      "beneficiary_requirements": ["has_producer_number"],
+      "rates_pl": ["Gwarancja spłaty kredytu i dopłata do odsetek — warunki w ofercie BGK (gwarancja Agromax)."],
+      "conditions_pl": [
+        "Zakres: inwestycje w gospodarstwach rolnych, w tym inwestycje na nawadnianie (ARiMR, harmonogram 2026).",
+        "ARiMR nie prowadzi naboru — wniosek o kredyt składa się w banku współpracującym z BGK."
+      ],
+      "how_to_apply_pl": "W banku współpracującym z BGK; nabór ciągły od 1 marca 2024 r.",
+      "funds_same_costs_as": ["PSWPR-I.10.4"],
+      "official_source_url": "https://www.bgk.pl/male-i-srednie-przedsiebiorstwa/zabezpieczenie-finansowania/gwarancja-agromax/",
+      "source_urls": ["https://www.gov.pl/web/arimr/harmonogram-naborow-wnioskow-ps-wpr-na-lata-2023-2027", "https://www.bgk.pl/male-i-srednie-przedsiebiorstwa/zabezpieczenie-finansowania/gwarancja-agromax/"],
+      "calls": [
+        {"call_id": "I.10.1.2-CIAGLY", "valid_from": "2024-03-01", "valid_to": null, "known_from": "2024-03-01", "known_to": null, "published_at": "2024-03-01",
+         "basis_pl": "Nabór ciągły od 1 marca 2024 r. (ARiMR, harmonogram stan 18.11.2026)."}
+      ],
+      "plan_steps": [
+        {"step_id": "INVEST_BGK_LOAN", "phase": 4, "title_pl": "Zapytać w banku o kredyt inwestycyjny z gwarancją i dopłatą do odsetek BGK",
+         "purpose_pl": "Nabór ciągły — możliwość sfinansowania nawadniania lub zbiornika kredytem na preferencyjnych warunkach.",
+         "timing_pl": "nabór ciągły — przed zakupami i zleceniem robót", "method_ids": ["efficient_irrigation", "retention_pond"],
+         "completion_check_pl": "oferta kredytowa z bankiem", "resources_pl": ["kosztorys inwestycji", "dokumenty gospodarstwa"]}
+      ]
+    }
+  ]
+}

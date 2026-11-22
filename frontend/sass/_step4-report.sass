@@ -283,3 +283,94 @@ details.analysis-section
   margin-top: 16px
   a.action
     text-decoration: none
+
+// ---------- Dofinansowania: szczegóły programu ----------
+.grant-inner
+  align-items: flex-start
+
+.grant-main
+  min-width: 0
+
+.grant-code
+  display: inline-block
+  font-size: 11px
+  font-weight: 800
+  color: $gold-deep
+  background: #fff4d5
+  border: 1px solid #e8d08a
+  border-radius: 6px
+  padding: 1px 6px
+  margin-right: 7px
+  font-variant-numeric: tabular-nums
+
+.grant-facts
+  margin: 10px 0 4px
+  padding-left: 18px
+  font-size: 12.5px
+  color: $ink-2
+  li + li
+    margin-top: 4px
+  b
+    color: $ink
+
+.grant-estimate
+  color: $green-ink
+  font-weight: 650
+
+.grant-note
+  color: $ink-3
+
+.grant-src
+  font-size: 12px !important
+  color: $ink-3 !important
+  a
+    color: $green
+
+// ---------- Plan: najbliższe terminy ----------
+.deadlines
+  margin-top: 16px
+  border: 1px solid #e5ece7
+  border-radius: 12px
+  padding: 14px 16px
+  background: #fbfdfb
+  h4
+    margin: 0 0 10px
+    font-size: 13px
+
+.deadline-list
+  list-style: none
+  margin: 0
+  padding: 0
+  li
+    display: grid
+    grid-template-columns: minmax(170px, auto) 1fr
+    gap: 12px
+    padding: 8px 0
+    border-top: 1px solid #edf1ee
+    font-size: 12.5px
+    &:first-child
+      border-top: 0
+  span span
+    color: $ink-3
+    font-size: 12px
+
+.deadline-date
+  font-weight: 750
+  color: $green-deep
+  font-variant-numeric: tabular-nums
+  white-space: nowrap
+
+.task-date
+  color: $green-deep
+  font-weight: 650
+  font-variant-numeric: tabular-nums
+  white-space: nowrap
+
+.task-prog
+  color: $gold-deep
+  font-weight: 650
+
+@media (max-width: $bp-phone)
+  .deadline-list li
+    grid-template-columns: 1fr
+    gap: 2px

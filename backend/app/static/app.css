@@ -1613,6 +1613,115 @@ details.analysis-section[open] summary .icon {
   text-decoration: none;
 }
 
+.grant-inner {
+  align-items: flex-start;
+}
+
+.grant-main {
+  min-width: 0;
+}
+
+.grant-code {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  color: #805a0b;
+  background: #fff4d5;
+  border: 1px solid #e8d08a;
+  border-radius: 6px;
+  padding: 1px 6px;
+  margin-right: 7px;
+  font-variant-numeric: tabular-nums;
+}
+
+.grant-facts {
+  margin: 10px 0 4px;
+  padding-left: 18px;
+  font-size: 12.5px;
+  color: #4a5e58;
+}
+.grant-facts li + li {
+  margin-top: 4px;
+}
+.grant-facts b {
+  color: #172c29;
+}
+
+.grant-estimate {
+  color: #3f6a56;
+  font-weight: 650;
+}
+
+.grant-note {
+  color: #5a6d67;
+}
+
+.grant-src {
+  font-size: 12px !important;
+  color: #5a6d67 !important;
+}
+.grant-src a {
+  color: #0e6548;
+}
+
+.deadlines {
+  margin-top: 16px;
+  border: 1px solid #e5ece7;
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #fbfdfb;
+}
+.deadlines h4 {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+
+.deadline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.deadline-list li {
+  display: grid;
+  grid-template-columns: minmax(170px, auto) 1fr;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid #edf1ee;
+  font-size: 12.5px;
+}
+.deadline-list li:first-child {
+  border-top: 0;
+}
+.deadline-list span span {
+  color: #5a6d67;
+  font-size: 12px;
+}
+
+.deadline-date {
+  font-weight: 750;
+  color: #074b35;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.task-date {
+  color: #074b35;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.task-prog {
+  color: #805a0b;
+  font-weight: 650;
+}
+
+@media (max-width: 570px) {
+  .deadline-list li {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
 @media (max-width: 1050px) {
   .page, .topbar-inner, .footer-inner {
     width: min(100% - 38px, 1450px);

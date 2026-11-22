@@ -28,6 +28,12 @@ CALL_PL = {"open": "otwarty", "closed": "zamknięty", "announced": "ogłoszony (
 MATCH_PL = {"possible": "potencjalnie możliwe", "needs_verification": "wymaga weryfikacji", "not_eligible": "niekwalifikowalne"}
 
 
+
+def _d(iso: str) -> str:
+    """2027-03-15 -> 15.03.2027"""
+    y, m, d = str(iso)[:10].split("-")
+    return f"{d}.{m}.{y}"
+
 def _module_summary(snapshot: AnalysisSnapshot) -> dict[str, Any]:
     m = snapshot.modules.model_dump(mode="json")
     w = m["weather"]
@@ -161,9 +167,18 @@ def render_blocks(plan: FinalPlan) -> list[tuple[str, str]]:
     if not f["matches"]:
         b.append((P, "Nie znaleziono dopasowanych programów w katalogu."))
     for m in f["matches"]:
-        b.append((L, f"{m['program_name_pl']} — {MATCH_PL[m['match_status']]}; nabór w dniu analizy: "
+        code = f"{m['code']} " if m.get("code") else ""
+        b.append((L, f"{code}{m['program_name_pl']} — {MATCH_PL[m['match_status']]}; nabór w dniu analizy: "
                      f"{CALL_PL[m['call_status_on_as_of']]}, obecnie: {CALL_PL[m['call_status_now']]}; "
                      f"forma: {m['support_type']}. {' '.join(m['reasons_pl'])}"))
+        for line in m.get("rates_pl", []) + m.get("estimate_pl", []):
+            b.append((L, f"    {line}"))
+        if m.get("how_to_apply_pl"):
+            b.append((L, f"    Jak złożyć wniosek: {m['how_to_apply_pl']}"))
+        if m.get("call_basis_pl"):
+            b.append((L, f"    Termin: {m['call_basis_pl']}"))
+        if m.get("source_urls"):
+            b.append((L, f"    Źródła (stan na {m.get('verified_at')}): {', '.join(m['source_urls'])}"))
     for w in f["double_funding_warnings"] + f["warnings"]:
         b.append((L, w))
     im = plan.section_4_implementation
@@ -172,8 +187,12 @@ def render_blocks(plan: FinalPlan) -> list[tuple[str, str]]:
         b.append((P, "BŁĄD: wykryto cykl zależności — harmonogram nie został wygenerowany."))
     for task in im["tasks"]:
         dep = f" (po: {', '.join(d.split('-', 2)[1] for d in task['depends_on'])})" if task["depends_on"] else ""
+        when = ""
+        if task.get("window_from"):
+            when = f" [najbliższy termin: {_d(task['window_from'])}–{_d(task['window_to'])}; {task['window_note_pl']}]"
+        prog = f"; program: {', '.join(task['program_ids'])}" if task.get("program_ids") else ""
         b.append((L, f"[{task['order']:02d}] Faza {task['phase']} {task['phase_label_pl']}: {task['title_pl']} — "
-                     f"{task['timing_pl']}{dep}; metody: {', '.join(task['method_ids'])}; status: {task['status']}"))
+                     f"{task['timing_pl']}{when}{dep}; metody: {', '.join(task['method_ids'])}{prog}; status: {task['status']}"))
     for s in im["stop_go_conditions"]:
         b.append((L, s))
     a = plan.section_5_analysis

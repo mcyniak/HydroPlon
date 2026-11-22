@@ -18,12 +18,12 @@ const LEVEL_PL = { high: 'wysokie', medium: 'średnie', low: 'niskie', unknown: 
 const CONF_PL = { high: 'wysoka', medium: 'średnia', low: 'niska', unknown: 'nieustalona' };
 const MODULE_PL = { soil: 'Gleba', terrain: 'Teren (NMT)', hydrology: 'Hydrologia', weather: 'Pogoda (IMGW)', satellite: 'Satelity (Sentinel-2)' };
 const MSTATUS_PL = { ok: 'dane dostępne', partial: 'dane częściowe', unavailable: 'dane niedostępne', unknown: 'brak oceny', error: 'błąd źródła' };
-const MATCH_PL = { eligible: 'Kwalifikuje się', likely_eligible: 'Prawdopodobnie kwalifikuje się', needs_verification: 'Do weryfikacji', not_eligible: 'Nie kwalifikuje się' };
+const MATCH_PL = { possible: 'Możliwe', eligible: 'Kwalifikuje się', likely_eligible: 'Prawdopodobnie kwalifikuje się', needs_verification: 'Do weryfikacji', not_eligible: 'Nie kwalifikuje się' };
 const ID_PL = { wind_exposure: 'narażenie na wiatr', low_soil_retention: 'niska retencja gleby', low_organic_matter: 'niska zawartość materii organicznej',
   surface_runoff_erosion: 'spływ powierzchniowy i erozja', periodic_water_deficit: 'okresowe niedobory wody', drainage_context: 'kontekst drenażu', flood_hazard: 'zagrożenie powodziowe' };
 // Teksty z silnika reguł zawierają identyfikatory problemów — na ekranie pokazujemy polskie nazwy.
 const human = (t) => String(t ?? '').replace(/[a-z]+(?:_[a-z0-9]+)+/g, (id) => ID_PL[id] || id);
-const CALL_PL = { open: 'nabór otwarty', closed: 'nabór zamknięty', upcoming: 'nabór zapowiedziany', planned: 'nabór planowany', unknown: 'termin naboru nieznany' };
+const CALL_PL = { open: 'nabór otwarty', closed: 'nabór zakończony', announced: 'nabór zapowiedziany', upcoming: 'nabór zapowiedziany', planned: 'nabór planowany', unknown: 'termin naboru nieznany' };
 
 // ---------- narzędzia ----------
 const $ = (id) => document.getElementById(id);
@@ -31,6 +31,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const num = (v, d = 0) => (v == null || Number.isNaN(Number(v))) ? null : Number(v).toLocaleString('pl-PL', { maximumFractionDigits: d });
 const zl = (v) => v == null ? null : `${num(v, 0)} zł`;
 const or = (v, fallback = 'brak danych') => (v == null || v === '') ? `<span class="na">${esc(fallback)}</span>` : esc(v);
+const fmtDate = (iso) => (iso ? String(iso).slice(0, 10).split('-').reverse().join('.') : '');
 const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const plural = (n, a, b, c) => n === 1 ? a : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) ? b : c;
 let toastTimer;
@@ -344,17 +345,37 @@ function renderReport() {
     ${shared.length ? `<div class="cost-line"><span>Prace wspólne dla kilku metod (liczone raz)</span><strong>${esc(costLabel({ capex: sharedCapex, opex: sharedOpex, unpriced: sharedUnpriced }))}</strong></div>` : ''}
     <p class="fine">${esc(t.explanation_pl || '')}${demoPrices ? ' Stawki z cennika demonstracyjnego — nie są cenami rynkowymi.' : ''}</p></div>`;
 
-  // 3. Dotacje
+  // 3. Dotacje — programy z katalogu (w trybie live: interwencje PS WPR z dokumentów ARiMR/CDR/MRiRW)
   const matches = fund.matches || [];
+  const methodName = (id) => (allMethods().find((m) => m.method_id === id) || {}).name_pl || id;
+  const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return u; } };
+  const callText = (m) => {
+    const w = m.call_window, st = m.call_status_now;
+    if (!w) return CALL_PL[st] || 'nabór nieogłoszony';
+    const range = w.valid_to ? `${fmtDate(w.valid_from)} – ${fmtDate(w.valid_to)}` : `od ${fmtDate(w.valid_from)}, nabór ciągły`;
+    return `${CALL_PL[st] || st}: ${range}`;
+  };
+  const grantHtml = (m) => `<div class="grant-inner"><div class="grant-main">
+      <strong>${m.code ? `<span class="grant-code">${esc(m.code)}</span>` : ''}${esc(m.program_name_pl)}</strong>
+      <p>${esc(m.support_type || '')}${m.institution ? ` · ${esc(m.institution)}` : ''}</p>
+      <ul class="grant-facts">
+        <li><b>Dla metod:</b> ${m.method_ids.map((id) => esc(m.method_practices_pl?.[id] ? `${methodName(id)} — ${m.method_practices_pl[id]}` : methodName(id))).join('; ')}</li>
+        ${(m.rates_pl || []).map((r) => `<li><b>Stawka:</b> ${esc(r)}</li>`).join('')}
+        ${(m.estimate_pl || []).map((r) => `<li class="grant-estimate">${esc(r)}</li>`).join('')}
+        <li><b>Nabór:</b> ${esc(callText(m))}${m.call_basis_pl ? ` <span class="grant-note">(${esc(m.call_basis_pl)})</span>` : ''}</li>
+        ${m.how_to_apply_pl ? `<li><b>Jak złożyć wniosek:</b> ${esc(m.how_to_apply_pl)}</li>` : ''}
+      </ul>
+      ${(m.conditions_pl || []).length ? `<details class="more"><summary>Warunki i uwagi (${m.conditions_pl.length + m.reasons_pl.length})</summary><ul class="fine-list">${[...m.conditions_pl, ...m.reasons_pl].map((c) => `<li>${esc(c)}</li>`).join('')}</ul></details>` : ''}
+      ${(m.source_urls || []).length ? `<p class="grant-src">Źródło: ${m.source_urls.map((u) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(host(u))}</a>`).join(', ')}${m.verified_at ? ` · stan na ${esc(fmtDate(m.verified_at))}` : ''}</p>` : ''}
+    </div><span class="grant-status">${esc(MATCH_PL[m.match_status] || m.match_status)}</span></div>`;
+  const unmatched = (fund.unmatched_method_ids || []).map(methodName);
   const fundHtml = `<div class="report-section grant-box"><div class="report-heading"><svg class="icon"><use href="#icon-bank"/></svg>MOŻLIWE DOFINANSOWANIA${fund.catalog_is_demonstration ? '<span class="tag-demo">KATALOG DEMONSTRACYJNY</span>' : ''}</div>
-    ${matches.length ? matches.map((m) => `<div class="grant-inner"><div><strong>${esc(m.program_name_pl)}</strong>
-      <p>${esc(m.support_type || '')}${m.institution ? ` · ${esc(m.institution)}` : ''} · ${esc(CALL_PL[m.call_status_on_as_of] || m.call_status_on_as_of || '')}</p>
-      ${(m.conditions_pl || []).length ? `<p>${esc(m.conditions_pl[0])}</p>` : ''}</div>
-      <span class="grant-status">${esc(MATCH_PL[m.match_status] || m.match_status)}</span></div>`).join('') : '<div class="grant-inner"><div><strong>Brak dopasowanych programów</strong><p>Dla wybranych metod nie znaleziono programu w katalogu.</p></div></div>'}
+    ${matches.length ? matches.map(grantHtml).join('') : '<div class="grant-inner"><div><strong>Brak dopasowanych programów</strong><p>Dla wybranych metod nie znaleziono programu w katalogu.</p></div></div>'}
+    ${unmatched.length ? `<p class="fine">Bez programu wsparcia w katalogu: ${esc(unmatched.join(', '))}.</p>` : ''}
     ${[...(fund.double_funding_warnings || []), ...(fund.warnings || [])].length ? `<ul class="fine-list">${[...(fund.double_funding_warnings || []), ...(fund.warnings || [])].map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}
     <p class="fine">Dotacji nie odejmujemy od kosztów — wskazanie programu nie oznacza przyznania wsparcia.</p></div>`;
 
-  // 4. Plan wdrożenia
+  // 4. Plan wdrożenia — najbliższe terminy (z programów) + fazy
   const phases = [];
   for (const task of impl.tasks) {
     let ph = phases.find((p) => p.phase === task.phase);
@@ -362,11 +383,18 @@ function renderReport() {
     ph.tasks.push(task);
   }
   phases.sort((a, b) => a.phase - b.phase);
+  const codeOf = (label) => String(label).split(' ')[0];
+  const dated = impl.tasks.filter((t) => t.window_from).sort((a, b) => a.window_from.localeCompare(b.window_from));
+  const taskLi = (tk) => `<li>${esc(tk.title_pl)}${tk.window_from ? ` <span class="task-date">${esc(fmtDate(tk.window_from))} – ${esc(fmtDate(tk.window_to))}</span>` : (tk.timing_pl ? ` <span>· ${esc(tk.timing_pl)}</span>` : '')}${(tk.program_ids || []).length ? ` <span class="task-prog">${esc(tk.program_ids.map(codeOf).join(', '))}</span>` : ''}</li>`;
+  const deadlinesHtml = dated.length ? `<div class="deadlines"><h4>Najbliższe terminy</h4><ol class="deadline-list">${dated.map((t) => `<li>
+      <span class="deadline-date">${esc(fmtDate(t.window_from))} – ${esc(fmtDate(t.window_to))}</span>
+      <span class="deadline-what"><b>${esc(t.title_pl)}</b>${(t.program_ids || []).length ? ` · ${esc(t.program_ids.map(codeOf).join(', '))}` : ''}<br><span>${esc(t.window_note_pl || '')}</span></span></li>`).join('')}</ol></div>` : '';
   const implHtml = `<div class="report-section"><div class="report-heading"><svg class="icon"><use href="#icon-plan"/></svg>PLAN WDROŻENIA ZMIAN</div>
-    <div class="subline">${impl.tasks.length} ${plural(impl.tasks.length, 'zadanie', 'zadania', 'zadań')} w ${phases.length} ${plural(phases.length, 'fazie', 'fazach', 'fazach')} · wspólne prace dla kilku metod połączone w jedno zadanie</div>
+    <div class="subline">${impl.tasks.length} ${plural(impl.tasks.length, 'zadanie', 'zadania', 'zadań')} w ${phases.length} ${plural(phases.length, 'fazie', 'fazach', 'fazach')} · wspólne prace dla kilku metod połączone w jedno zadanie${dated.length ? ' · terminy liczone od dziś według zasad programów' : ''}</div>
+    ${deadlinesHtml}
     <div class="timeline">${phases.map((ph, i) => `<div class="timeline-item"><span class="num">${i + 1}</span><strong>${esc(ph.label)}</strong>
-      <ul class="task-list">${ph.tasks.slice(0, 4).map((tk) => `<li>${esc(tk.title_pl)}${tk.timing_pl ? ` <span>· ${esc(tk.timing_pl)}</span>` : ''}</li>`).join('')}</ul>
-      ${ph.tasks.length > 4 ? `<details class="more"><summary>i jeszcze ${ph.tasks.length - 4}</summary><ul class="task-list">${ph.tasks.slice(4).map((tk) => `<li>${esc(tk.title_pl)}</li>`).join('')}</ul></details>` : ''}</div>`).join('')}</div>
+      <ul class="task-list">${ph.tasks.slice(0, 4).map(taskLi).join('')}</ul>
+      ${ph.tasks.length > 4 ? `<details class="more"><summary>i jeszcze ${ph.tasks.length - 4}</summary><ul class="task-list">${ph.tasks.slice(4).map(taskLi).join('')}</ul></details>` : ''}</div>`).join('')}</div>
     ${(impl.stop_go_conditions || []).length ? `<details class="more" style="margin-top:14px"><summary>Warunki STOP/GO przed realizacją (${impl.stop_go_conditions.length})</summary><ul class="fine-list">${impl.stop_go_conditions.map((c) => `<li>${esc(c)}</li>`).join('')}</ul></details>` : ''}</div>`;
 
   // 5. Rozwijana analiza (zawsze na końcu)
