@@ -11,7 +11,6 @@ const CROP_UI = {
 // Ikony metod: symbole SVG #m-<method_id> w app.html.
 const methodIcon = (id) => `<svg class="icon"><use href="#m-${id}"/></svg>`;
 const MIN_CLICK_ZOOM = 14; // poniżej tego przybliżenia kliknięcie nie wskazuje konkretnej działki
-const EXAMPLE_PARCEL = { id: '120404_2.0006.131', label: 'Wójcina, gm. Mędrzechów (małopolskie)' };
 const PROBLEM_PL = { periodic_water_deficit: 'Okresowe niedobory wody', surface_runoff_erosion: 'Spływ powierzchniowy i erozja',
   low_soil_retention: 'Niska retencja wodna gleby', low_organic_matter: 'Niska zawartość materii organicznej' };
 const LEVEL_PL = { high: 'wysokie', medium: 'średnie', low: 'niskie', unknown: 'nieustalone' };
@@ -49,8 +48,8 @@ async function api(method, url, body) {
 
 // ---------- stan kreatora ----------
 const state = {
-  step: 1, health: null, parcel: null, date: todayStr(),
-  analysis: null, analysisErr: null, analysisPromise: null, analysisKey: null, analysisT0: 0,
+  step: 1, parcel: null, date: todayStr(),
+  analysis: null, analysisErr: null, analysisPromise: null, analysisKey: null,
   crops: [], cropId: null, fc: { drainage: 'unknown', retention: 'unknown', types: [] },
   assessment: null, ranking: null, selected: new Set(), selectedFor: null,
   selection: null, plan: null, busy: false,
@@ -208,25 +207,19 @@ function setParcel(p) {
   map.fitBounds(parcelLayer.getBounds(), { maxZoom: 17, padding: [40, 40] });
   addressLayer.clearLayers();
   updateMapChip();
-  renderParcelCard();
+  renderParcelCard(p);
   if (changed) { invalidate(1); }
   startAnalysis();
   updateStep();
 }
-function renderParcelCard() {
-  const p = state.parcel;
-  if (!p) {
-    const live = state.health?.data_mode === 'live';
-    $('parcel-detail-slot').innerHTML = live ? `<div class="parcel-empty"><button type="button" class="link-btn" data-example>Zobacz przykład: działka ${esc(EXAMPLE_PARCEL.id)} — ${esc(EXAMPLE_PARCEL.label)}</button></div>` : '';
-    return;
-  }
+function renderParcelCard(p) {
   const m = p.metrics, s = p.source, a = p.administrative_location;
   const loc = [a.region && `obręb ${a.region}`, a.commune && `gm. ${a.commune}`, a.county && `pow. ${a.county}`, a.voivodeship && `woj. ${a.voivodeship}`].filter(Boolean).join(', ');
   $('parcel-detail-slot').innerHTML = `<div class="parcel-detail">
       <div class="parcel-detail-top"><svg class="icon"><use href="#icon-check"/></svg>DZIAŁKA WYBRANA${s.is_demonstration ? ' <span class="tag-demo">DANE TESTOWE</span>' : ''}</div>
       <div class="parcel-id">${esc(p.parcel_id)}</div>
       <div class="parcel-location">${esc(loc || a.full_label || '')}</div>
-      <div class="parcel-stats"><div><small>Powierzchnia (z geometrii)</small><b>${esc(num(m.area_ha, 2))} ha</b>${m.is_multipart ? `<small>${esc(m.part_count)} części</small>` : ''}</div>
+      <div class="parcel-stats"><div><small>Powierzchnia</small><b>${esc(num(m.area_ha, 2))} ha</b>${m.is_multipart ? `<small>${esc(m.part_count)} części</small>` : ''}</div>
       <div style="text-align:right"><small>Źródło granic</small><b style="font-size:13px">${esc(s.service)}</b><small>${esc(s.datasource || '')}</small></div></div>
     </div>
     <details class="notes"><summary>Uwagi do danych ewidencyjnych (${p.notices.length})</summary><ul>${p.notices.map((n) => `<li>${esc(n)}</li>`).join('')}</ul></details>`;
@@ -239,7 +232,7 @@ function updateAnalysisDate() {
   dateError.hidden = !!date;
   if (!date) {
     dateError.textContent = dateInput.validity.rangeUnderflow
-      ? `Najwcześniejsza dostępna data analizy to ${fmtDate(dateInput.min)}.`
+      ? `Wybierz datę od ${fmtDate(dateInput.min)}.`
       : 'Wpisz poprawną datę analizy.';
   } else {
     dateError.textContent = '';
@@ -260,7 +253,7 @@ function startAnalysis(force) {
   const key = `${state.parcel.parcel_id}|${state.date}`;
   if (!force && state.analysisKey === key && (state.analysisPromise || state.analysis)) return state.analysisPromise;
   const my = ++analysisSeq;
-  state.analysisKey = key; state.analysis = null; state.analysisErr = null; state.analysisT0 = Date.now();
+  state.analysisKey = key; state.analysis = null; state.analysisErr = null;
   const p = api('POST', '/api/analysis', { parcel_id: state.parcel.parcel_id, as_of_date: state.date })
     .then((an) => { if (my === analysisSeq) { state.analysis = an; state.analysisPromise = null; renderAnalysisStatus(); } return an; },
           (e) => { if (my === analysisSeq) { state.analysisErr = e; state.analysisPromise = null; renderAnalysisStatus(); } throw e; });
@@ -273,26 +266,22 @@ function unavailableModules(an) { return Object.entries(an.module_statuses || {}
 function analysisStatusHtml() {
   if (!state.parcel) return '';
   if (state.analysisPromise) {
-    const s = Math.round((Date.now() - state.analysisT0) / 1000);
-    return `<div class="status-box"><span class="spinner"></span><span><b>Analiza działki w toku · ${s} s</b><br>Gleba, teren, hydrologia, pogoda i zdjęcia satelitarne z publicznych źródeł. Możesz w tym czasie przejść dalej i wybrać uprawę.</span></div>`;
+    return `<div class="status-box"><span class="spinner"></span><span>Trwa analiza. Możesz już wybrać uprawę.</span></div>`;
   }
   if (state.analysisErr) {
     return `<div class="status-box err"><svg class="icon"><use href="#icon-info"/></svg><span><b>Analiza nie powiodła się.</b> ${esc(state.analysisErr.message)}<br><button type="button" class="link-btn" data-retry-analysis>Ponów analizę</button></span></div>`;
   }
   const an = state.analysis; if (!an) return '';
   const missing = unavailableModules(an);
-  const n = 5 - missing.length;
-  if (!missing.length) return `<div class="status-box ok"><svg class="icon"><use href="#icon-check"/></svg><span><b>Analiza działki gotowa</b> · ${n}/5 źródeł danych · stan na ${esc(an.time_context.as_of_date)}</span></div>`;
-  return `<div class="status-box warn"><svg class="icon"><use href="#icon-info"/></svg><span><b>Analiza częściowa (${n}/5 źródeł)</b> · stan na ${esc(an.time_context.as_of_date)} · brak: ${missing.map((m) => `${esc(MODULE_PL[m.k] || m.k)} — ${esc(MSTATUS_PL[m.v] || m.v)}`).join(', ')}. Braki są oznaczone, a zależne metody dostaną status warunkowy.<br><button type="button" class="link-btn" data-retry-analysis>Ponów pobranie brakujących danych</button></span></div>`;
+  if (!missing.length) return `<div class="status-box ok"><svg class="icon"><use href="#icon-check"/></svg><span>Analiza gotowa.</span></div>`;
+  return `<div class="status-box warn"><svg class="icon"><use href="#icon-info"/></svg><span><b>Analiza częściowa</b> · ${missing.map((m) => `${esc(MODULE_PL[m.k] || m.k)} — ${esc(MSTATUS_PL[m.v] || m.v)}`).join(', ')}.<br><button type="button" class="link-btn" data-retry-analysis>Ponów pobieranie</button></span></div>`;
 }
 function renderAnalysisStatus() {
   const html = analysisStatusHtml();
   $('an-status-1').innerHTML = html; $('an-status-2').innerHTML = html;
   if (state.step === 3) renderPartialNote();
 }
-setInterval(() => { if (state.analysisPromise) renderAnalysisStatus(); }, 1000);
 document.addEventListener('click', (e) => {
-  if (e.target.closest('[data-example]')) { loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(EXAMPLE_PARCEL.id)}`); return; }
   if (!e.target.closest('[data-retry-analysis]')) return;
   invalidate(1); startAnalysis(true); updateStep();
 });
@@ -335,11 +324,11 @@ async function computeRanking() {
   let an = state.analysis;
   if (!an) {
     if (!state.analysisPromise) startAnalysis(true);
-    setNavNote('Czekam na zakończenie analizy działki…', true);
+    setNavNote('Czekam na analizę działki…');
     an = await state.analysisPromise;
   }
   if (key !== state.analysisKey) throw new Error('Działka lub data zmieniły się w trakcie obliczeń — spróbuj ponownie.');
-  setNavNote('Oceniam potrzeby wodne uprawy i dobieram metody…', true);
+  setNavNote('Dobieram metody…');
   const ca = await api('POST', '/api/crops/assess', { analysis_id: an.analysis_id, crop_id: state.cropId });
   const fc = { subsurface_drainage_status: state.fc.drainage, existing_retention_status: state.fc.retention,
     existing_retention_types: state.fc.retention === 'yes' ? state.fc.types : [] };
@@ -360,7 +349,7 @@ function allMethods() {
 }
 function renderPartialNote() {
   const an = state.analysis; const missing = an ? unavailableModules(an) : [];
-  $('methods-partial').innerHTML = missing.length ? `<div class="status-box warn" style="margin-bottom:16px"><svg class="icon"><use href="#icon-info"/></svg><span><b>Ranking na niepełnych danych:</b> brak — ${missing.map((m) => esc(MODULE_PL[m.k] || m.k)).join(', ')}. Metody, których potrzeby nie da się ocenić, mają status warunkowy.</span></div>` : '';
+  $('methods-partial').innerHTML = missing.length ? `<div class="status-box warn" style="margin-bottom:16px"><svg class="icon"><use href="#icon-info"/></svg><span><b>Ranking na niepełnych danych</b> · ${missing.map((m) => esc(MODULE_PL[m.k] || m.k)).join(', ')}.</span></div>` : '';
 }
 function renderMethods() {
   const list = allMethods();
@@ -390,7 +379,7 @@ $('method-list').addEventListener('change', (e) => {
 });
 
 async function computePlan() {
-  setNavNote('Liczę kosztorys, opłacalność, dotacje i harmonogram…', true);
+  setNavNote('Przygotowuję raport…');
   const ids = allMethods().filter((m) => state.selected.has(m.method_id)).map((m) => m.method_id);
   const sel = await api('POST', '/api/selections', { analysis_id: state.analysis.analysis_id, ranking_run_id: state.ranking.ranking_run_id, selected_method_ids: ids });
   const fp = await api('POST', '/api/plans', { selection_id: sel.selection_id });
@@ -502,7 +491,7 @@ function renderReport() {
   const an = state.analysis, ca = state.assessment;
   const methods = allMethods().filter((m) => state.selected.has(m.method_id));
   const demoPrices = costs.price_catalog_is_demonstration || pr.baseline?.is_demonstration;
-  $('report-context').innerHTML = `Działka <b>${esc(state.parcel.parcel_id)}</b> · ${esc(num(state.parcel.metrics.area_ha, 2))} ha · ${esc(CROP_UI[state.cropId]?.label || '')} · stan na ${esc(an.time_context.as_of_date)} · plan <code>${esc(fp.plan_id)}</code>`;
+  $('report-context').innerHTML = `Działka <b>${esc(state.parcel.parcel_id)}</b> · ${esc(num(state.parcel.metrics.area_ha, 2))} ha · ${esc(CROP_UI[state.cropId]?.label || '')} · stan na ${esc(an.time_context.as_of_date)}`;
 
   // 1. Opłacalność
   const be = pr.break_even || {};
@@ -564,8 +553,7 @@ function renderReport() {
   const implHtml = renderImplementation(impl);
 
   // 5. Rozwijana analiza (zawsze na końcu)
-  $('report').innerHTML = `<div class="report-top">${benefitHtml}${costHtml}</div>${fundHtml}${implHtml}${analysisDetailsHtml(an, ca, fp)}
-    <div class="report-print"><a class="action blue" href="/api/plans/${encodeURIComponent(fp.plan_id)}/pdf" target="_blank" rel="noopener"><svg class="icon"><use href="#icon-printer"/></svg>Pobierz raport PDF</a></div>`;
+  $('report').innerHTML = `<div class="report-top">${benefitHtml}${costHtml}</div>${fundHtml}${implHtml}${analysisDetailsHtml(an, ca, fp)}`;
 }
 $('report').addEventListener('click', (event) => {
   const link = event.target.closest('[data-implementation-task]');
@@ -617,7 +605,6 @@ function analysisDetailsHtml(an, ca, fp) {
       'Wskaźnik własny — nie jest oficjalnym KBW IUNG.']),
   ].join('');
   const problems = d.problems || [], constraints = d.constraints || [];
-  const sources = Object.entries(an.source_versions || {}).filter(([k]) => k !== 'data_mode').map(([k, v]) => `${esc(k)}: <code>${esc(v)}</code>`).join(' · ');
   const warnings = [...new Set([...(an.warnings || []), ...(fp.warnings || [])])];
   return `<details class="analysis-section" id="analysis-details"><summary><span>Szczegóły analizy działki i uprawy</span><svg class="icon"><use href="#icon-chevron"/></svg></summary><div class="analysis-body">
     <h4>Diagnoza działki</h4>
@@ -626,23 +613,17 @@ function analysisDetailsHtml(an, ca, fp) {
     <h4>Dane źródłowe</h4><div class="analysis-chips">${chips}</div>
     ${warnings.length ? `<h4>Ograniczenia interpretacji</h4><ul class="fine-list">${warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}
     ${(fp.disclaimers_pl || []).length ? `<ul class="fine-list">${fp.disclaimers_pl.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}
-    <p class="fine">Wersje źródeł: ${sources}. Analiza <code>${esc(an.analysis_id)}</code> (${esc(an.time_context.mode)}), wygenerowano ${esc(an.generated_at)}.
-    <a href="/api/plans/${encodeURIComponent(fp.plan_id)}" target="_blank" rel="noopener">Pełne dane (JSON)</a></p>
   </div></details>`;
 }
 
 // ---------- nawigacja ----------
-function setNavNote(text, spinning) {
-  $('nav-note').innerHTML = `${spinning ? '<span class="spinner"></span>' : '<svg class="icon"><use href="#icon-info"/></svg>'}<span>${esc(text)}</span>`;
+function setNavNote(text = '') {
+  const note = $('nav-note');
+  note.hidden = !text;
+  note.innerHTML = text ? `<span class="spinner"></span><span>${esc(text)}</span>` : '';
 }
 function showError(msg) { const el = $('error-box'); el.innerHTML = `<b>Coś poszło nie tak.</b> ${esc(msg)}`; el.hidden = false; }
 function hideError() { $('error-box').hidden = true; }
-const NAV_NOTES = {
-  1: 'Granice działki z GUGiK; analiza rusza w tle zaraz po wyborze.',
-  2: 'Uprawa jest wymagana; pytania możesz pominąć.',
-  3: 'Zaznacz co najmniej jedną metodę.',
-  4: 'Raport i PDF pochodzą z tego samego planu.',
-};
 function updateStep() {
   document.querySelectorAll('.step-screen').forEach((el) => el.classList.toggle('active', Number(el.id.split('-')[1]) === state.step));
   document.querySelectorAll('.step-indicator').forEach((el) => {
@@ -653,13 +634,17 @@ function updateStep() {
   });
   document.querySelectorAll('.step-line').forEach((el) => el.classList.toggle('done', Number(el.dataset.after) < state.step));
   const next = $('nav-next');
+  next.hidden = state.step === 4;
+  const pdfDownload = $('nav-pdf');
+  pdfDownload.hidden = state.step !== 4 || !state.plan;
+  if (pdfDownload.hidden) pdfDownload.removeAttribute('href');
+  else pdfDownload.href = `/api/plans/${encodeURIComponent(state.plan.plan_id)}/pdf`;
   $('nav-back').disabled = state.step === 1 || state.busy;
   next.disabled = state.busy || (state.step === 1 && (!state.parcel || !state.date)) || (state.step === 2 && !state.cropId) || (state.step === 3 && state.selected.size === 0);
   if (state.busy) next.innerHTML = '<span class="spinner light"></span>Liczę…';
   else if (state.step === 3) next.innerHTML = 'Utwórz plan<svg class="icon"><use href="#icon-right"/></svg>';
-  else if (state.step === 4) next.innerHTML = '<svg class="icon"><use href="#icon-printer"/></svg>Pobierz PDF';
   else next.innerHTML = 'Dalej<svg class="icon"><use href="#icon-right"/></svg>';
-  if (!state.busy) setNavNote(NAV_NOTES[state.step]);
+  if (!state.busy) setNavNote();
   document.title = `HydroPlon — ${['Działka', 'Uprawa', 'Metody', 'Raport'][state.step - 1]}`;
 }
 function go(step) {
@@ -694,7 +679,6 @@ $('nav-next').addEventListener('click', async () => {
     if (!state.plan && !(await runBusy(computePlan))) return;
     go(4); return;
   }
-  if (state.step === 4 && state.plan) window.open(`/api/plans/${encodeURIComponent(state.plan.plan_id)}/pdf`, '_blank', 'noopener');
 });
 document.querySelectorAll('.step-indicator').forEach((b) => b.addEventListener('click', () => { const n = Number(b.dataset.step); if (reachable(n) && !state.busy) go(n); }));
 
@@ -709,21 +693,17 @@ document.querySelectorAll('.step-indicator').forEach((b) => b.addEventListener('
   updateAnalysisDate();
   updateStep();
   try {
-    const h = await api('GET', '/api/health'); state.health = h;
-    const live = h.data_mode === 'live';
+    const { data_mode } = await api('GET', '/api/health');
+    const live = data_mode === 'live';
+    $('mode-pill').hidden = live;
     if (!live) {
       parcelInput.placeholder = 'Wpisz identyfikator działki';
-      $('parcel-search-hint').textContent = 'W trybie testowym wpisz identyfikator działki lub wybierz przykład.';
+      $('parcel-search-hint').textContent = 'Wpisz identyfikator lub wybierz działkę testową.';
     }
-    $('mode-pill').textContent = live ? 'DANE RZECZYWISTE' : 'DANE TESTOWE';
-    $('context-text').textContent = live ? 'Źródła: GUGiK, SoilGrids, IMGW-PIB, Wody Polskie, Sentinel-2' : 'Tryb testowy — dane syntetyczne';
     const parcelId = params.get('parcel');
-    if (parcelSeq === 0) {
-      renderParcelCard();
-      if (parcelId) {
-        parcelInput.value = parcelId;
-        loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(parcelId)}`);
-      }
+    if (parcelSeq === 0 && parcelId) {
+      parcelInput.value = parcelId;
+      loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(parcelId)}`);
     }
     const cr = await api('GET', '/api/crops'); state.crops = cr.crops; renderCrops();
     const fx = await api('GET', '/api/system/fixture-parcels');
@@ -733,6 +713,6 @@ document.querySelectorAll('.step-indicator').forEach((b) => b.addEventListener('
       $('fixture-links').innerHTML = '<span class="hint">Działki testowe:</span> ' + fx.features.map((f) => `<button type="button" class="link-btn" data-id="${esc(f.properties.parcel_id)}" title="${esc(f.properties.scenario_pl)}">${esc(f.properties.label)}</button>`).join(' ');
       $('fixture-links').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(b.dataset.id)}`)));
     }
-  } catch (e) { showError(e.message); $('mode-pill').textContent = 'BRAK POŁĄCZENIA'; }
+  } catch (e) { showError(e.message); }
 })();
 })();

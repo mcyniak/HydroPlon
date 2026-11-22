@@ -12,6 +12,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from fpdf import FPDF
+
 from app.config import APP_VERSION, TZ
 from app.engine.ids import make_id
 from app.models.analysis import AnalysisSnapshot
@@ -128,20 +130,28 @@ def render_blocks(plan: FinalPlan) -> list[tuple[str, str]]:
     b: list[tuple[str, str]] = []
     H, P, L = "h", "p", "li"
     tc, ps, cs = plan.time_context, plan.parcel_summary, plan.crop_summary
-    b.append(("title", "HydroPlon — Twój plan gospodarowania wodą"))
-    b.append((P, f"Działka: {ps['parcel_id']} ({_fmt(ps['area_ha'], 'ha')}; {ps.get('location') or 'lokalizacja nieznana'})"))
-    b.append((P, f"Uprawa: {cs.get('name_pl')} ({cs['crop_id']}); data analizy: {tc['as_of_date']} "
-                 f"(tryb: {tc['mode']}); wiedza do: {tc['knowledge_cutoff_date']}; wygenerowano: {plan.generated_at}"))
+    b.append(("title", "Plan gospodarowania wodą"))
+    mode = {"historical": "historyczna", "current": "bieżąca", "future": "scenariuszowa"}.get(tc["mode"], tc["mode"])
+    generated_at = datetime.fromisoformat(plan.generated_at).strftime("%d.%m.%Y, %H:%M")
+    b.append(("meta", f"Działka: {ps['parcel_id']} · {_fmt(ps['area_ha'], 'ha')} · {ps.get('location') or 'lokalizacja nieznana'}"))
+    b.append(("meta", f"Uprawa: {cs.get('name_pl') or cs['crop_id']}"))
+    b.append(("meta", f"Data analizy: {_d(tc['as_of_date'])} · analiza {mode} · stan danych na {_d(tc['knowledge_cutoff_date'])}"))
+    b.append(("meta", f"Wygenerowano: {generated_at}"))
     modules = plan.section_5_analysis["modules"]
     imgw_date = (modules["weather"].get("metadata") or {}).get("last_observation_date")
     sentinel_date = (modules["satellite"].get("latest_valid_observation") or {}).get("acquisition_date")
-    b.append((P, f"Ostatnia obserwacja IMGW w analizie: {_d(imgw_date) if imgw_date else 'brak danych'}."))
-    b.append((P, f"Ostatnia użyteczna scena Sentinel-2: {_d(sentinel_date) if sentinel_date else 'brak danych'}."))
-    b.append((P, f"Plan: {plan.plan_id}; status: {plan.status}"))
+    b.append(("meta", f"Ostatnia obserwacja IMGW w analizie: {_d(imgw_date) if imgw_date else 'brak danych'}."))
+    b.append(("meta", f"Ostatnia użyteczna scena Sentinel-2: {_d(sentinel_date) if sentinel_date else 'brak danych'}."))
+    status = {"ok": "kompletny", "partial": "częściowy", "unavailable": "dane niedostępne",
+              "unknown": "nieustalony", "error": "błąd"}.get(plan.status, plan.status)
+    b.append(("meta", f"Identyfikator planu: {plan.plan_id} · status: {status}"))
     for d in plan.disclaimers_pl:
         b.append((L, d))
-    b.append((P, "Wybrane metody: " + "; ".join(f"{m['name_pl']} [{m['status_pl']}, priorytet {m['priority_class']}]"
-                                                   for m in plan.selected_methods)))
+    priorities = {"high": "wysoki", "medium": "średni", "low": "niski", "unassessed": "nieustalony"}
+    b.append((P, "Wybrane metody: " + "; ".join(
+        f"{m['name_pl']} ({m['status_pl'].lower()}, priorytet {priorities[m['priority_class']]})"
+        for m in plan.selected_methods
+    )))
     pr = plan.section_1_profitability
     b.append((H, "1. Opłacalność i potencjalne korzyści"))
     b.append((P, pr["headline_pl"]))
@@ -190,14 +200,20 @@ def render_blocks(plan: FinalPlan) -> list[tuple[str, str]]:
     b.append((H, "4. Plan wdrożenia"))
     if im["cycle_detected"]:
         b.append((P, "BŁĄD: wykryto cykl zależności — harmonogram nie został wygenerowany."))
+    phase = None
+    task_statuses = {"ready_to_consider": "do rozważenia", "requires_verification": "wymaga weryfikacji"}
     for task in im["tasks"]:
+        if task["phase"] != phase:
+            phase = task["phase"]
+            b.append(("phase", f"Faza {phase} · {task['phase_label_pl']}"))
         dep = f" (po: {', '.join(d.split('-', 2)[1] for d in task['depends_on'])})" if task["depends_on"] else ""
         when = ""
         if task.get("window_from"):
             when = f" [najbliższy termin: {_d(task['window_from'])}–{_d(task['window_to'])}; {task['window_note_pl']}]"
         prog = f"; program: {', '.join(task['program_ids'])}" if task.get("program_ids") else ""
-        b.append((L, f"[{task['order']:02d}] Faza {task['phase']} {task['phase_label_pl']}: {task['title_pl']} — "
-                     f"{task['timing_pl']}{when}{dep}; metody: {', '.join(task['method_ids'])}{prog}; status: {task['status']}"))
+        b.append(("task", f"{task['order']:02d}. {task['title_pl']}"))
+        b.append(("task_detail", f"{task['timing_pl']}{when}{dep}; metody: {', '.join(task['method_ids'])}"
+                                 f"{prog}; status: {task_statuses.get(task['status'], task['status'])}"))
     for s in im["stop_go_conditions"]:
         b.append((L, s))
     a = plan.section_5_analysis
@@ -238,7 +254,9 @@ def render_blocks(plan: FinalPlan) -> list[tuple[str, str]]:
 def render_text(plan: FinalPlan) -> str:
     out = []
     for kind, text in render_blocks(plan):
-        out.append({"title": f"# {text}\n", "h": f"\n## {text}\n", "p": f"{text}\n", "li": f"- {text}"}[kind])
+        out.append({"title": f"# {text}\n", "h": f"\n## {text}\n", "phase": f"\n### {text}\n",
+                    "task": f"- {text}", "task_detail": f"  {text}", "p": f"{text}\n",
+                    "meta": f"{text}\n", "li": f"- {text}"}[kind])
     return "\n".join(out) + "\n"
 
 
@@ -255,38 +273,121 @@ def _ascii(text: str) -> str:
     return unicodedata.normalize("NFKD", text).encode("latin-1", "ignore").decode("latin-1")
 
 
-def render_pdf(plan: FinalPlan) -> bytes:
-    from fpdf import FPDF
-    pdf = FPDF(format="A4")
-    pdf.set_auto_page_break(auto=True, margin=15)
-    regular = bold = None
-    for r_path, b_path in _FONT_CANDIDATES:
-        if Path(r_path).exists():
-            regular, bold = r_path, (b_path if Path(b_path).exists() else r_path)
-            break
-    if regular:
-        pdf.add_font("Body", "", regular)
-        pdf.add_font("Body", "B", bold)
-        family, conv = "Body", (lambda s: s.replace("−", "-"))
-    else:
-        family, conv = "Helvetica", _ascii
-    pdf.add_page()
-    width = pdf.w - pdf.l_margin - pdf.r_margin
-    for kind, text in render_blocks(plan):
-        if kind == "title":
-            style, size, line_height = "B", 15, 8
-        elif kind == "h":
-            if pdf.will_page_break(14):
-                pdf.add_page()
-            else:
-                pdf.ln(2)
-            style, size, line_height = "B", 12, 7
+_INK = (28, 43, 40)
+_MUTED = (65, 83, 78)
+_GREEN = (20, 82, 59)
+_RULE = (186, 203, 193)
+_PANEL = (243, 247, 244)
+_LOGO = Path(__file__).with_name("logo-hydroplon.png")
+
+
+class _ReportPdf(FPDF):
+    def __init__(self, plan: FinalPlan) -> None:
+        super().__init__(format="A4")
+        self.plan_id = plan.plan_id
+        self.set_margins(18, 12, 18)
+        self.set_auto_page_break(auto=True, margin=23)
+        self.set_title("Plan gospodarowania wodą")
+        self.set_author("HydroPlon")
+        self.set_lang("pl-PL")
+        self.alias_nb_pages()
+        self.body_font = "Helvetica"
+        for regular, bold in _FONT_CANDIDATES:
+            if Path(regular).exists():
+                self.add_font("Body", "", regular)
+                self.add_font("Body", "B", bold if Path(bold).exists() else regular)
+                self.body_font = "Body"
+                break
+
+    def doc_text(self, text: str) -> str:
+        text = text.replace("−", "-").replace("–", "-").replace("—", "-")
+        return _ascii(text) if self.body_font == "Helvetica" else text
+
+    def header(self) -> None:
+        self.image(_LOGO, x=self.l_margin - 3, y=8, w=20)
+        self.set_xy(self.l_margin + 16, 13)
+        self.set_font(self.body_font, "B", 11)
+        self.set_text_color(*_GREEN)
+        self.cell(36, 8, "HydroPlon")
+        self.set_font(self.body_font, "", 9)
+        self.set_text_color(*_MUTED)
+        self.cell(self.epw - 52, 8, self.doc_text("Raport dla działki rolnej"), align="R")
+        self.set_draw_color(*_RULE)
+        self.line(self.l_margin, 27, self.w - self.r_margin, 27)
+        self.set_y(33)
+
+    def footer(self) -> None:
+        self.set_y(-18)
+        self.set_draw_color(*_RULE)
+        self.line(self.l_margin, self.y, self.w - self.r_margin, self.y)
+        self.ln(2)
+        self.set_font(self.body_font, "", 8)
+        self.set_text_color(*_MUTED)
+        self.cell(self.epw - 34, 5, f"HydroPlon {APP_VERSION}  |  {self.plan_id}")
+        self.cell(34, 5, f"Strona {self.page_no()} / {{nb}}", align="R")
+
+    def write_section(self, title: str) -> None:
+        if self.will_page_break(24):
+            self.add_page()
         else:
-            style, size, line_height = "", 10, 5
-        pdf.set_font(family, style, size)
-        prefix = "• " if kind == "li" else ""
-        pdf.multi_cell(width, line_height, conv(prefix + text), align="L", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font(family, "", 8)
-    footer = f"plan_id={plan.plan_id} | wygenerowano {plan.generated_at} | HydroPlon {APP_VERSION}"
-    pdf.multi_cell(width, 4, conv(footer), new_x="LMARGIN", new_y="NEXT")
+            self.ln(3)
+        self.start_section(title)
+        self.set_font(self.body_font, "B", 13)
+        self.set_text_color(*_GREEN)
+        self.set_fill_color(*_PANEL)
+        y = self.y
+        self.multi_cell(self.epw, 6.2, title, align="L", fill=True, padding=(2, 4), new_x="LMARGIN", new_y="NEXT")
+        self.set_fill_color(*_GREEN)
+        self.rect(self.l_margin, y, 1, self.y - y, "F")
+        self.ln(2.5)
+
+    def write_paragraph(self, kind: str, text: str) -> None:
+        styles = {
+            "p": ("", 10, 4.7, _INK, 1.8, 0),
+            "li": ("", 10, 4.7, _INK, .9, 0),
+            "phase": ("B", 11, 5.3, _GREEN, 1.6, 13),
+            "task": ("B", 10, 4.85, _INK, .6, 7),
+            "task_detail": ("", 9.5, 4.5, _MUTED, 2, 0),
+        }
+        style, font_size, line_height, color, after, keep_with_next = styles[kind]
+        indent = (10 if text.startswith("    ") else 5) if kind == "li" else 0
+        text = text.strip()
+        self.set_font(self.body_font, style, font_size)
+        self.set_text_color(*color)
+        self.set_x(self.l_margin + indent)
+        width = self.epw - indent
+        height = self.multi_cell(width, line_height, text, align="L", dry_run=True, output="HEIGHT")
+        if height <= self.page_break_trigger - 33 and self.will_page_break(height + after + keep_with_next):
+            self.add_page()
+            self.set_x(self.l_margin + indent)
+        if indent:
+            self.set_fill_color(*_GREEN)
+            self.ellipse(self.x - 2.4, self.y + 2, .85, .85, style="F")
+        self.multi_cell(width, line_height, text, align="L", new_x="LMARGIN", new_y="NEXT")
+        self.ln(after)
+
+
+def render_pdf(plan: FinalPlan) -> bytes:
+    pdf = _ReportPdf(plan)
+    pdf.add_page()
+    previous_kind = None
+    for kind, text in render_blocks(plan):
+        if previous_kind == "meta" and kind != "meta":
+            pdf.ln(4)
+        previous_kind = kind
+        text = pdf.doc_text(text)
+        if kind == "title":
+            pdf.set_font(pdf.body_font, "B", 25)
+            pdf.set_text_color(*_INK)
+            pdf.multi_cell(pdf.epw, 11, text, align="L", new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(4)
+        elif kind == "meta":
+            pdf.set_font(pdf.body_font, "", 10)
+            pdf.set_text_color(*_INK)
+            pdf.set_fill_color(*_PANEL)
+            pdf.multi_cell(pdf.epw, 5, text, align="L", fill=True, padding=(.85, 4), new_x="LMARGIN", new_y="NEXT")
+        elif kind == "h":
+            pdf.write_section(text)
+        else:
+            pdf.write_paragraph(kind, text)
     return bytes(pdf.output())

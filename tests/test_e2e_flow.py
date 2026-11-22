@@ -65,17 +65,21 @@ def test_report_text_and_pdf_from_same_plan(orch):
     pdf = render_pdf(fp)
     assert pdf[:4] == b"%PDF" and len(pdf) > 5000
     from pypdf import PdfReader
+    report = PdfReader(io.BytesIO(pdf))
     pdf_text = []
-    for page in PdfReader(io.BytesIO(pdf)).pages:
+    for index, page in enumerate(report.pages, start=1):
         text_starts = []
 
         def collect_text_start(text, _cm, tm, _font, _size):
             if text.strip():
                 text_starts.append(tm[4])
 
-        pdf_text.append(page.extract_text(visitor_text=collect_text_start))
-        # Każdy wiersz powinien zaczynać się przy lewym marginesie A4.
-        assert text_starts and all(20 <= x <= 50 for x in text_starts)
+        text = page.extract_text(visitor_text=collect_text_start)
+        pdf_text.append(text)
+        assert text_starts and all(45 <= x <= float(page.mediabox.width) - 45 for x in text_starts)
+        assert f"Strona {index} / {len(report.pages)}" in text
+        assert page.images
+    assert len(report.outline) >= len(headers)
 
     pdf_text = " ".join(" ".join(pdf_text).split())
     assert fp.plan_id in pdf_text
@@ -245,10 +249,11 @@ def test_wizard_app_served_and_root_redirects(client):
     css, js = client.get("/static/app.css"), client.get("/static/app.js")
     assert css.status_code == 200 and "text/css" in css.headers["content-type"] and "#0e6548" in css.text  # zieleń KOWR z tokenów Sass
     assert js.status_code == 200 and "javascript" in js.headers["content-type"]
-    # kreator 4 kroków podpięty pod te same endpointy co kontrakt (spec. GRAND FINALE v7 §58)
-    for needle in ("/api/parcels/by-id", "/api/parcels/by-point", "/api/analysis", "/api/crops/assess",
-                   "/api/recommendations", "/api/selections", "/api/plans", "/pdf"):
+    for needle in ("/api/parcels/by-id", "/api/parcels/by-point", "/api/parcels/address-search",
+                   "/api/analysis", "/api/crops/assess", "/api/recommendations", "/api/selections", "/api/plans"):
         assert needle in js.text, needle
+    assert 'id="nav-pdf"' in r.text and "/pdf" in js.text
+    assert 'src="/static/logo-hydroplon.svg"' in r.text
     root = client.get("/", follow_redirects=False)
     assert root.status_code in (302, 307) and root.headers["location"] == "/app"
 
