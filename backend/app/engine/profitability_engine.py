@@ -17,8 +17,9 @@ from app.engine.ids import make_id
 from app.engine.method_catalog import methods_by_id
 from app.models.economics import CostEstimate, EconomicInputs, ProfitabilityResult
 from app.models.methods import MethodSelectionResult
+from app.services.errors import InputValidationError
 
-ENGINE_VERSION = "profitability-engine-0.1.0"
+ENGINE_VERSION = "profitability-engine-0.2.0"
 
 
 def _pl(x: float, nd: int = 0) -> str:
@@ -52,6 +53,16 @@ def combine_scenario_benefits(benefits: dict[str, float], selected: list[str]) -
     return (round(total, 2) if groups else None), warnings, used
 
 
+def _estimate_scenario(gross: float, capex: float, opex: float, costs_complete: bool) -> dict:
+    net = round(gross - opex, 2)
+    payback = round(capex / net, 1) if net > 0 and capex > 0 and costs_complete else None
+    return {
+        "annual_gross_benefit_pln": gross,
+        "annual_net_benefit_pln": net,
+        "simple_payback_years": payback,
+    }
+
+
 def evaluate(cost: CostEstimate, selection: MethodSelectionResult, inputs: EconomicInputs,
              area_ha: float, horizon_years: int) -> ProfitabilityResult:
     bm = load_benchmarks()
@@ -66,15 +77,16 @@ def evaluate(cost: CostEstimate, selection: MethodSelectionResult, inputs: Econo
         assumptions.append("Cena produktu z SYNTETYCZNEGO benchmarku testowego (nie GUS/ZSRIR) — wpisz własną cenę.")
     if inputs.own_yield_t_ha is None and yield_t is not None:
         assumptions.append("Plon bazowy z SYNTETYCZNEGO benchmarku testowego — wpisz własny średni plon.")
-    if price is None or yield_t is None:
-        warnings.append("Brak ceny lub plonu bazowego dla tej uprawy — progu w t/ha nie wyznaczono.")
+    if price is None:
+        warnings.append("Podaj cenę sprzedaży, aby wyrazić próg opłacalności w dodatkowych tonach na hektar.")
     if inputs.cultivated_area_ha is None:
-        assumptions.append("Powierzchnia = cała działka ewidencyjna (do potwierdzenia).")
+        assumptions.append("Do obliczeń przyjęto powierzchnię całej działki ewidencyjnej.")
     capex = cost.totals.capex_known_net_pln or 0.0
     opex = cost.totals.opex_annual_known_net_pln or 0.0
-    complete = cost.totals.capex_is_complete and cost.totals.opex_is_complete
+    opex_complete = cost.totals.opex_is_complete
+    complete = cost.totals.capex_is_complete and opex_complete
     if not complete:
-        warnings.append("Koszty są niekompletne — próg opłacalności jest DOLNĄ granicą (pozycje bez wyceny go podniosą).")
+        warnings.append("Próg opłacalności jest dolną granicą. Brakujące wyceny podniosą koszt planu.")
     required = round(capex / horizon + opex, 2) if (capex or opex) else None
     be: dict = {
         "horizon_years": horizon,
@@ -83,37 +95,48 @@ def evaluate(cost: CostEstimate, selection: MethodSelectionResult, inputs: Econo
         "formula_pl": "wymagana roczna korzyść = CAPEX_znany / horyzont + OPEX_roczny_znany (bez dyskontowania)",
         "required_yield_increase_t_ha": None, "required_yield_increase_pct_of_baseline": None,
     }
-    if required is not None and price and yield_t and area:
+    if required is not None and price and area:
         dy = required / (price * area)
         be["required_yield_increase_t_ha"] = round(dy, 3)
-        be["required_yield_increase_pct_of_baseline"] = round(100 * dy / yield_t, 1)
-        be["interpretation_pl"] = (f"Aby nakłady zwróciły się w {horizon} lat, potrzebna jest dodatkowa korzyść co najmniej "
-                                   f"{_pl(required)} zł/rok, czyli np. przyrost plonu o {_pl(dy, 2)} t/ha "
-                                   f"({_pl(100 * dy / yield_t, 1)}% plonu bazowego) przy cenie {_pl(price)} zł/t — "
-                                   "bez założenia, że metody taki przyrost dadzą.")
+        if yield_t:
+            be["required_yield_increase_pct_of_baseline"] = round(100 * dy / yield_t, 1)
+        be["interpretation_pl"] = (f"Przy cenie {_pl(price)} zł/t próg odpowiada dodatkowym {_pl(dy, 2)} t/ha "
+                                   "plonu rocznie.")
+    sensitivity = [
+        {"threshold_pct": pct, **_estimate_scenario(round(required * pct / 100, 2), capex, opex, complete)}
+        for pct in (50, 100, 150)
+    ] if required is not None and required > 0 else []
+    if sensitivity:
+        assumptions.append("Warianty zakładają roczne korzyści równe 50%, 100% i 150% progu opłacalności.")
+
     selected = [m.method_id for m in selection.selected_methods if not m.blocked]
     scen_total, overlap_warnings, used = combine_scenario_benefits(inputs.scenario_annual_benefit_pln, selected)
+    yield_change = inputs.scenario_yield_change_t_ha
+    savings = inputs.scenario_annual_savings_pln
+    if yield_change is not None or savings is not None:
+        if inputs.scenario_annual_benefit_pln:
+            raise InputValidationError("Podaj założenia dla całego planu albo korzyści poszczególnych metod.")
+        if yield_change and price is None:
+            raise InputValidationError("Podaj cenę sprzedaży, aby wycenić przyjętą zmianę plonu.")
+        scen_total = round((yield_change or 0) * (price or 0) * area + (savings or 0), 2)
+        assumptions.append("Korzyść roczna to przyjęta zmiana plonu × cena × powierzchnia plus oszczędności.")
     net = payback = None
     if scen_total is not None:
         kind = "scenario"
-        net = round(scen_total - opex, 2)
-        if net > 0 and cost.totals.capex_is_complete and capex > 0:
-            payback = round(capex / net, 1)
-        elif net <= 0:
-            warnings.append("Korzyść netto w scenariuszu nie jest dodatnia — okres zwrotu nie jest wyznaczany.")
-        else:
-            warnings.append("CAPEX niekompletny — okres zwrotu nie jest wyznaczany.")
-        headline = (f"Scenariusz użytkownika: korzyść netto {_pl(net)} zł/rok"
-                    + (f", prosty okres zwrotu {_pl(payback, 1)} lat." if payback else " — okres zwrotu nieokreślony."))
-        assumptions.append("Korzyści pochodzą z jawnego scenariusza użytkownika, nie z prognozy systemu.")
+        scenario = _estimate_scenario(scen_total, capex, opex, complete)
+        net, payback = scenario["annual_net_benefit_pln"], scenario["simple_payback_years"]
+        if net <= 0:
+            warnings.append("Przy tej korzyści rocznej koszty utrzymania pochłaniają całą korzyść lub więcej.")
+        elif not complete:
+            warnings.append("Do wyliczenia okresu zwrotu potrzebny jest pełny kosztorys inwestycji i utrzymania.")
+        headline = f"Twój scenariusz daje {_pl(scen_total)} zł rocznej korzyści przed kosztami planu."
+        assumptions.append("Korzyści w tym wariancie wynikają z założeń użytkownika.")
     elif required is not None:
         kind = "break_even_only"
-        headline = ("Do oszacowania: brak zweryfikowanych danych o skuteczności metod. "
-                    f"Próg opłacalności: co najmniej {_pl(required)} zł korzyści rocznie"
-                    + (" (dolna granica — koszty niepełne)." if not complete else "."))
+        headline = f"Taka dodatkowa korzyść roczna pokrywa {'znane ' if not complete else ''}koszty w ciągu {horizon} lat."
     else:
         kind = "insufficient_data"
-        headline = "Do oszacowania: brak wycenionych kosztów i danych o efektach — opłacalności nie można obliczyć."
+        headline = "Dla wybranych metod potrzebna jest wycena, żeby obliczyć próg opłacalności."
     baseline = {"crop_id": selection.crop_id, "yield_t_ha": yield_t, "price_pln_t": price, "area_ha": area,
                 "baseline_revenue_pln": round(yield_t * price * area, 2) if (yield_t and price and area) else None,
                 "source": "dane użytkownika" if inputs.own_yield_t_ha and inputs.own_price_pln_t else "benchmark syntetyczny/brak",
@@ -122,15 +145,19 @@ def evaluate(cost: CostEstimate, selection: MethodSelectionResult, inputs: Econo
                            "horizon": horizon, "bm": bm["version"], "engine": ENGINE_VERSION})
     return ProfitabilityResult(
         profitability_id=pid, cost_estimate_id=cost.cost_estimate_id,
-        status="ok" if kind == "scenario" and payback else ("partial" if kind != "insufficient_data" else "unavailable"),
+        status="ok" if kind == "scenario" and complete else ("partial" if kind != "insufficient_data" else "unavailable"),
         result_kind=kind, baseline=baseline,
         investment_variant={"capex_known_net_pln": cost.totals.capex_known_net_pln,
                             "opex_annual_known_net_pln": cost.totals.opex_annual_known_net_pln,
-                            "costs_complete": complete, "subsidy_deducted": False,
+                            "costs_complete": complete, "opex_is_complete": opex_complete,
+                            "subsidy_deducted": False,
                             "subsidy_note_pl": "Dotacji nie odjęto od nakładów — przyznanie nie jest potwierdzone."},
-        annual_net_benefit_pln=net, simple_payback_years=payback, break_even=be,
+        annual_net_benefit_pln=net, simple_payback_years=payback, break_even=be, sensitivity_cases=sensitivity,
         yield_effect={"status": "not_estimated", "documented_effects": bm["method_effects"]["documented_yield_effect_pct"],
-                      "reason_pl": "Brak zweryfikowanego modelu i źródeł skuteczności metod — nie prognozujemy zmiany plonu.",
+                      "reason_pl": "Wyniki wariantów zależą od przyjętych założeń o korzyściach.",
+                      "scenario_inputs": {"own_price_pln_t": inputs.own_price_pln_t,
+                                          "scenario_yield_change_t_ha": yield_change,
+                                          "scenario_annual_savings_pln": savings},
                       "scenario_benefits_used": used},
         overlap_warnings=overlap_warnings, assumptions=assumptions, warnings=warnings, headline_pl=headline,
         engine_version=ENGINE_VERSION)

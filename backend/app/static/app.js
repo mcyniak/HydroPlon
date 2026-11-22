@@ -548,16 +548,41 @@ function renderReport() {
   // 1. Opłacalność
   const be = pr.break_even || {};
   const benefit = pr.annual_net_benefit_pln;
-  const hero = benefit != null ? `${zl(benefit)} / rok` : 'Do oszacowania';
+  const required = be.required_annual_benefit_pln;
+  const netLabel = t.opex_is_complete ? 'Po kosztach utrzymania' : 'Po znanych kosztach utrzymania';
+  const hero = benefit != null ? `${zl(benefit)} / rok`
+    : required != null ? `Próg ${be.is_lower_bound ? 'od ' : ''}${zl(required)} / rok` : 'Potrzebna wycena';
+  const cases = pr.sensitivity_cases || [];
+  const variants = cases.length ? `<div class="benefit-variants">
+    <h4>Warianty opłacalności</h4>
+    <p>Porównanie wyniku przy różnych założeniach rocznej korzyści.</p>
+    <div class="benefit-metrics">${cases.map((c) => `<div class="benefit-metric">
+      <span>${esc(c.threshold_pct)}% progu</span>
+      <b>${esc(zl(c.annual_gross_benefit_pln))}/rok korzyści</b>
+      <span>${esc(netLabel)} ${esc(zl(c.annual_net_benefit_pln))}/rok</span>
+      ${c.simple_payback_years != null ? `<span>Zwrot po ${esc(num(c.simple_payback_years, 1))} lat</span>` : ''}
+    </div>`).join('')}</div>
+  </div>` : '';
+  const inputs = pr.yield_effect?.scenario_inputs || {};
   const benefitHtml = `<div class="benefit-card"><h3 class="report-heading"><svg class="icon" aria-hidden="true"><use href="#icon-chart"/></svg>OPŁACALNOŚĆ I POTENCJALNE KORZYŚCI</h3>
     <div class="benefit-main">${esc(hero)}</div><p>${esc(pr.headline_pl)}</p>
-    <div class="benefit-metrics">
-      <div class="benefit-metric"><span>Roczna korzyść netto</span><b>${benefit != null ? esc(zl(benefit)) : 'Do oszacowania'}</b></div>
-      <div class="benefit-metric"><span>Okres zwrotu</span><b>${pr.simple_payback_years != null ? `${esc(num(pr.simple_payback_years, 1))} lat` : 'Do oszacowania'}</b></div>
-      <div class="benefit-metric"><span>Próg opłacalności (${esc(be.horizon_years ?? '—')} lat)</span><b>${be.required_annual_benefit_pln != null ? `min. ${esc(zl(be.required_annual_benefit_pln))}/rok${be.is_lower_bound ? '*' : ''}` : 'brak danych'}</b></div>
-    </div>
-    ${pr.yield_effect?.reason_pl ? `<p class="fine">${esc(pr.yield_effect.reason_pl)}</p>` : ''}
-    ${be.is_lower_bound ? '<p class="fine">* Dolna granica — część kosztów wymaga wyceny.</p>' : ''}</div>`;
+    ${benefit != null ? `<div class="benefit-metrics">
+      <div class="benefit-metric"><span>${esc(netLabel)}</span><b>${esc(zl(benefit))}/rok</b></div>
+      ${pr.simple_payback_years != null ? `<div class="benefit-metric"><span>Okres zwrotu</span><b>${esc(num(pr.simple_payback_years, 1))} lat</b></div>` : ''}
+    </div>` : ''}
+    ${be.interpretation_pl ? `<p class="fine">${esc(be.interpretation_pl)}</p>` : ''}
+    ${be.is_lower_bound && required != null ? '<p class="fine">Próg jest dolną granicą. Pełny kosztorys może podnieść próg i pozwoli wyliczyć czas zwrotu.</p>' : ''}
+    ${variants}
+    <details class="benefit-inputs"${Object.values(inputs).some((v) => v != null) ? ' open' : ''}>
+      <summary>Przelicz własny wariant</summary>
+      <form id="profitability-form">
+        <label>Cena sprzedaży (zł/t)<input class="input" name="own_price_pln_t" type="number" min="0.01" step="any" value="${esc(inputs.own_price_pln_t)}" placeholder="${esc(pr.baseline?.price_pln_t)}"></label>
+        <label>Zmiana plonu (t/ha)<input class="input" name="scenario_yield_change_t_ha" type="number" step="any" value="${esc(inputs.scenario_yield_change_t_ha)}"></label>
+        <label>Oszczędności (zł/rok)<input class="input" name="scenario_annual_savings_pln" type="number" min="0" step="any" value="${esc(inputs.scenario_annual_savings_pln)}"></label>
+        <p>Podaj założenia dla całego zestawu metod. W oszczędnościach uwzględnij zmiany kosztów produkcji poza kosztorysem planu.</p>
+        <button type="submit" class="action alt">Przelicz opłacalność</button>
+      </form>
+    </details></div>`;
 
   // 2. Koszty
   const shared = costs.items.filter((i) => i.shared);
@@ -616,6 +641,25 @@ $('report').addEventListener('click', (event) => {
   task.closest('details').open = true;
   task.focus({ preventScroll: true });
   task.scrollIntoView({ block: 'nearest' });
+});
+$('report').addEventListener('submit', async (event) => {
+  const form = event.target;
+  if (form.id !== 'profitability-form') return;
+  event.preventDefault();
+  if (state.busy || !state.selection) return;
+  const economicInputs = {};
+  for (const input of form.querySelectorAll('input[type="number"]')) {
+    if (input.value !== '') economicInputs[input.name] = input.valueAsNumber;
+  }
+  const submit = form.querySelector('button[type="submit"]');
+  submit.disabled = true;
+  const updated = await runBusy(async () => {
+    state.plan = await api('POST', '/api/plans', {
+      selection_id: state.selection.selection_id, economic_inputs: economicInputs,
+    });
+  });
+  if (updated) renderReport();
+  else submit.disabled = false;
 });
 function waterReportHtml(report) {
   if (!report) return { overview: '', actions: '', sources: '' };

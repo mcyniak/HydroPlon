@@ -161,12 +161,38 @@ def render_blocks(plan: FinalPlan, *, concise: bool = False) -> list[tuple[str, 
             b.append(("metric", f"Próg {lower}{_fmt(threshold, 'zł/rok')}"))
         else:
             b.append(("metric", "Potrzebna wycena"))
+    if be.get("required_annual_benefit_pln") is not None:
+        lower_bound = "od " if be["is_lower_bound"] else ""
+        b.append((L, f"Próg opłacalności w {be['horizon_years']} lat · "
+                     f"{lower_bound}{_fmt(be['required_annual_benefit_pln'], 'zł/rok')}."))
     b.append((P, pr["headline_pl"]))
     if be.get("interpretation_pl") and not concise:
         b.append((L, be["interpretation_pl"]))
-    if not concise or pr["annual_net_benefit_pln"] is not None:
-        b.append((L, f"Roczna korzyść netto: {_fmt(pr['annual_net_benefit_pln'], 'zł')}; prosty okres zwrotu: "
-                     f"{_fmt(pr['simple_payback_years'], 'lat')}"))
+    net_label = ("Po kosztach utrzymania" if pr["investment_variant"].get("opex_is_complete", True)
+                 else "Po znanych kosztach utrzymania")
+    if pr["annual_net_benefit_pln"] is not None:
+        b.append((L, f"{net_label} · {_fmt(pr['annual_net_benefit_pln'], 'zł/rok')}."))
+        if pr["simple_payback_years"] is not None:
+            b.append((L, f"Prosty okres zwrotu · {_fmt(pr['simple_payback_years'], 'lat')}."))
+    inputs = pr["yield_effect"].get("scenario_inputs") or {}
+    scenario_values = []
+    for key, label, unit in (
+        ("own_price_pln_t", "Cena użytkownika", "zł/t"),
+        ("scenario_yield_change_t_ha", "Przyjęta zmiana plonu", "t/ha"),
+        ("scenario_annual_savings_pln", "Przyjęte oszczędności", "zł/rok"),
+    ):
+        if inputs.get(key) is not None:
+            scenario_values.append(f"{label} · {_fmt(inputs[key], unit)}")
+    if concise and scenario_values:
+        b.append((L, " · ".join(scenario_values)))
+    elif not concise:
+        b.extend((L, f"{value}.") for value in scenario_values)
+    for case in pr.get("sensitivity_cases", []):
+        payback = case["simple_payback_years"]
+        suffix = f" Zwrot po {_fmt(payback, 'lat')}." if payback is not None else ""
+        b.append((L, f"Wariant {case['threshold_pct']}% progu · "
+                     f"{_fmt(case['annual_gross_benefit_pln'], 'zł/rok')} przed kosztami. "
+                     f"{net_label} · {_fmt(case['annual_net_benefit_pln'], 'zł/rok')}.{suffix}"))
     if not concise or pr["annual_net_benefit_pln"] is None:
         b.append((L, pr["yield_effect"]["reason_pl"]))
     for x in pr["overlap_warnings"] + ([] if concise else pr["assumptions"]):

@@ -83,6 +83,8 @@ class EconomicInputs(StrictModel):
     scenario_annual_benefit_pln: dict[str, float] = Field(
         default_factory=dict,
         description="Jawny scenariusz użytkownika: roczna korzyść netto per metoda (zł). Nie jest prognozą systemu.")
+    scenario_yield_change_t_ha: float | None = Field(default=None, allow_inf_nan=False)
+    scenario_annual_savings_pln: float | None = Field(default=None, ge=0, allow_inf_nan=False)
     payback_target_years: int | None = Field(default=None, ge=1, le=50)
 
 
@@ -96,6 +98,7 @@ class ProfitabilityResult(StrictModel):
     annual_net_benefit_pln: float | None
     simple_payback_years: float | None
     break_even: dict[str, Any]
+    sensitivity_cases: list[dict[str, Any]] = Field(default_factory=list)
     yield_effect: dict[str, Any]
     overlap_warnings: list[str]
     assumptions: list[str]

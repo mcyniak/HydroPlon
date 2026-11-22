@@ -92,7 +92,26 @@ def test_no_yield_increase_and_break_even_instead_of_roi(orch):
     expected = round(ce.totals.capex_known_net_pln / 10 + ce.totals.opex_annual_known_net_pln, 2)
     assert be["required_annual_benefit_pln"] == pytest.approx(expected)
     assert be["required_yield_increase_t_ha"] == pytest.approx(expected / (700 * 4.8), rel=1e-3)
-    assert "bez założenia" in be["interpretation_pl"]
+    assert [case["threshold_pct"] for case in pr.sensitivity_cases] == [50, 100, 150]
+    middle = pr.sensitivity_cases[1]
+    assert middle["annual_gross_benefit_pln"] == expected
+    assert middle["annual_net_benefit_pln"] == pytest.approx(expected - ce.totals.opex_annual_known_net_pln)
+    assert middle["simple_payback_years"] == pytest.approx(10)
+
+
+def test_yield_and_savings_scenario_uses_area_and_keeps_partial_costs_visible(orch):
+    _, _, sel = _sel(orch, ["crop_residues", "contour_farming", "vegetative_strips"], crop="sugar_beet")
+    ce = orch.costs(sel.selection_id)
+    inputs = EconomicInputs(own_price_pln_t=600, scenario_yield_change_t_ha=0.5, scenario_annual_savings_pln=250)
+    plan = orch.plan(sel.selection_id, economic_inputs=inputs)
+    result = plan.section_1_profitability
+    assert result["result_kind"] == "scenario"
+    assert result["annual_net_benefit_pln"] == pytest.approx(0.5 * 600 * 4.8 + 250 - ce.totals.opex_annual_known_net_pln)
+    assert result["break_even"]["required_yield_increase_t_ha"] is not None
+    assert result["break_even"]["required_yield_increase_pct_of_baseline"] is None
+    assert result["break_even"]["is_lower_bound"]
+    assert result["simple_payback_years"] is None
+    assert all(case["simple_payback_years"] is None for case in result["sensitivity_cases"])
 
 
 def test_scenario_payback_only_with_positive_benefit_and_complete_capex(orch):
