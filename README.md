@@ -9,6 +9,7 @@
 <p align="center">
   <a href="docs/INSTALACJA.md"><strong>Instalacja</strong></a> ·
   <a href="docs/INSTRUKCJA.md"><strong>Instrukcja obsługi</strong></a> ·
+  <a href="docs/GALERIA.md"><strong>Zrzuty ekranów</strong></a> ·
   <a href="docs/assets/hydroplon-przykladowy-raport.pdf"><strong>Przykładowy raport PDF</strong></a> ·
   <a href="docs/DANE_I_WERYFIKACJA.md"><strong>Dane i weryfikacja</strong></a>
 </p>
@@ -25,19 +26,12 @@ Na Windows pobierz całe repozytorium i otwórz [`Uruchom HydroPlon.cmd`](Urucho
 
 Raport pokazuje stan niedoboru wody i jego możliwe przyczyny, zalecenia retencyjne i agrotechniczne oraz opcjonalne nawadnianie. Podaje też źródła, daty obserwacji IMGW i Sentinel‑2, niepewność oraz braki danych. Wyniki są orientacyjne.
 
-<details>
-<summary>Zobacz kreator</summary>
-
-![Wybór jednej z ośmiu upraw w aplikacji HydroPlon](docs/assets/hydroplon-wybor-uprawy.webp)
-
-</details>
-
 ## Gdzie co jest
 
 | Katalog | Zawartość |
 | --- | --- |
 | [`backend/`](backend/) | API, dane, obliczenia, raporty i zależności Pythona |
 | [`frontend/`](frontend/) | Style kreatora oraz konfiguracja i zależności Sass |
-| [`docs/`](docs/) | Instrukcje, opis źródeł i przykładowy PDF |
+| [`docs/`](docs/) | Instrukcje, galeria, opis źródeł i przykładowy PDF |
 | [`scripts/`](scripts/) | Uruchamianie, import danych i narzędzia pomocnicze |
 | [`tests/`](tests/) | Testy obliczeń, API i eksportu raportu |
