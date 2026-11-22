@@ -66,9 +66,9 @@ class Orchestrator:
     # ------------------------------------------------------------------ etap 2
     def analyze(self, parcel_id: str, as_of: date | None = None, *, knowledge_cutoff: date | None = None,
                 strict_backtest: bool = False, time_budget_s: float | None = None) -> AnalysisSnapshot:
-        parcel = self.parcel_by_id(parcel_id)
         tc = build_time_context(as_of, knowledge_cutoff=knowledge_cutoff, today=self.today or settings.today(),
                                 strict_backtest=strict_backtest)
+        parcel = self.parcel_by_id(parcel_id)
         snap = run_analysis(parcel, tc, self.adapters, budget_s=time_budget_s)
         self.store.put(snap.analysis_id, "analysis", snap, parents=(f"parcel:{parcel.parcel_id}:{parcel.geometry_version}",))
         return snap

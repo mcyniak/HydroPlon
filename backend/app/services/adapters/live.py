@@ -17,7 +17,7 @@ from typing import Any
 
 from app.services.adapters.base import AdapterInfo
 from app.services.egib_wfs_service import EgibWfsClient
-from app.services.errors import AdapterNotImplementedError, SourceError, SourceRateLimitedError
+from app.services.errors import AdapterNotImplementedError, NotFoundError, SourceError, SourceRateLimitedError
 from app.services.uldk_service import LiveUldkClient, RawUldkParcel
 
 PARCEL_SOURCES = ("auto", "uldk", "wfs")
@@ -84,9 +84,8 @@ class LiveAdapters:
                                    "not_implemented"))
         return out
 
-    def _resolve(self, uldk_call, wfs_call) -> RawUldkParcel:
-        """auto: ULDK, a przy błędzie usługi (limit, timeout, awaria) — WFS EGiB. Wynik zawsze mówi,
-        z którego źródła pochodzi (notes, source_service). Nigdy nie sięga po dane fixture."""
+    def _resolve(self, uldk_call, wfs_call, *, wfs_on_not_found: bool = False) -> RawUldkParcel:
+        """W trybie auto używa WFS EGiB przy awarii ULDK lub braku działki po kliknięciu mapy."""
         if self.parcel_source == "wfs":
             self.last_parcel_source = "wfs"
             return wfs_call(None)
@@ -101,7 +100,12 @@ class LiveAdapters:
                 if self.parcel_source == "uldk":
                     raise
                 reason = exc.message_pl
-            except SourceError as exc:  # timeout, awaria, zły format; NotFound NIE uruchamia drugiego źródła
+            except NotFoundError:
+                if self.parcel_source == "uldk" or not wfs_on_not_found:
+                    raise
+                self.last_parcel_source = "wfs"
+                return wfs_call("ULDK nie zwróciło działki w tym punkcie. Sprawdzono WFS EGiB.")
+            except SourceError as exc:
                 if self.parcel_source == "uldk":
                     raise
                 reason = exc.message_pl
@@ -114,7 +118,8 @@ class LiveAdapters:
         return self._resolve(lambda: self.uldk.fetch_by_id(teryt_id), lambda note: self.wfs.fetch_by_id(teryt_id, note))
 
     def parcel_by_xy(self, lon: float, lat: float) -> RawUldkParcel:
-        return self._resolve(lambda: self.uldk.fetch_by_xy(lon, lat), lambda note: self.wfs.fetch_by_xy(lon, lat, note))
+        return self._resolve(lambda: self.uldk.fetch_by_xy(lon, lat),
+                             lambda note: self.wfs.fetch_by_xy(lon, lat, note), wfs_on_not_found=True)
 
     def _not_implemented(self, module: str) -> dict:
         raise AdapterNotImplementedError(

@@ -88,7 +88,7 @@
             <ul class="address-results" id="address-results" hidden></ul>
           </form>
           <div class="field-group"><label class="section-label" for="parcel-input">IDENTYFIKATOR DZIAŁKI</label><div class="search-row"><input class="input" type="text" id="parcel-input" placeholder="np. 120404_2.0006.131" autocomplete="off" spellcheck="false"/><button type="button" class="action alt" id="parcel-search"><svg class="icon"><use href="#icon-search"/></svg>Szukaj</button></div><div class="hint" style="margin-top:8px">Format TERYT: <code>WWPPGG_R.OOOO.NR</code>.</div><div class="fixture-links" id="fixture-links"></div></div>
-          <div class="field-group"><label class="section-label" for="date-input">DATA ANALIZY</label><div class="date-ctrl"><svg class="icon"><use href="#icon-calendar"/></svg><input class="input" type="date" id="date-input" min="2016-01-01"/></div><div class="hint" style="margin-top:7px">Domyślnie dzisiejsza. Możesz wybrać datę historyczną — analiza użyje wyłącznie danych dostępnych do tego dnia.</div></div>
+          <div class="field-group"><label class="section-label" for="date-input">DATA ANALIZY</label><div class="date-ctrl"><svg class="icon"><use href="#icon-calendar"/></svg><input class="input" type="date" id="date-input" min="2016-01-01" required aria-describedby="date-hint date-error"/></div><div class="hint" id="date-hint" style="margin-top:7px">Dla daty historycznej pogoda i zdjęcia satelitarne są sprawdzane do wybranego dnia. Granice pochodzą z bieżącej ewidencji.</div><div class="hint" id="date-error" role="status" hidden></div></div>
           <div id="parcel-detail-slot"></div>
           <div id="an-status-1"></div>
         </div>

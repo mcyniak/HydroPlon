@@ -65,8 +65,25 @@ def test_report_text_and_pdf_from_same_plan(orch):
     pdf = render_pdf(fp)
     assert pdf[:4] == b"%PDF" and len(pdf) > 5000
     from pypdf import PdfReader
-    pdf_text = "".join(p.extract_text() for p in PdfReader(io.BytesIO(pdf)).pages)
-    assert fp.plan_id in pdf_text.replace("\n", "")
+    pdf_text = []
+    for page in PdfReader(io.BytesIO(pdf)).pages:
+        text_starts = []
+
+        def collect_text_start(text, _cm, tm, _font, _size):
+            if text.strip():
+                text_starts.append(tm[4])
+
+        pdf_text.append(page.extract_text(visitor_text=collect_text_start))
+        # Każdy wiersz powinien zaczynać się przy lewym marginesie A4.
+        assert text_starts and all(20 <= x <= 50 for x in text_starts)
+
+    pdf_text = " ".join(" ".join(pdf_text).split())
+    assert fp.plan_id in pdf_text
+    for line in (
+        "Ostatnia obserwacja IMGW w analizie: 15.06.2019.",
+        "Ostatnia użyteczna scena Sentinel-2: 11.06.2019.",
+    ):
+        assert line in txt and line in pdf_text
 
 
 # --- 31. Zmiana danych wejściowych unieważnia stary wynik -------------------------------------------------

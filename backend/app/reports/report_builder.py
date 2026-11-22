@@ -132,6 +132,11 @@ def render_blocks(plan: FinalPlan) -> list[tuple[str, str]]:
     b.append((P, f"Działka: {ps['parcel_id']} ({_fmt(ps['area_ha'], 'ha')}; {ps.get('location') or 'lokalizacja nieznana'})"))
     b.append((P, f"Uprawa: {cs.get('name_pl')} ({cs['crop_id']}); data analizy: {tc['as_of_date']} "
                  f"(tryb: {tc['mode']}); wiedza do: {tc['knowledge_cutoff_date']}; wygenerowano: {plan.generated_at}"))
+    modules = plan.section_5_analysis["modules"]
+    imgw_date = (modules["weather"].get("metadata") or {}).get("last_observation_date")
+    sentinel_date = (modules["satellite"].get("latest_valid_observation") or {}).get("acquisition_date")
+    b.append((P, f"Ostatnia obserwacja IMGW w analizie: {_d(imgw_date) if imgw_date else 'brak danych'}."))
+    b.append((P, f"Ostatnia użyteczna scena Sentinel-2: {_d(sentinel_date) if sentinel_date else 'brak danych'}."))
     b.append((P, f"Plan: {plan.plan_id}; status: {plan.status}"))
     for d in plan.disclaimers_pl:
         b.append((L, d))
@@ -264,15 +269,19 @@ def render_pdf(plan: FinalPlan) -> bytes:
     width = pdf.w - pdf.l_margin - pdf.r_margin
     for kind, text in render_blocks(plan):
         if kind == "title":
-            pdf.set_font(family, "B", 15)
-            pdf.multi_cell(width, 8, conv(text))
+            style, size, line_height = "B", 15, 8
         elif kind == "h":
-            pdf.ln(2)
-            pdf.set_font(family, "B", 12)
-            pdf.multi_cell(width, 7, conv(text))
+            if pdf.will_page_break(14):
+                pdf.add_page()
+            else:
+                pdf.ln(2)
+            style, size, line_height = "B", 12, 7
         else:
-            pdf.set_font(family, "", 8.5)
-            pdf.multi_cell(width, 4.4, conv(("• " if kind == "li" else "") + text))
-    pdf.set_font(family, "", 7)
-    pdf.multi_cell(width, 4, conv(f"plan_id={plan.plan_id} | wygenerowano {plan.generated_at} | HydroPlon {APP_VERSION}"))
+            style, size, line_height = "", 10, 5
+        pdf.set_font(family, style, size)
+        prefix = "• " if kind == "li" else ""
+        pdf.multi_cell(width, line_height, conv(prefix + text), align="L", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font(family, "", 8)
+    footer = f"plan_id={plan.plan_id} | wygenerowano {plan.generated_at} | HydroPlon {APP_VERSION}"
+    pdf.multi_cell(width, 4, conv(footer), new_x="LMARGIN", new_y="NEXT")
     return bytes(pdf.output())

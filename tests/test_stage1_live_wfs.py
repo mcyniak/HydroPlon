@@ -125,3 +125,23 @@ def test_uldk_not_found_does_not_trigger_second_source():
         wfs_client=wfs(lambda req: pytest.fail("WFS nie powinien być wywołany")), parcel_source="auto")
     with pytest.raises(NotFoundError):
         ad.parcel_by_id(PID)
+
+
+@pytest.mark.parametrize("has_parcel", [True, False])
+def test_map_click_checks_wfs_when_uldk_has_no_parcel(has_parcel):
+    ad = LiveAdapters(
+        uldk_client=LiveUldkClient(transport=httpx.MockTransport(
+            lambda r: httpx.Response(200, text="-1 brak\n")), max_retries=0),
+        wfs_client=wfs(lambda req: [feature(PID, square(PT.x, PT.y))] if has_parcel else []),
+        parcel_source="auto",
+    )
+    if not has_parcel:
+        with pytest.raises(NotFoundError):
+            ad.parcel_by_xy(LON, LAT)
+        return
+
+    profile = build_parcel_profile(ad.parcel_by_xy(LON, LAT))
+    assert profile.parcel_id == PID
+    assert profile.source.source_type == "live" and not profile.source.is_demonstration
+    assert "WFS EGiB" in profile.source.service
+    assert any("ULDK nie zwróciło działki" in notice for notice in profile.notices)

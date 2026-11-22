@@ -58,11 +58,11 @@ let parcelSeq = 0, analysisSeq = 0;
 
 // Zmiana danych nadrzędnych unieważnia wyniki zależne (spec. §53).
 function invalidate(level) {
-  if (level <= 1) { state.analysis = null; state.analysisErr = null; state.analysisPromise = null; state.analysisKey = null; }
+  if (level <= 1) { ++analysisSeq; state.analysis = null; state.analysisErr = null; state.analysisPromise = null; state.analysisKey = null; }
   if (level <= 2) { state.assessment = null; state.ranking = null; }
   if (level <= 3) { state.selection = null; state.plan = null; }
 }
-function reachable(n) { return n === 1 || (n === 2 && !!state.parcel) || (n === 3 && !!state.ranking) || (n === 4 && !!state.plan); }
+function reachable(n) { return n === 1 || (n === 2 && !!state.parcel && !!state.date) || (n === 3 && !!state.ranking) || (n === 4 && !!state.plan); }
 
 // ---------- mapa ----------
 const map = L.map('map', { zoomControl: false }).setView([52.1, 19.4], 6);
@@ -220,21 +220,32 @@ $('parcel-search').addEventListener('click', () => {
   loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(v)}`);
 });
 $('parcel-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('parcel-search').click(); } });
-$('date-input').value = state.date;
-$('date-input').addEventListener('change', () => {
-  const v = $('date-input').value;
-  if (!v) { $('date-input').value = state.date; return; }
-  if (v === state.date) return;
-  state.date = v;
-  if (v > todayStr()) toast('Data przyszła: analiza scenariuszowa, nie pomiarowa.');
+const dateInput = $('date-input');
+const dateError = $('date-error');
+function updateAnalysisDate() {
+  const date = dateInput.validity.valid && /^\d{4}-\d{2}-\d{2}$/.test(dateInput.value) ? dateInput.value : null;
+  dateInput.setAttribute('aria-invalid', String(!date));
+  dateError.hidden = !!date;
+  if (!date) {
+    dateError.textContent = dateInput.validity.rangeUnderflow
+      ? `Najwcześniejsza dostępna data analizy to ${fmtDate(dateInput.min)}.`
+      : 'Wpisz poprawną datę analizy.';
+  } else {
+    dateError.textContent = '';
+  }
+  if (date === state.date) return;
+  state.date = date;
+  if (date && date > todayStr()) toast('Dla daty przyszłej pokażemy analizę scenariuszową.');
   invalidate(1);
-  if (state.parcel) startAnalysis();
+  if (state.parcel && date) startAnalysis();
+  else renderAnalysisStatus();
   updateStep();
-});
+}
+dateInput.addEventListener('change', updateAnalysisDate);
 
 // ---------- analiza w tle (etap 2 backendu, bez osobnego ekranu) ----------
 function startAnalysis(force) {
-  if (!state.parcel) return null;
+  if (!state.parcel || !state.date) return null;
   const key = `${state.parcel.parcel_id}|${state.date}`;
   if (!force && state.analysisKey === key && (state.analysisPromise || state.analysis)) return state.analysisPromise;
   const my = ++analysisSeq;
@@ -261,7 +272,7 @@ function analysisStatusHtml() {
   const missing = unavailableModules(an);
   const n = 5 - missing.length;
   if (!missing.length) return `<div class="status-box ok"><svg class="icon"><use href="#icon-check"/></svg><span><b>Analiza działki gotowa</b> · ${n}/5 źródeł danych · stan na ${esc(an.time_context.as_of_date)}</span></div>`;
-  return `<div class="status-box warn"><svg class="icon"><use href="#icon-info"/></svg><span><b>Analiza częściowa (${n}/5 źródeł)</b> · brak: ${missing.map((m) => `${esc(MODULE_PL[m.k] || m.k)} — ${esc(MSTATUS_PL[m.v] || m.v)}`).join(', ')}. Braki są oznaczone, a zależne metody dostaną status warunkowy.<br><button type="button" class="link-btn" data-retry-analysis>Ponów pobranie brakujących danych</button></span></div>`;
+  return `<div class="status-box warn"><svg class="icon"><use href="#icon-info"/></svg><span><b>Analiza częściowa (${n}/5 źródeł)</b> · stan na ${esc(an.time_context.as_of_date)} · brak: ${missing.map((m) => `${esc(MODULE_PL[m.k] || m.k)} — ${esc(MSTATUS_PL[m.v] || m.v)}`).join(', ')}. Braki są oznaczone, a zależne metody dostaną status warunkowy.<br><button type="button" class="link-btn" data-retry-analysis>Ponów pobranie brakujących danych</button></span></div>`;
 }
 function renderAnalysisStatus() {
   const html = analysisStatusHtml();
@@ -552,7 +563,7 @@ function updateStep() {
   document.querySelectorAll('.step-line').forEach((el) => el.classList.toggle('done', Number(el.dataset.after) < state.step));
   const next = $('nav-next');
   $('nav-back').disabled = state.step === 1 || state.busy;
-  next.disabled = state.busy || (state.step === 1 && !state.parcel) || (state.step === 2 && !state.cropId) || (state.step === 3 && state.selected.size === 0);
+  next.disabled = state.busy || (state.step === 1 && (!state.parcel || !state.date)) || (state.step === 2 && !state.cropId) || (state.step === 3 && state.selected.size === 0);
   if (state.busy) next.innerHTML = '<span class="spinner light"></span>Liczę…';
   else if (state.step === 3) next.innerHTML = 'Utwórz plan<svg class="icon"><use href="#icon-right"/></svg>';
   else if (state.step === 4) next.innerHTML = '<svg class="icon"><use href="#icon-printer"/></svg>Pobierz PDF';
@@ -578,7 +589,10 @@ async function runBusy(fn) {
 $('nav-back').addEventListener('click', () => { hideError(); go(state.step - 1); });
 $('nav-next').addEventListener('click', async () => {
   if (state.busy) return;
-  if (state.step === 1) { if (!state.parcel) { toast('Najpierw wybierz działkę.'); return; } startAnalysis(); go(2); return; }
+  if (state.step === 1) {
+    if (!state.parcel || !state.date) return;
+    startAnalysis(); go(2); return;
+  }
   if (state.step === 2) {
     if (!state.cropId) { toast('Wybierz jedną uprawę, aby kontynuować.'); return; }
     if (!state.ranking && !(await runBusy(computeRanking))) return;
@@ -595,6 +609,13 @@ document.querySelectorAll('.step-indicator').forEach((b) => b.addEventListener('
 
 // ---------- start ----------
 (async () => {
+  const params = new URLSearchParams(location.search);
+  const suppliedDate = params.get('date');
+  dateInput.value = suppliedDate === null ? state.date : suppliedDate.trim().replace(
+    /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/,
+    (_, day, month, year) => `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`,
+  );
+  updateAnalysisDate();
   updateStep();
   try {
     const h = await api('GET', '/api/health'); state.health = h;
@@ -606,7 +627,14 @@ document.querySelectorAll('.step-indicator').forEach((b) => b.addEventListener('
     }
     $('mode-pill').textContent = live ? 'DANE RZECZYWISTE' : 'DANE TESTOWE';
     $('context-text').textContent = live ? 'Źródła: GUGiK, SoilGrids, IMGW-PIB, Wody Polskie, Sentinel-2' : 'Tryb testowy — dane syntetyczne';
-    renderParcelCard();
+    const parcelId = params.get('parcel');
+    if (parcelSeq === 0) {
+      renderParcelCard();
+      if (parcelId) {
+        $('parcel-input').value = parcelId;
+        loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(parcelId)}`);
+      }
+    }
     const cr = await api('GET', '/api/crops'); state.crops = cr.crops; renderCrops();
     const fx = await api('GET', '/api/system/fixture-parcels');
     if (fx.features?.length) {
@@ -614,9 +642,6 @@ document.querySelectorAll('.step-indicator').forEach((b) => b.addEventListener('
       $('fixture-links').innerHTML = '<span class="hint">Działki testowe:</span> ' + fx.features.map((f) => `<button type="button" class="link-btn" data-id="${esc(f.properties.parcel_id)}" title="${esc(f.properties.scenario_pl)}">${esc(f.properties.label)}</button>`).join(' ');
       $('fixture-links').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(b.dataset.id)}`)));
     }
-    const q = new URLSearchParams(location.search);
-    if (q.get('date')) { $('date-input').value = q.get('date'); state.date = q.get('date'); }
-    if (q.get('parcel')) { $('parcel-input').value = q.get('parcel'); loadParcel(`/api/parcels/by-id?id=${encodeURIComponent(q.get('parcel'))}`); }
   } catch (e) { showError(e.message); $('mode-pill').textContent = 'BRAK POŁĄCZENIA'; }
 })();
 })();
