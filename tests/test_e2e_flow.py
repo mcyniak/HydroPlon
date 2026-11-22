@@ -15,7 +15,7 @@ from app.models.methods import FieldContext
 from app.reports.report_builder import render_pdf, render_text
 from app.services.parcel_service import parcel_cache
 from app.store import ResultStore
-from conftest import HIST, PARCEL_A, PARCEL_B, TODAY, strip_volatile
+from conftest import HIST, PARCEL_A, PARCEL_B, PARCEL_C, TODAY, strip_volatile
 
 
 # --- 30. Scenariusz ze specyfikacji: działka A, kukurydza, drenaż = nie wiem, + metoda warunkowa -------------
@@ -56,10 +56,11 @@ def test_report_text_and_pdf_from_same_plan(orch):
     r = orch.run_full(PARCEL_A, "maize_grain", as_of=HIST)
     fp = r["plan"]
     txt = render_text(fp)
-    headers = ["## 1. Opłacalność", "## 2. Koszty", "## 3. Możliwe dofinansowania", "## 4. Plan wdrożenia",
-               "## 5. Szczegóły analizy"]
+    headers = ["## Diagnoza wodna działki i uprawy", "### Stan niedoboru wody", "### Przyczyny i czynniki ryzyka",
+               "## Zalecane działania i uzasadnienie", "## 1. Opłacalność", "## 2. Koszty",
+               "## 3. Możliwe dofinansowania", "## 4. Plan wdrożenia", "## 5. Szczegóły analizy"]
     positions = [txt.index(h) for h in headers]
-    assert positions == sorted(positions)  # kolejność sekcji wg części VIII
+    assert positions == sorted(positions)
     assert fp.plan_id in txt and "SYNTETYCZNE" in txt
     assert not re.search(r"(?:= |: )0,00 zł", txt)  # żadna pozycja ani suma nie jest fikcyjnym zerem
     pdf = render_pdf(fp)
@@ -79,18 +80,57 @@ def test_report_text_and_pdf_from_same_plan(orch):
         assert text_starts and all(45 <= x <= float(page.mediabox.width) - 45 for x in text_starts)
         assert f"Strona {index} / {len(report.pages)}" in text
         assert page.images
-    assert len(report.outline) >= len(headers)
+    assert len(report.outline) >= 7
 
+    first_page = " ".join(pdf_text[0].split())
     pdf_text = " ".join(" ".join(pdf_text).split())
+    assert "Stan niedoboru wody" in first_page and "Przyczyny i czynniki ryzyka" in first_page
+    pdf_positions = [pdf_text.index(header.lstrip("# ")) for header in headers]
+    assert pdf_positions == sorted(pdf_positions)
     assert fp.plan_id in pdf_text
-    assert "Źródła danych" in pdf_text
     assert "Wersje danych i reguł" not in pdf_text
     assert "Wersje danych i reguł" in txt
     for line in (
+        "Stan niedoboru wody",
+        "Dane wieloletnie wskazują na ryzyko niedoboru",
+        "Przyczyny i czynniki ryzyka",
+        "Zalecane działania i uzasadnienie",
+        "Retencja · Pasy roślinne i zadarnienie",
+        "Agrotechnika · Pozostawianie resztek pożniwnych",
+        "Podstawa w danych: ryzyko spływu i erozji.",
+        "Źródła danych",
+        "Ograniczenia i braki danych",
+        "Pewność rozpoznania okresowych niedoborów: wysoka.",
         "Ostatnia obserwacja IMGW w analizie: 15.06.2019.",
         "Ostatnia użyteczna scena Sentinel-2: 11.06.2019.",
     ):
         assert line in txt and line in pdf_text
+
+
+def test_water_report_shows_missing_data_and_conditional_irrigation(orch):
+    snapshot = orch.analyze(PARCEL_C, HIST)
+    assessment = orch.assess(snapshot.analysis_id, "maize_grain")
+    ranking = orch.recommend(snapshot.analysis_id, assessment.crop_assessment_id, FieldContext())
+    selection = orch.select(snapshot.analysis_id, ranking.ranking_run_id, ["crop_residues", "efficient_irrigation"])
+    plan = orch.plan(selection.selection_id)
+    report = plan.section_5_analysis["water_report"]
+    sections = {section["title"]: section["entries"] for section in report["sections"]}
+    assert all("Brak danych" in entry["text"] and "mm" not in entry["text"]
+               for entry in sections["Stan niedoboru wody"])
+    assert report["dates"][2]["text"] == "brak danych"
+    actions = sections["Zalecane działania i uzasadnienie"]
+    irrigation = next(entry for entry in actions if entry["label"].startswith("Nawadnianie (opcjonalne) · warunkowa"))
+    assert "Brak danych do potwierdzenia potrzeby" in irrigation["text"]
+    assert "prawa do poboru wody" in irrigation["text"]
+    assert any(entry["label"] == "Gleba" and "zdolność gleby do zatrzymywania wody" in entry["text"]
+               for entry in sections["Ograniczenia i braki danych"])
+
+    # Raporty generowane ze starszych obiektów planu też pokazują braki.
+    plan.section_5_analysis.pop("water_report")
+    text = render_text(plan)
+    assert "Ostatnia użyteczna scena Sentinel-2: brak danych" in text
+    assert "Pewność rozpoznania okresowych niedoborów: nieustalona" in text
+    assert "brak danych mm" not in text
 
 
 # --- 31. Zmiana danych wejściowych unieważnia stary wynik -------------------------------------------------

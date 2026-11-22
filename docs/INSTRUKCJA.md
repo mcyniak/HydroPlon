@@ -20,12 +20,14 @@ Przejrzyj rekomendacje i uzasadnienia. Domyślnie zaznaczone metody możesz zmie
 
 ## 4. Przeczytaj i pobierz raport
 
+- **Diagnoza wodna** — zacznij od stanu niedoboru, jego możliwych przyczyn i ryzyka wynikającego z danych wieloletnich. Pod nagłówkiem znajdziesz też datę analizy oraz daty ostatnich obserwacji IMGW i Sentinel-2.
+- **Zalecane działania** — przeczytaj uzasadnienia zaleceń retencyjnych i agrotechnicznych. Jeżeli w planie jest nawadnianie, sprawdź jego warunki.
 - **Opłacalność i koszty** — sprawdź próg opłacalności oraz koszty jednorazowe i roczne. Pozycje oznaczone **do wyceny** wymagają osobnej oferty.
 - **Dofinansowania** — przejrzyj potencjalne programy i ich warunki. Przed złożeniem wniosku sprawdź aktualny nabór u źródła.
 - **Plan wdrożenia** — rozwiń etap, żeby zobaczyć zadania. Wybranie terminu otwiera etap z powiązanym zadaniem.
-- **Szczegóły analizy** — sprawdź użyte dane i ograniczenia. Daty ostatnich dostępnych obserwacji IMGW i Sentinel-2 znajdziesz również w PDF.
+- **Dane wykorzystane w raporcie** — sprawdź źródła, poziom pewności i informacje, których nie udało się ustalić. Dodatkowe wskaźniki są pod przyciskiem **Szczegóły analizy działki i uprawy**.
 
-Kliknij **Pobierz PDF** obok przycisku **Wstecz**.
+Kliknij **Pobierz PDF** obok przycisku **Wstecz**. Dokument możesz zapisać albo wydrukować z przeglądarki plików PDF. [Zobacz przykładowy raport](assets/hydroplon-przykladowy-raport.pdf).
 
 ## Klawiatura i wygląd
 

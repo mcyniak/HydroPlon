@@ -1,10 +1,4 @@
-"""Etap 5 — FinalPlan (JSON) oraz jego renderowanie do tekstu i PDF.
-
-Kolejność sekcji zgodna z częścią VIII (§57): 1. opłacalność, 2. koszty,
-3. dofinansowania, 4. plan wdrożenia, 5. analiza działki i uprawy (aneks).
-Tekst i PDF powstają z TEGO SAMEGO obiektu FinalPlan (ten sam plan_id), więc
-nie generują niezależnych liczb.
-"""
+"""Plan końcowy i renderowanie wspólnej diagnozy wodnej, tekstu oraz PDF."""
 from __future__ import annotations
 
 import unicodedata
@@ -21,8 +15,9 @@ from app.models.analysis import AnalysisSnapshot
 from app.models.crop import CropWaterAssessment
 from app.models.economics import CostEstimate, FinalPlan, FundingMatchResult, ImplementationPlan, ProfitabilityResult
 from app.models.methods import MethodRankingResponse, MethodSelectionResult
+from app.reports.water_report import build_water_report
 
-PLAN_VERSION = "final-plan-0.1.0"
+PLAN_VERSION = "final-plan-0.2.0"
 STATUS_PL = {"recommended": "Rekomendowana", "conditional": "Warunkowa (wymaga weryfikacji)",
              "not_recommended": "Niezalecana w obecnych warunkach"}
 COST_STATUS_PL = {"priced": "wycenione", "requires_quote": "do wyceny (brak ceny)",
@@ -79,7 +74,7 @@ def build_final_plan(*, snapshot: AnalysisSnapshot, assessment: CropWaterAssessm
     overall = "error" if implementation.status == "error" else ("ok" if all(s == "ok" for s in statuses) and
                                                                  snapshot.status == "ok" else "partial")
     tc = snapshot.time_context
-    return FinalPlan(
+    plan = FinalPlan(
         plan_id=plan_id, plan_version=PLAN_VERSION, status=overall,
         generated_at=datetime.now(TZ).isoformat(timespec="seconds"), ids=ids, versions=versions,
         time_context=tc.model_dump(mode="json"),
@@ -115,6 +110,8 @@ def build_final_plan(*, snapshot: AnalysisSnapshot, assessment: CropWaterAssessm
             "Nie gwarantujemy zysku, wzrostu plonów ani przyznania dotacji.",
             "Saldo P−ET0/P−ETc jest wskaźnikiem modelu, nie oficjalnym Klimatycznym Bilansem Wodnym IUNG/SMSR.",
         ] + (["TRYB TESTOWY: dane działki, ceny i programy są SYNTETYCZNE."] if snapshot.data_mode == "fixture" else []))
+    plan.section_5_analysis["water_report"] = build_water_report(plan)
+    return plan
 
 
 # --------------------------------------------------------------------------- tekst
@@ -136,23 +133,26 @@ def render_blocks(plan: FinalPlan, *, concise: bool = False) -> list[tuple[str, 
     generated_at = datetime.fromisoformat(plan.generated_at).strftime("%d.%m.%Y, %H:%M")
     b.append(("meta", f"Działka: {ps['parcel_id']} · {_fmt(ps['area_ha'], 'ha')} · {ps.get('location') or 'lokalizacja nieznana'}"))
     b.append(("meta", f"Uprawa: {cs.get('name_pl') or cs['crop_id']}"))
-    b.append(("meta", f"Data analizy: {_d(tc['as_of_date'])} · analiza {mode} · stan danych na {_d(tc['knowledge_cutoff_date'])}"))
-    b.append(("meta", f"Wygenerowano: {generated_at}"))
-    modules = plan.section_5_analysis["modules"]
-    imgw_date = (modules["weather"].get("metadata") or {}).get("last_observation_date")
-    sentinel_date = (modules["satellite"].get("latest_valid_observation") or {}).get("acquisition_date")
-    b.append(("meta", f"Ostatnia obserwacja IMGW w analizie: {_d(imgw_date) if imgw_date else 'brak danych'}."))
-    b.append(("meta", f"Ostatnia użyteczna scena Sentinel-2: {_d(sentinel_date) if sentinel_date else 'brak danych'}."))
-    status = {"ok": "kompletny", "partial": "częściowy", "unavailable": "dane niedostępne",
-              "unknown": "nieustalony", "error": "błąd"}.get(plan.status, plan.status)
-    b.append(("meta", f"Identyfikator planu: {plan.plan_id} · status: {status}"))
-    for d in plan.disclaimers_pl:
-        b.append((L, d))
-    priorities = {"high": "wysoki", "medium": "średni", "low": "niski", "unassessed": "nieustalony"}
-    b.append((P, "Wybrane metody: " + "; ".join(
-        m["name_pl"] if concise else f"{m['name_pl']} ({m['status_pl'].lower()}, priorytet {priorities[m['priority_class']]})"
-        for m in plan.selected_methods
-    )))
+    b.append(("meta", f"Data analizy: {_d(tc['as_of_date'])} · analiza {mode}"))
+    analysis = plan.section_5_analysis
+    water_report = analysis.get("water_report") or build_water_report(plan)
+    state, causes, recommendations, sources, limitations = water_report["sections"]
+    if plan.data_provenance["data_mode"] == "fixture":
+        b.append(("meta", "Dane testowe · działka i obserwacje syntetyczne"))
+    b.append(("overview", "Diagnoza wodna działki i uprawy"))
+    for section in (state, causes):
+        b.append(("phase", section["title"]))
+        b.extend((L, entry["text"]) for entry in section["entries"])
+    b.append((H, recommendations["title"]))
+    for entry in recommendations["entries"]:
+        kind, label = ("action", f"**{entry['label']}**") if concise else (L, entry["label"])
+        b.append((kind, f"{label}: {entry['text']}"))
+    if not concise:
+        priorities = {"high": "wysoki", "medium": "średni", "low": "niski", "unassessed": "nieustalony"}
+        b.append((P, "Wybrane metody: " + "; ".join(
+            f"{m['name_pl']} ({m['status_pl'].lower()}, priorytet {priorities[m['priority_class']]})"
+            for m in plan.selected_methods
+        )))
     pr = plan.section_1_profitability
     b.append((H, "1. Opłacalność i potencjalne korzyści"))
     b.append((P, pr["headline_pl"]))
@@ -230,25 +230,36 @@ def render_blocks(plan: FinalPlan, *, concise: bool = False) -> list[tuple[str, 
         if task.get("window_from"):
             when = f" [najbliższy termin: {_d(task['window_from'])}–{_d(task['window_to'])}; {task['window_note_pl']}]"
         prog = f"; program: {', '.join(task['program_ids'])}" if task.get("program_ids") else ""
-        b.append(("task", f"{task['order']:02d}. {task['title_pl']}"))
+        title = f"{task['order']:02d}. {task['title_pl']}"
         if concise:
             verification = " · wymaga weryfikacji" if task["status"] == "requires_verification" else ""
-            b.append(("task_detail", f"{task['timing_pl']}{when}{dep}{verification}"))
+            b.append(("task_compact", f"**{title}** · {task['timing_pl']}{when}{dep}{verification}"))
         else:
+            b.append(("task", title))
             b.append(("task_detail", f"{task['timing_pl']}{when}{dep}; metody: {', '.join(task['method_ids'])}"
                                      f"{prog}; status: {task_statuses.get(task['status'], task['status'])}"))
     for s in im["stop_go_conditions"]:
         b.append((L, s))
-    a = plan.section_5_analysis
-    b.append((H, "5. Szczegóły analizy działki i uprawy"))
+    b.append(("appendix" if concise else H, "5. Szczegóły analizy działki i uprawy"))
+    b.append(("phase", sources["title"]))
+    for observation in water_report["dates"][1:]:
+        b.append((L, f"{observation['label']}: {observation['text']}."))
+    b.extend((L, f"{entry['label']}: {entry['text']}") for entry in sources["entries"])
+    b.append(("phase", limitations["title"]))
+    b.extend((L, f"{entry['label']}: {entry['text']}" if entry['label'] else entry["text"])
+             for entry in limitations["entries"])
+    status = {"ok": "kompletny", "partial": "częściowy", "unavailable": "dane niedostępne",
+              "unknown": "nieustalony", "error": "błąd"}.get(plan.status, plan.status)
+    b.append((P, f"Wygenerowano: {generated_at} · status: {status} · plan: {plan.plan_id}"))
+    b.extend((L, disclaimer) for disclaimer in plan.disclaimers_pl)
     if concise:
-        b.extend(_analysis_summary_blocks(a))
         shown = {text.strip() for _, text in b}
         warnings = [warning for warning in dict.fromkeys(plan.warnings) if warning not in shown]
         if warnings:
             b.append(("phase", "Istotne uwagi"))
             b.extend((L, warning) for warning in warnings)
         return b
+    a = analysis
     b.append((P, "Statusy modułów: " + ", ".join(f"{k}: {v}" for k, v in a["module_statuses"].items())))
     d = a["diagnosis"]
     for p in d["problems"]:
@@ -256,8 +267,6 @@ def render_blocks(plan: FinalPlan, *, concise: bool = False) -> list[tuple[str, 
                      f"{p['reasons'][0]} Wskaźniki: {p['supporting_indicators']}"))
     for con in d["constraints"]:
         b.append((L, f"Ograniczenie {con['constraint_id']} ({con['status']}): {con['reason_pl']}"))
-    for g in d.get("data_gaps", []):
-        b.append((L, f"Luka danych — {g['module']}: nie ustalono {', '.join(g['cannot_determine'])}."))
     ca = a["crop_assessment"]
     cwb = ca.get("crop_water_balance") or {}
     b.append((P, f"Ocena uprawy: status {ca['status']}; saldo P−ETc w oknie krytycznym: "
@@ -281,43 +290,10 @@ def render_blocks(plan: FinalPlan, *, concise: bool = False) -> list[tuple[str, 
             b.append((L, w))
     return b
 
-
-def _analysis_summary_blocks(analysis: dict[str, Any]) -> list[tuple[str, str]]:
-    blocks = []
-    diagnosis = analysis["diagnosis"]
-    confidence_labels = {"low": "niska", "medium": "średnia", "high": "wysoka", "unknown": "nieustalona"}
-    for problem in diagnosis["problems"]:
-        reasons = problem.get("reasons_pl") or problem.get("reasons") or []
-        if reasons:
-            confidence = confidence_labels.get(problem.get("confidence"), "nieustalona")
-            blocks.append(("li", f"{reasons[0]} Pewność: {confidence}."))
-    blocks.extend(("li", item["reason_pl"]) for item in diagnosis["constraints"] if item.get("reason_pl"))
-
-    balance = analysis["crop_assessment"].get("crop_water_balance") or {}
-    critical = _fmt(balance.get("indicative_critical_window_p_minus_etc_mm"), "mm")
-    season = _fmt(balance.get("indicative_season_p_minus_etc_mm"), "mm")
-    blocks.append(("p", f"Orientacyjny bilans P−ETc: okres krytyczny {critical} · sezon {season}."))
-
-    labels = {"soil": "Gleba", "terrain": "Teren", "hydrology": "Hydrologia", "weather": "Pogoda", "satellite": "Satelity"}
-    incomplete = [labels.get(key, key) for key, status in analysis["module_statuses"].items() if status != "ok"]
-    if incomplete:
-        blocks.append(("li", f"Niepełne dane: {', '.join(incomplete)}."))
-    metadata = [(module.get("metadata") or {}) for module in analysis["modules"].values()]
-    limitations = dict.fromkeys(limit for meta in metadata for limit in (meta.get("limitations") or [])[:1])
-    if limitations:
-        blocks.append(("phase", "Ograniczenia danych"))
-        blocks.extend(("li", limit) for limit in limitations)
-    sources = dict.fromkeys(source for meta in metadata for source in meta.get("sources") or [])
-    if sources:
-        blocks.append(("phase", "Źródła danych"))
-        blocks.extend(("li", source) for source in sources)
-    return blocks
-
-
 def render_text(plan: FinalPlan) -> str:
     out = []
     for kind, text in render_blocks(plan):
-        out.append({"title": f"# {text}\n", "h": f"\n## {text}\n", "phase": f"\n### {text}\n",
+        out.append({"title": f"# {text}\n", "h": f"\n## {text}\n", "overview": f"\n## {text}\n", "phase": f"\n### {text}\n",
                     "task": f"- {text}", "task_detail": f"  {text}", "p": f"{text}\n",
                     "meta": f"{text}\n", "li": f"- {text}"}[kind])
     return "\n".join(out) + "\n"
@@ -390,15 +366,15 @@ class _ReportPdf(FPDF):
         self.cell(self.epw - 34, 5, f"HydroPlon {APP_VERSION}  |  {self.plan_id}")
         self.cell(34, 5, f"Strona {self.page_no()} / {{nb}}", align="R")
 
-    def write_section(self, title: str) -> None:
-        if self.will_page_break(24):
+    def write_section(self, title: str, *, overview: bool = False, space_needed: float = 24) -> None:
+        if self.will_page_break(space_needed):
             self.add_page()
         else:
             self.ln(3)
         self.start_section(title)
-        self.set_font(self.body_font, "B", 13)
-        self.set_text_color(*_GREEN)
-        self.set_fill_color(*_PANEL)
+        self.set_font(self.body_font, "B", 14 if overview else 13)
+        self.set_text_color(*((255, 255, 255) if overview else _GREEN))
+        self.set_fill_color(*(_GREEN if overview else _PANEL))
         y = self.y
         self.multi_cell(self.epw, 6.2, title, align="L", fill=True, padding=(2, 4), new_x="LMARGIN", new_y="NEXT")
         self.set_fill_color(*_GOLD)
@@ -410,8 +386,8 @@ class _ReportPdf(FPDF):
             "p": ("", 10, 4.7, _INK, 1.8, 0),
             "li": ("", 10, 4.7, _INK, .9, 0),
             "phase": ("B", 11, 5.3, _GREEN, 1.6, 13),
-            "task": ("B", 10, 4.85, _INK, .6, 7),
-            "task_detail": ("", 9.5, 4.5, _MUTED, 2, 0),
+            "action": ("", 10, 4.7, _INK, 2, 0),
+            "task_compact": ("", 10, 4.7, _INK, 1.7, 0),
         }
         style, font_size, line_height, color, after, keep_with_next = styles[kind]
         indent = (10 if text.startswith("    ") else 5) if kind == "li" else 0
@@ -420,14 +396,15 @@ class _ReportPdf(FPDF):
         self.set_text_color(*color)
         self.set_x(self.l_margin + indent)
         width = self.epw - indent
-        height = self.multi_cell(width, line_height, text, align="L", dry_run=True, output="HEIGHT")
+        markdown = kind in ("action", "task_compact")
+        height = self.multi_cell(width, line_height, text, align="L", markdown=markdown, dry_run=True, output="HEIGHT")
         if height <= self.page_break_trigger - 33 and self.will_page_break(height + after + keep_with_next):
             self.add_page()
             self.set_x(self.l_margin + indent)
         if indent:
             self.set_fill_color(*_GREEN)
             self.ellipse(self.x - 2.4, self.y + 2, .85, .85, style="F")
-        self.multi_cell(width, line_height, text, align="L", new_x="LMARGIN", new_y="NEXT")
+        self.multi_cell(width, line_height, text, align="L", markdown=markdown, new_x="LMARGIN", new_y="NEXT")
         self.ln(after)
 
 
@@ -451,8 +428,10 @@ def render_pdf(plan: FinalPlan) -> bytes:
             pdf.set_text_color(*_INK)
             pdf.set_fill_color(*_PANEL)
             pdf.multi_cell(pdf.epw, 5, text, align="L", fill=True, padding=(.85, 4), new_x="LMARGIN", new_y="NEXT")
-        elif kind == "h":
-            pdf.write_section(text)
+        elif kind in ("h", "overview"):
+            pdf.write_section(text, overview=kind == "overview")
+        elif kind == "appendix":
+            pdf.write_section(text, space_needed=56)
         elif kind == "source":
             pdf.set_font(pdf.body_font, "", 9)
             pdf.set_text_color(0, 85, 165)

@@ -604,8 +604,8 @@ function renderReport() {
 
   const implHtml = renderImplementation(impl);
 
-  // 5. Rozwijana analiza (zawsze na końcu)
-  $('report').innerHTML = `<div class="report-top">${benefitHtml}${costHtml}</div>${fundHtml}${implHtml}${analysisDetailsHtml(an, ca, fp)}`;
+  const { overview, actions, sources } = waterReportHtml(fp.section_5_analysis?.water_report);
+  $('report').innerHTML = `${overview}${actions}<div class="report-top">${benefitHtml}${costHtml}</div>${fundHtml}${implHtml}${sources}${analysisDetailsHtml(an, ca, fp)}`;
 }
 $('report').addEventListener('click', (event) => {
   const link = event.target.closest('[data-implementation-task]');
@@ -617,6 +617,30 @@ $('report').addEventListener('click', (event) => {
   task.focus({ preventScroll: true });
   task.scrollIntoView({ block: 'nearest' });
 });
+function waterReportHtml(report) {
+  if (!report) return { overview: '', actions: '', sources: '' };
+  const [status, causes, recommendations, sources, limits] = report.sections;
+  const list = (entries) => `<ul>${entries.map(({ label, text }) => `<li>${label ? `<strong>${esc(label)}</strong> ` : ''}${esc(text)}</li>`).join('')}</ul>`;
+  const subsection = ({ title, entries }) => `<div><h4>${esc(title)}</h4>${list(entries)}</div>`;
+  return {
+    overview: `<section class="report-section water-report water-report-overview" aria-labelledby="water-report-heading">
+      <h3 id="water-report-heading">Diagnoza wodna działki i uprawy</h3>
+      <div class="water-report-grid">
+        <div class="water-report-status"><h4>${esc(status.title)}</h4>${status.entries.map(({ text }) => `<p>${esc(text)}</p>`).join('')}</div>
+        <div class="water-report-causes">${subsection(causes)}</div>
+      </div>
+      <dl class="water-report-dates">${report.dates.map(({ label, text }) => `<div><dt>${esc(label)}</dt><dd>${esc(text)}</dd></div>`).join('')}</dl>
+    </section>`,
+    actions: `<section class="report-section water-report water-report-actions" aria-labelledby="water-actions-heading">
+      <h3 id="water-actions-heading">${esc(recommendations.title)}</h3>
+      <ul class="water-report-grid" role="list">${recommendations.entries.map(({ label, text }) => `<li><strong>${esc(label)}</strong><p>${esc(text)}</p></li>`).join('')}</ul>
+    </section>`,
+    sources: `<section class="report-section water-report water-report-evidence" aria-labelledby="water-evidence-heading">
+      <h3 id="water-evidence-heading">Dane wykorzystane w raporcie</h3>
+      <div class="water-report-grid">${subsection(sources)}${subsection(limits)}</div>
+    </section>`,
+  };
+}
 function chip(title, status, lines) {
   const ok = status === 'ok';
   return `<div class="analysis-chip ${ok ? '' : 'missing'}"><b>${esc(title)}</b>${ok || status === 'partial' ? lines.filter(Boolean).map((l) => `<span>${l}</span>`).join('') : `<span class="na">${esc(MSTATUS_PL[status] || status || 'brak danych')}</span>`}</div>`;
@@ -628,30 +652,34 @@ function analysisDetailsHtml(an, ca, fp) {
   const ds = we.decade_summary_up_to_target || {}, ss = we.target_date_season_snapshot || {}, st = we.stations_used?.precipitation_station || {};
   const ob = sa.latest_valid_observation || {}, bl = sa.baseline_comparison || {};
   const wb = ca?.crop_water_balance || {};
+  const measure = (value, unit, decimals = 0) => {
+    const formatted = num(value, decimals);
+    return or(formatted == null ? null : `${formatted}${unit}`);
+  };
   const chips = [
     chip('Gleba (SoilGrids, 0–30 cm)', so.status, [
-      `Retencja: ${or(so.retention_class)}`, `Woda dostępna (AWC): ${or(num(so.water_holding_capacity_0_30cm?.awc_mm, 1))} mm`,
-      `Materia organiczna: ${or(num(so.organic_matter?.organic_matter_pct, 2))} %`,
-      `Piasek / pył / ił: ${or(num(so.granulometry?.sand_pct, 0))} / ${or(num(so.granulometry?.silt_pct, 0))} / ${or(num(so.granulometry?.clay_pct, 0))} %`]),
+      `Retencja: ${or(so.retention_class)}`, `Woda dostępna (AWC): ${measure(so.water_holding_capacity_0_30cm?.awc_mm, ' mm')}`,
+      `Materia organiczna: ${measure(so.organic_matter?.organic_matter_pct, '%', 1)}`,
+      `Piasek / pył / ił: ${measure(so.granulometry?.sand_pct, '%')} / ${measure(so.granulometry?.silt_pct, '%')} / ${measure(so.granulometry?.clay_pct, '%')}`]),
     chip('Teren (NMT GUGiK)', te.status, [
-      `Ryzyko spływu i erozji: ${or(te.runoff_erosion_risk)}`, `Nachylenie średnie / maks.: ${or(num(te.slope?.mean_deg, 1))}° / ${or(num(te.slope?.max_deg, 1))}°`,
-      `Powierzchnia > 3°: ${or(num(te.slope?.area_over_3deg_pct, 0))} %`, `Wysokość: ${or(num(te.elevation_m?.min, 1))}–${or(num(te.elevation_m?.max, 1))} m n.p.m.`]),
+      `Ryzyko spływu i erozji: ${or(te.runoff_erosion_risk)}`, `Nachylenie średnie / maks.: ${measure(te.slope?.mean_deg, '°', 1)} / ${measure(te.slope?.max_deg, '°', 1)}`,
+      `Powierzchnia > 3°: ${measure(te.slope?.area_over_3deg_pct, '%')}`, `Wysokość min. / maks.: ${measure(te.elevation_m?.min, ' m n.p.m.')} / ${measure(te.elevation_m?.max, ' m n.p.m.')}`]),
     chip('Hydrologia (BDOT10k, mapy powodziowe)', hy.status, [
-      `Najbliższy rów: ${or(num(nw.nearest_ditch_m, 0))} m · ciek: ${or(num(nw.nearest_watercourse_m, 0))} m`,
-      `Zbiornik wodny: ${or(num(nw.nearest_reservoir_m, 0))} m`,
+      `Najbliższy rów: ${measure(nw.nearest_ditch_m, ' m')} · ciek: ${measure(nw.nearest_watercourse_m, ' m')}`,
+      `Zbiornik wodny: ${measure(nw.nearest_reservoir_m, ' m')}`,
       `Strefa zagrożenia powodziowego: ${fl.in_flood_hazard_zone == null ? or(null) : fl.in_flood_hazard_zone ? '<b>tak</b>' : 'nie'}`,
       fl.flood_hazard_class ? esc(fl.flood_hazard_class) : null]),
     chip('Pogoda (IMGW-PIB)', we.status, [
       `Stacja: ${or(st.name)}${st.distance_km != null ? ` (${esc(num(st.distance_km, 1))} km)` : ''}`,
-      `Śr. bilans P−ET0 sezonu: ${or(num(ds.mean_veg_season_kbw_mm, 0))} mm (${or(ds.completed_veg_seasons_count)} sezonów)`,
-      `Bieżący sezon do dnia analizy: ${or(num(ss.kbw_to_date_mm, 0))} mm`, `Najdłuższy okres bez opadu: ${or(ds.max_consecutive_dry_days)} dni`]),
+      `Śr. bilans P−ET0 sezonu: ${measure(ds.mean_veg_season_kbw_mm, ' mm')}`,
+      `Bieżący sezon do dnia analizy: ${measure(ss.kbw_to_date_mm, ' mm')}`, `Najdłuższy okres bez opadu: ${measure(ds.max_consecutive_dry_days, ' dni')}`]),
     chip('Satelity (Sentinel-2)', sa.status, [
       `Ostatnie czyste zdjęcie: ${or(ob.acquisition_date)}`, `NDVI: ${or(num(ob.ndvi_median, 2))} · NDMI: ${or(num(ob.ndmi_median, 2))}`,
       `Odchylenie od lat poprzednich (NDVI / NDMI): ${or(num(bl.ndvi_anomaly, 2))} / ${or(num(bl.ndmi_anomaly, 2))}`,
       bl.canopy_rule?.interpretation_pl ? esc(bl.canopy_rule.interpretation_pl) : null]),
     chip(`Uprawa: ${CROP_UI[state.cropId]?.label || ca?.crop?.name_pl || ''}`, ca?.status_raw, [
-      `Orientacyjne P−ETc w oknie krytycznym: ${or(num(wb.indicative_critical_window_p_minus_etc_mm, 0))} mm`,
-      `P−ETc całego sezonu: ${or(num(wb.indicative_season_p_minus_etc_mm, 0))} mm`,
+      `Orientacyjne P−ETc w oknie krytycznym: ${measure(wb.indicative_critical_window_p_minus_etc_mm, ' mm')}`,
+      `P−ETc całego sezonu: ${measure(wb.indicative_season_p_minus_etc_mm, ' mm')}`,
       ca?.crop?.critical_stage_label_pl ? `Okres krytyczny: ${esc(ca.crop.critical_stage_label_pl)}` : null,
       ca?.crop?.parameter_basis_pl ? esc(ca.crop.parameter_basis_pl) : null,
       'Wskaźnik własny — nie jest oficjalnym KBW IUNG.']),

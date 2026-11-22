@@ -2022,6 +2022,108 @@ details.more summary {
   margin-top: 6px;
 }
 
+.water-report {
+  background: var(--bg);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.water-report h3:not(.report-heading) {
+  color: var(--green-text-deep);
+  font-size: clamp(17px, 2vw, 23px);
+  line-height: 1.25;
+}
+.water-report h4 {
+  font-size: 15px;
+  color: var(--green-text-deep);
+  margin: 0 0 8px;
+}
+.water-report p, .water-report ul {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.water-report ul {
+  padding-inline-start: 19px;
+}
+.water-report li + li {
+  margin-top: 5px;
+}
+
+.water-report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 15px;
+}
+@media (max-width: 800px) {
+  .water-report-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.water-report-overview {
+  border-top: 4px solid #ba830d;
+  background: var(--green-pale);
+  border-inline-color: var(--green-line);
+  border-bottom-color: var(--green-line);
+}
+
+.water-report-status, .water-report-causes {
+  background: var(--bg);
+  border: 1px solid var(--green-line);
+  border-radius: 4px;
+  padding: 14px 16px;
+}
+
+.water-report-status p:first-of-type {
+  font-weight: 700;
+}
+.water-report-status p + p {
+  margin-top: 7px;
+}
+
+.water-report-actions ul.water-report-grid {
+  margin-top: 15px;
+  padding: 0;
+  list-style: none;
+}
+.water-report-actions li {
+  background: var(--blue-pale);
+  border: 1px solid var(--blue-line);
+  border-radius: 4px;
+  padding: 12px 14px;
+}
+.water-report-actions li + li {
+  margin-top: 0;
+}
+.water-report-actions li strong {
+  display: block;
+  color: var(--blue-deep);
+  margin-bottom: 4px;
+}
+
+.water-report-evidence .water-report-grid {
+  gap: 16px 26px;
+}
+.water-report-evidence li strong {
+  margin-inline-end: 3px;
+}
+
+.water-report-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+.water-report-dates dt {
+  color: var(--ink-3);
+}
+.water-report-dates dd {
+  margin: 3px 0 0;
+  font-weight: 700;
+}
+
 details.analysis-section {
   border: 1px solid var(--border);
   border-radius: 4px;

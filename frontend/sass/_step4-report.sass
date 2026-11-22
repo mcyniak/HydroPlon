@@ -1,7 +1,6 @@
 @use "tokens" as *
 
-// Krok 4 — raport: opłacalność (zielona, 2/3) obok kosztów (1/3), potem żółte dotacje,
-// plan wdrożenia i zwinięta analiza na końcu (spec. §57).
+// Krok 4 — diagnoza i zalecenia, opłacalność obok kosztów, dotacje, plan i dane źródłowe.
 
 .report-top
   display: grid
@@ -440,7 +439,89 @@ details.more summary
   color: $green-text
   margin-top: 6px
 
-// ---------- Rozwijana analiza (zawsze na końcu) ----------
+// ---------- Diagnoza wodna i szczegóły analizy ----------
+.water-report
+  background: $bg
+  color: $ink
+  overflow-wrap: anywhere
+  h3:not(.report-heading)
+    color: $green-text-deep
+    font-size: clamp(17px, 2vw, 23px)
+    line-height: 1.25
+  h4
+    font-size: 15px
+    color: $green-text-deep
+    margin: 0 0 8px
+  p, ul
+    margin: 0
+    font-size: 14px
+    line-height: 1.55
+  ul
+    padding-inline-start: 19px
+  li + li
+    margin-top: 5px
+
+.water-report-grid
+  display: grid
+  grid-template-columns: repeat(2, minmax(0, 1fr))
+  gap: 12px
+  margin-top: 15px
+  @media (max-width: $bp-narrow)
+    grid-template-columns: minmax(0, 1fr)
+
+.water-report-overview
+  border-top: 4px solid $gold
+  background: $green-pale
+  border-inline-color: $green-line
+  border-bottom-color: $green-line
+
+.water-report-status, .water-report-causes
+  background: $bg
+  border: 1px solid $green-line
+  border-radius: $radius
+  padding: 14px 16px
+
+.water-report-status
+  p:first-of-type
+    font-weight: 700
+  p + p
+    margin-top: 7px
+
+.water-report-actions
+  ul.water-report-grid
+    margin-top: 15px
+    padding: 0
+    list-style: none
+  li
+    background: $blue-pale
+    border: 1px solid $blue-line
+    border-radius: $radius
+    padding: 12px 14px
+    & + li
+      margin-top: 0
+    strong
+      display: block
+      color: $blue-deep
+      margin-bottom: 4px
+
+.water-report-evidence
+  .water-report-grid
+    gap: 16px 26px
+  li strong
+    margin-inline-end: 3px
+
+.water-report-dates
+  display: flex
+  flex-wrap: wrap
+  gap: 8px 22px
+  margin: 12px 0 0
+  font-size: 13px
+  dt
+    color: $ink-3
+  dd
+    margin: 3px 0 0
+    font-weight: 700
+
 details.analysis-section
   border: 1px solid $border
   border-radius: $radius
