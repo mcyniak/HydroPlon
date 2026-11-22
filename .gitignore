@@ -1,4 +1,4 @@
-# Środowiska i zależności (odtwarzane: pip install -r requirements.txt, npm install)
+# Środowiska i zależności (odtwarzane: pip install -r backend/requirements.txt, npm --prefix frontend ci)
 .venv/
 venv/
 node_modules/

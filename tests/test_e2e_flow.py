@@ -7,6 +7,7 @@ from datetime import date
 
 import pytest
 from fastapi.testclient import TestClient
+from pypdf import PdfReader
 
 from app.api.deps import get_orchestrator
 from app.engine.orchestrator import Orchestrator, PipelineSession
@@ -65,7 +66,6 @@ def test_report_text_and_pdf_from_same_plan(orch):
     assert not re.search(r"(?:= |: )0,00 zł", txt)  # żadna pozycja ani suma nie jest fikcyjnym zerem
     pdf = render_pdf(fp)
     assert pdf[:4] == b"%PDF" and len(pdf) > 5000
-    from pypdf import PdfReader
     report = PdfReader(io.BytesIO(pdf))
     pdf_text = []
     for index, page in enumerate(report.pages, start=1):
@@ -85,6 +85,10 @@ def test_report_text_and_pdf_from_same_plan(orch):
     first_page = " ".join(pdf_text[0].split())
     pdf_text = " ".join(" ".join(pdf_text).split())
     assert "Stan niedoboru wody" in first_page and "Przyczyny i czynniki ryzyka" in first_page
+    assert "Ostatnia obserwacja IMGW w analizie 15.06.2019" in first_page
+    assert "Ostatnia użyteczna scena Sentinel-2 11.06.2019" in first_page
+    fonts = report.pages[0]["/Resources"]["/Font"].values()
+    assert any("Literata" in font.get_object()["/BaseFont"] for font in fonts)
     pdf_positions = [pdf_text.index(header.lstrip("# ")) for header in headers]
     assert pdf_positions == sorted(pdf_positions)
     assert fp.plan_id in pdf_text
@@ -127,6 +131,10 @@ def test_water_report_shows_missing_data_and_conditional_irrigation(orch):
 
     # Raporty generowane ze starszych obiektów planu też pokazują braki.
     plan.section_5_analysis.pop("water_report")
+    first_page = " ".join(PdfReader(io.BytesIO(render_pdf(plan))).pages[0].extract_text().split())
+    assert "Brak danych do oceny bilansu" in first_page
+    assert "Ostatnia użyteczna scena Sentinel-2 brak danych" in first_page
+    assert "Nawadnianie (opcjonalne) · warunkowa" in first_page
     text = render_text(plan)
     assert "Ostatnia użyteczna scena Sentinel-2: brak danych" in text
     assert "Pewność rozpoznania okresowych niedoborów: nieustalona" in text

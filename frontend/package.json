@@ -3,8 +3,8 @@
   "private": true,
   "description": "Style kreatora HydroPlon (/app): Sass -> backend/app/static/app.css. Serwer Pythona nie potrzebuje Node — skompilowany CSS jest w repozytorium.",
   "scripts": {
-    "css": "sass frontend/sass/app.sass backend/app/static/app.css --no-source-map --style=expanded",
-    "css:watch": "sass frontend/sass/app.sass backend/app/static/app.css --no-source-map --style=expanded --watch"
+    "css": "sass sass/app.sass ../backend/app/static/app.css --no-source-map --style=expanded",
+    "css:watch": "sass sass/app.sass ../backend/app/static/app.css --no-source-map --style=expanded --watch"
   },
   "devDependencies": {
     "sass": "1.83.4"

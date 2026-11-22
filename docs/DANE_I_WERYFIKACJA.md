@@ -23,7 +23,7 @@ Daty obserwacji zależą od wyników zapytania i są podawane w raporcie. Mapy r
 ## Modele, komponenty i AI
 
 - Silnik używa jawnych reguł i katalogów. Obliczenia korzystają m.in. z uproszczenia Hargreavesa dla ET₀, współczynników upraw Kc oraz szacunków retencji z parametrów gleby. Progi diagnozy można sprawdzić w [`analysis_rules.json`](../backend/app/data/analysis_rules.json), a parametry upraw i reguły działań w [`backend/app/data`](../backend/app/data/). [Podstawa metodyczna FAO‑56](https://www.fao.org/4/x0490e/x0490e00.htm)
-- [Zależności Pythona](../requirements.txt) obejmują FastAPI, Pydantic, pyproj i pytest (MIT), Uvicorn, Shapely, HTTPX, Rasterio i pypdf (BSD), fpdf2 (LGPL‑3.0), tzdata (Apache‑2.0) i NumPy (BSD oraz licencje części składowych). Szczegółowe licencje są w metadanych zainstalowanych pakietów.
+- [Zależności Pythona](../backend/requirements.txt) obejmują FastAPI, Pydantic, pyproj i pytest (MIT), Uvicorn, Shapely, HTTPX, Rasterio i pypdf (BSD), fpdf2 (LGPL‑3.0), tzdata (Apache‑2.0) i NumPy (BSD oraz licencje części składowych). Szczegółowe licencje są w metadanych zainstalowanych pakietów.
 - Mapa używa [Leaflet 1.9.4 (BSD‑2‑Clause)](https://github.com/Leaflet/Leaflet/blob/v1.9.4/LICENSE). Style kompiluje [Dart Sass (MIT)](https://github.com/sass/dart-sass/blob/main/LICENSE). Czcionka [Literata (SIL Open Font License)](../backend/app/static/fonts/OFL-Literata.txt) jest dołączona do projektu.
 - OpenAI Codex wspierał prace nad kodem, testami i dokumentacją. W działającej aplikacji raport i rekomendacje powstają z danych i reguł bez wywoływania modelu generatywnego. [Warunki usług OpenAI](https://openai.com/policies/eu-terms-of-use/)
 

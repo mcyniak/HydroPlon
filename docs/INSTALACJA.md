@@ -22,7 +22,7 @@ Poniższe polecenia uruchamiają serwer w trybie rzeczywistym z PowerShella.
 
 ```powershell
 py -3.13 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r backend/requirements.txt
 $env:HYDROPLON_MODE = "live"
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --app-dir backend --port 8000
 ```
@@ -33,7 +33,7 @@ Uruchom poniższe polecenia w terminalu z katalogu projektu.
 
 ```bash
 python3.13 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m pip install -r backend/requirements.txt
 HYDROPLON_MODE=live .venv/bin/python -m uvicorn app.main:app --app-dir backend --port 8000
 ```
 
@@ -50,6 +50,6 @@ Otwórz [przykładową działkę A z datą 15.06.2019](http://127.0.0.1:8000/app
 ## Narzędzia deweloperskie
 
 - **Testy** — uruchom `.\.venv\Scripts\python.exe -m pytest -q` na Windows albo `.venv/bin/python -m pytest -q` na macOS i Linux.
-- **Style** — do zmiany plików Sass użyj Node.js i poleceń `npm ci` oraz `npm run css`. Do samego uruchomienia aplikacji wystarcza CSS zapisany w repozytorium.
+- **Style** — do zmiany plików Sass użyj Node.js i poleceń `npm --prefix frontend ci` oraz `npm --prefix frontend run css`. Do samego uruchomienia aplikacji wystarcza CSS zapisany w repozytorium.
 - **API** — po uruchomieniu serwera otwórz [Swagger](http://127.0.0.1:8000/docs), [status aplikacji](http://127.0.0.1:8000/api/health) lub [status źródeł](http://127.0.0.1:8000/api/system/sources).
 - **Dane IMGW** — repozytorium zawiera kopię dobowego archiwum. Aby ją odświeżyć, uruchom `scripts/import_imgw.py` Pythonem ze środowiska `.venv`.

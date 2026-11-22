@@ -1,13 +1,8 @@
 """Plan końcowy i renderowanie wspólnej diagnozy wodnej, tekstu oraz PDF."""
 from __future__ import annotations
 
-import unicodedata
 from datetime import datetime
-from pathlib import Path
 from typing import Any
-from urllib.parse import urlsplit
-
-from fpdf import FPDF
 
 from app.config import APP_VERSION, TZ
 from app.engine.ids import make_id
@@ -15,6 +10,7 @@ from app.models.analysis import AnalysisSnapshot
 from app.models.crop import CropWaterAssessment
 from app.models.economics import CostEstimate, FinalPlan, FundingMatchResult, ImplementationPlan, ProfitabilityResult
 from app.models.methods import MethodRankingResponse, MethodSelectionResult
+from app.reports.pdf_layout import render_layout
 from app.reports.water_report import build_water_report
 
 PLAN_VERSION = "final-plan-0.2.0"
@@ -140,23 +136,32 @@ def render_blocks(plan: FinalPlan, *, concise: bool = False) -> list[tuple[str, 
     if plan.data_provenance["data_mode"] == "fixture":
         b.append(("meta", "Dane testowe · działka i obserwacje syntetyczne"))
     b.append(("overview", "Diagnoza wodna działki i uprawy"))
-    for section in (state, causes):
-        b.append(("phase", section["title"]))
-        b.extend((L, entry["text"]) for entry in section["entries"])
-    b.append((H, recommendations["title"]))
-    for entry in recommendations["entries"]:
-        kind, label = ("action", f"**{entry['label']}**") if concise else (L, entry["label"])
-        b.append((kind, f"{label}: {entry['text']}"))
     if not concise:
+        for section in (state, causes):
+            b.append(("phase", section["title"]))
+            b.extend((L, entry["text"]) for entry in section["entries"])
+    b.append(("recommendations" if concise else H, recommendations["title"]))
+    if not concise:
+        b.extend((L, f"{entry['label']}: {entry['text']}") for entry in recommendations["entries"])
         priorities = {"high": "wysoki", "medium": "średni", "low": "niski", "unassessed": "nieustalony"}
         b.append((P, "Wybrane metody: " + "; ".join(
             f"{m['name_pl']} ({m['status_pl'].lower()}, priorytet {priorities[m['priority_class']]})"
             for m in plan.selected_methods
         )))
     pr = plan.section_1_profitability
-    b.append((H, "1. Opłacalność i potencjalne korzyści"))
-    b.append((P, pr["headline_pl"]))
+    b.append(("profitability" if concise else H, "1. Opłacalność i potencjalne korzyści"))
     be = pr["break_even"]
+    if concise:
+        annual = pr["annual_net_benefit_pln"]
+        threshold = be.get("required_annual_benefit_pln")
+        if annual is not None:
+            b.append(("metric", _fmt(annual, "zł/rok")))
+        elif threshold is not None:
+            lower = "od " if be["is_lower_bound"] else ""
+            b.append(("metric", f"Próg {lower}{_fmt(threshold, 'zł/rok')}"))
+        else:
+            b.append(("metric", "Potrzebna wycena"))
+    b.append((P, pr["headline_pl"]))
     if be.get("interpretation_pl") and not concise:
         b.append((L, be["interpretation_pl"]))
     if not concise or pr["annual_net_benefit_pln"] is not None:
@@ -168,10 +173,13 @@ def render_blocks(plan: FinalPlan, *, concise: bool = False) -> list[tuple[str, 
         b.append((L, x))
     c = plan.section_2_costs
     t = c["totals"]
-    b.append((H, "2. Koszty wdrożenia"))
+    b.append(("costs" if concise else H, "2. Koszty wdrożenia"))
     if concise:
-        b.append((P, f"Wycenione netto: jednorazowo {_fmt(t['capex_known_net_pln'], 'zł')} · "
-                     f"rocznie {_fmt(t['opex_annual_known_net_pln'], 'zł')}."))
+        capex = t["capex_known_net_pln"]
+        b.append(("metric", _fmt(capex, "zł") + ("" if t["capex_is_complete"] else " +") if capex is not None
+                  else "Do wyceny"))
+        opex = t["opex_annual_known_net_pln"]
+        b.append((P, f"Nakłady inwestycyjne netto. Utrzymanie rocznie: {_fmt(opex, 'zł')}."))
     else:
         b.append((P, f"CAPEX znany (netto): {_fmt(t['capex_known_net_pln'], 'zł')}; OPEX roczny znany (netto): "
                      f"{_fmt(t['opex_annual_known_net_pln'], 'zł')}; status sumy: {t['total_status']}"))
@@ -190,7 +198,7 @@ def render_blocks(plan: FinalPlan, *, concise: bool = False) -> list[tuple[str, 
     if not concise:
         b.extend((L, assumption) for assumption in c["assumptions"])
     f = plan.section_3_funding
-    b.append((H, "3. Możliwe dofinansowania"))
+    b.append(("funding" if concise else H, "3. Możliwe dofinansowania"))
     if not f["matches"]:
         b.append((P, "Nie znaleziono dopasowanych programów w katalogu."))
     for m in f["matches"]:
@@ -216,7 +224,14 @@ def render_blocks(plan: FinalPlan, *, concise: bool = False) -> list[tuple[str, 
     for w in f["double_funding_warnings"] + f["warnings"]:
         b.append((L, w))
     im = plan.section_4_implementation
-    b.append((H, "4. Plan wdrożenia"))
+    b.append(("implementation" if concise else H, "4. Plan wdrożenia"))
+    if concise:
+        upcoming = sorted((task for task in im["tasks"] if task.get("window_from")),
+                          key=lambda task: task["window_from"])[:3]
+        for task in upcoming:
+            start = _d(task["window_from"])
+            when = f"{start} – {_d(task['window_to'])}" if task.get("window_to") else f"od {start}"
+            b.append(("deadline", f"{when} · {task['title_pl']}"))
     if im["cycle_detected"]:
         b.append((P, "BŁĄD: wykryto cykl zależności — harmonogram nie został wygenerowany."))
     phase = None
@@ -241,15 +256,17 @@ def render_blocks(plan: FinalPlan, *, concise: bool = False) -> list[tuple[str, 
     for s in im["stop_go_conditions"]:
         b.append((L, s))
     b.append(("appendix" if concise else H, "5. Szczegóły analizy działki i uprawy"))
-    b.append(("phase", sources["title"]))
+    b.append(("sources" if concise else "phase", sources["title"]))
     for observation in water_report["dates"][1:]:
         b.append((L, f"{observation['label']}: {observation['text']}."))
     b.extend((L, f"{entry['label']}: {entry['text']}") for entry in sources["entries"])
-    b.append(("phase", limitations["title"]))
+    b.append(("limitations" if concise else "phase", limitations["title"]))
     b.extend((L, f"{entry['label']}: {entry['text']}" if entry['label'] else entry["text"])
              for entry in limitations["entries"])
     status = {"ok": "kompletny", "partial": "częściowy", "unavailable": "dane niedostępne",
               "unknown": "nieustalony", "error": "błąd"}.get(plan.status, plan.status)
+    if concise:
+        b.append(("notes", ""))
     b.append((P, f"Wygenerowano: {generated_at} · status: {status} · plan: {plan.plan_id}"))
     b.extend((L, disclaimer) for disclaimer in plan.disclaimers_pl)
     if concise:
@@ -299,144 +316,6 @@ def render_text(plan: FinalPlan) -> str:
     return "\n".join(out) + "\n"
 
 
-# --------------------------------------------------------------------------- PDF
-_FONT_CANDIDATES = [
-    ("C:/Windows/Fonts/arial.ttf", "C:/Windows/Fonts/arialbd.ttf"),
-    ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
-    ("/Library/Fonts/Arial Unicode.ttf", "/Library/Fonts/Arial Unicode.ttf"),
-]
-
-
-def _ascii(text: str) -> str:
-    text = text.replace("ł", "l").replace("Ł", "L").replace("−", "-").replace("—", "-").replace("→", "->")
-    return unicodedata.normalize("NFKD", text).encode("latin-1", "ignore").decode("latin-1")
-
-
-_INK = (24, 38, 56)
-_MUTED = (65, 83, 103)
-_GREEN = (20, 82, 59)
-_GOLD = (186, 131, 13)
-_RULE = (186, 203, 193)
-_PANEL = (243, 247, 244)
-_LOGO = Path(__file__).with_name("logo-hydroplon.png")
-
-
-class _ReportPdf(FPDF):
-    def __init__(self, plan: FinalPlan) -> None:
-        super().__init__(format="A4")
-        self.plan_id = plan.plan_id
-        self.set_margins(18, 12, 18)
-        self.set_auto_page_break(auto=True, margin=23)
-        self.set_title("Plan gospodarowania wodą")
-        self.set_author("HydroPlon")
-        self.set_lang("pl-PL")
-        self.alias_nb_pages()
-        self.body_font = "Helvetica"
-        for regular, bold in _FONT_CANDIDATES:
-            if Path(regular).exists():
-                self.add_font("Body", "", regular)
-                self.add_font("Body", "B", bold if Path(bold).exists() else regular)
-                self.body_font = "Body"
-                break
-
-    def doc_text(self, text: str) -> str:
-        text = text.replace("−", "-").replace("–", "-").replace("—", "-")
-        return _ascii(text) if self.body_font == "Helvetica" else text
-
-    def header(self) -> None:
-        self.image(_LOGO, x=self.l_margin - 3, y=8, w=20)
-        self.set_xy(self.l_margin + 16, 13)
-        self.set_font(self.body_font, "B", 11)
-        self.set_text_color(*_GREEN)
-        self.cell(36, 8, "HydroPlon")
-        self.set_font(self.body_font, "", 9)
-        self.set_text_color(*_MUTED)
-        self.cell(self.epw - 52, 8, self.doc_text("Raport dla działki rolnej"), align="R")
-        self.set_draw_color(*_RULE)
-        self.line(self.l_margin, 27, self.w - self.r_margin, 27)
-        self.set_y(33)
-
-    def footer(self) -> None:
-        self.set_y(-18)
-        self.set_draw_color(*_RULE)
-        self.line(self.l_margin, self.y, self.w - self.r_margin, self.y)
-        self.ln(2)
-        self.set_font(self.body_font, "", 8)
-        self.set_text_color(*_MUTED)
-        self.cell(self.epw - 34, 5, f"HydroPlon {APP_VERSION}  |  {self.plan_id}")
-        self.cell(34, 5, f"Strona {self.page_no()} / {{nb}}", align="R")
-
-    def write_section(self, title: str, *, overview: bool = False, space_needed: float = 24) -> None:
-        if self.will_page_break(space_needed):
-            self.add_page()
-        else:
-            self.ln(3)
-        self.start_section(title)
-        self.set_font(self.body_font, "B", 14 if overview else 13)
-        self.set_text_color(*((255, 255, 255) if overview else _GREEN))
-        self.set_fill_color(*(_GREEN if overview else _PANEL))
-        y = self.y
-        self.multi_cell(self.epw, 6.2, title, align="L", fill=True, padding=(2, 4), new_x="LMARGIN", new_y="NEXT")
-        self.set_fill_color(*_GOLD)
-        self.rect(self.l_margin, y, 1, self.y - y, "F")
-        self.ln(2.5)
-
-    def write_paragraph(self, kind: str, text: str) -> None:
-        styles = {
-            "p": ("", 10, 4.7, _INK, 1.8, 0),
-            "li": ("", 10, 4.7, _INK, .9, 0),
-            "phase": ("B", 11, 5.3, _GREEN, 1.6, 13),
-            "action": ("", 10, 4.7, _INK, 2, 0),
-            "task_compact": ("", 10, 4.7, _INK, 1.7, 0),
-        }
-        style, font_size, line_height, color, after, keep_with_next = styles[kind]
-        indent = (10 if text.startswith("    ") else 5) if kind == "li" else 0
-        text = text.strip()
-        self.set_font(self.body_font, style, font_size)
-        self.set_text_color(*color)
-        self.set_x(self.l_margin + indent)
-        width = self.epw - indent
-        markdown = kind in ("action", "task_compact")
-        height = self.multi_cell(width, line_height, text, align="L", markdown=markdown, dry_run=True, output="HEIGHT")
-        if height <= self.page_break_trigger - 33 and self.will_page_break(height + after + keep_with_next):
-            self.add_page()
-            self.set_x(self.l_margin + indent)
-        if indent:
-            self.set_fill_color(*_GREEN)
-            self.ellipse(self.x - 2.4, self.y + 2, .85, .85, style="F")
-        self.multi_cell(width, line_height, text, align="L", markdown=markdown, new_x="LMARGIN", new_y="NEXT")
-        self.ln(after)
-
-
 def render_pdf(plan: FinalPlan) -> bytes:
-    pdf = _ReportPdf(plan)
-    pdf.add_page()
-    previous_kind = None
-    for kind, text in render_blocks(plan, concise=True):
-        if previous_kind == "meta" and kind != "meta":
-            pdf.ln(4)
-        previous_kind = kind
-        if kind != "source":
-            text = pdf.doc_text(text)
-        if kind == "title":
-            pdf.set_font(pdf.body_font, "B", 25)
-            pdf.set_text_color(*_INK)
-            pdf.multi_cell(pdf.epw, 11, text, align="L", new_x="LMARGIN", new_y="NEXT")
-            pdf.ln(4)
-        elif kind == "meta":
-            pdf.set_font(pdf.body_font, "", 10)
-            pdf.set_text_color(*_INK)
-            pdf.set_fill_color(*_PANEL)
-            pdf.multi_cell(pdf.epw, 5, text, align="L", fill=True, padding=(.85, 4), new_x="LMARGIN", new_y="NEXT")
-        elif kind in ("h", "overview"):
-            pdf.write_section(text, overview=kind == "overview")
-        elif kind == "appendix":
-            pdf.write_section(text, space_needed=56)
-        elif kind == "source":
-            pdf.set_font(pdf.body_font, "", 9)
-            pdf.set_text_color(0, 85, 165)
-            label = pdf.doc_text(f"Źródło · {urlsplit(text).netloc}")
-            pdf.multi_cell(pdf.epw, 4.5, label, link=text, align="L", new_x="LMARGIN", new_y="NEXT")
-        else:
-            pdf.write_paragraph(kind, text)
-    return bytes(pdf.output())
+    water_report = plan.section_5_analysis.get("water_report") or build_water_report(plan)
+    return render_layout(plan, water_report, render_blocks(plan, concise=True))

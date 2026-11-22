@@ -18,18 +18,19 @@ if not errorlevel 1 (
 )
 
 set "HYDROP_LAUNCH_PYTHON=.venv\Scripts\python.exe"
+set "HYDROP_LAUNCH_REQUIREMENTS=backend\requirements.txt"
 if not exist "%HYDROP_LAUNCH_PYTHON%" (
     echo Tworze srodowisko Pythona dla HydroPlon...
     call :create_venv
     if errorlevel 1 goto failed
 )
 
-fc /b requirements.txt ".venv\hydroplon-requirements.txt" >nul 2>&1
+fc /b "%HYDROP_LAUNCH_REQUIREMENTS%" ".venv\hydroplon-requirements.txt" >nul 2>&1
 if errorlevel 1 (
     echo Instaluje zaleznosci HydroPlon. To moze potrwac kilka minut.
-    "%HYDROP_LAUNCH_PYTHON%" -X utf8 -m pip install --disable-pip-version-check --no-input --quiet -r requirements.txt
+    "%HYDROP_LAUNCH_PYTHON%" -X utf8 -m pip install --disable-pip-version-check --no-input --quiet -r "%HYDROP_LAUNCH_REQUIREMENTS%"
     if errorlevel 1 goto failed
-    copy /y requirements.txt ".venv\hydroplon-requirements.txt" >nul
+    copy /y "%HYDROP_LAUNCH_REQUIREMENTS%" ".venv\hydroplon-requirements.txt" >nul
 )
 
 set "HYDROPLON_MODE=live"
