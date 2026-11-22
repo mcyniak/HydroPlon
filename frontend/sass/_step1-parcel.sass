@@ -71,7 +71,7 @@
   padding: 17px 18px
   border: 1px solid $green-line
   background: #f4faf6
-  border-radius: 15px
+  border-radius: $radius
 
 .parcel-detail-top
   display: flex
@@ -128,10 +128,12 @@ details.notes
   background: #deead9
   min-height: 495px
   height: 100%
-  border-radius: 17px
+  border-radius: $radius
   overflow: hidden
   position: relative
   isolation: isolate
+  .leaflet-container
+    font-family: $font-family
   #map
     position: absolute
     inset: 0
@@ -158,10 +160,9 @@ details.notes
   background: rgba(255, 255, 255, .95)
   color: #44615b
   border: 1px solid rgba(205, 225, 215, .85)
-  border-radius: 9px
+  border-radius: $radius
   font-size: 12px
   font-weight: 750
-  box-shadow: 0 2px 9px rgba(41, 76, 45, .08)
   padding: 9px 11px
   display: flex
   align-items: center
@@ -172,12 +173,11 @@ details.notes
   display: flex
   padding: 4px
   gap: 2px
-  border-radius: 10px
+  border-radius: $radius
   border: 1px solid #e1eae4
-  box-shadow: 0 2px 9px rgba(41, 76, 45, .08)
   button
     border: 0
-    border-radius: 7px
+    border-radius: $radius
     background: transparent
     padding: 7px 11px
     color: $ink-3
@@ -191,8 +191,7 @@ details.notes
 .map-panel
   .leaflet-bar
     border: 1px solid #d9e5dc
-    border-radius: 10px
-    box-shadow: 0 2px 8px rgba(37, 76, 48, .14)
+    border-radius: $radius
     overflow: hidden
     a
       width: 36px

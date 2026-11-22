@@ -11,6 +11,7 @@ import unicodedata
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 from fpdf import FPDF
 
@@ -126,7 +127,7 @@ def _fmt(v: Any, unit: str = "") -> str:
     return f"{v} {unit}".strip()
 
 
-def render_blocks(plan: FinalPlan) -> list[tuple[str, str]]:
+def render_blocks(plan: FinalPlan, *, concise: bool = False) -> list[tuple[str, str]]:
     b: list[tuple[str, str]] = []
     H, P, L = "h", "p", "li"
     tc, ps, cs = plan.time_context, plan.parcel_summary, plan.crop_summary
@@ -149,50 +150,68 @@ def render_blocks(plan: FinalPlan) -> list[tuple[str, str]]:
         b.append((L, d))
     priorities = {"high": "wysoki", "medium": "średni", "low": "niski", "unassessed": "nieustalony"}
     b.append((P, "Wybrane metody: " + "; ".join(
-        f"{m['name_pl']} ({m['status_pl'].lower()}, priorytet {priorities[m['priority_class']]})"
+        m["name_pl"] if concise else f"{m['name_pl']} ({m['status_pl'].lower()}, priorytet {priorities[m['priority_class']]})"
         for m in plan.selected_methods
     )))
     pr = plan.section_1_profitability
     b.append((H, "1. Opłacalność i potencjalne korzyści"))
     b.append((P, pr["headline_pl"]))
     be = pr["break_even"]
-    if be.get("interpretation_pl"):
+    if be.get("interpretation_pl") and not concise:
         b.append((L, be["interpretation_pl"]))
-    b.append((L, f"Roczna korzyść netto: {_fmt(pr['annual_net_benefit_pln'], 'zł')}; prosty okres zwrotu: "
-                 f"{_fmt(pr['simple_payback_years'], 'lat')}"))
-    b.append((L, pr["yield_effect"]["reason_pl"]))
-    for x in pr["overlap_warnings"] + pr["assumptions"]:
+    if not concise or pr["annual_net_benefit_pln"] is not None:
+        b.append((L, f"Roczna korzyść netto: {_fmt(pr['annual_net_benefit_pln'], 'zł')}; prosty okres zwrotu: "
+                     f"{_fmt(pr['simple_payback_years'], 'lat')}"))
+    if not concise or pr["annual_net_benefit_pln"] is None:
+        b.append((L, pr["yield_effect"]["reason_pl"]))
+    for x in pr["overlap_warnings"] + ([] if concise else pr["assumptions"]):
         b.append((L, x))
     c = plan.section_2_costs
     t = c["totals"]
     b.append((H, "2. Koszty wdrożenia"))
-    b.append((P, f"CAPEX znany (netto): {_fmt(t['capex_known_net_pln'], 'zł')}; OPEX roczny znany (netto): "
-                 f"{_fmt(t['opex_annual_known_net_pln'], 'zł')}; status sumy: {t['total_status']}"))
+    if concise:
+        b.append((P, f"Wycenione netto: jednorazowo {_fmt(t['capex_known_net_pln'], 'zł')} · "
+                     f"rocznie {_fmt(t['opex_annual_known_net_pln'], 'zł')}."))
+    else:
+        b.append((P, f"CAPEX znany (netto): {_fmt(t['capex_known_net_pln'], 'zł')}; OPEX roczny znany (netto): "
+                     f"{_fmt(t['opex_annual_known_net_pln'], 'zł')}; status sumy: {t['total_status']}"))
     b.append((P, t["explanation_pl"]))
     for i in c["items"]:
         amount = _fmt(i["total_net_pln"], "zł") if i["status"] == "priced" else COST_STATUS_PL[i["status"]]
         q = _fmt(i["quantity"], i["unit"]) if i["quantity"] is not None else f"? {i['unit']}"
         shared = " [wspólna]" if i["shared"] else ""
-        b.append((L, f"{i['name_pl']}{shared} — {i['cost_type']}, {q} × {_fmt(i['unit_price_net_pln'], 'zł')} = {amount} "
-                     f"(metody: {', '.join(i['method_ids'])})"))
-    for a in c["assumptions"]:
-        b.append((L, a))
+        if concise:
+            cost_type = "jednorazowo" if i["cost_type"] == "CAPEX" else "rocznie"
+            quantity = q if i["quantity"] is not None else "ilość do ustalenia"
+            b.append((L, f"{i['name_pl']}{shared} · {cost_type} · {quantity} · {amount}"))
+        else:
+            b.append((L, f"{i['name_pl']}{shared} — {i['cost_type']}, {q} × {_fmt(i['unit_price_net_pln'], 'zł')} = {amount} "
+                         f"(metody: {', '.join(i['method_ids'])})"))
+    if not concise:
+        b.extend((L, assumption) for assumption in c["assumptions"])
     f = plan.section_3_funding
     b.append((H, "3. Możliwe dofinansowania"))
     if not f["matches"]:
         b.append((P, "Nie znaleziono dopasowanych programów w katalogu."))
     for m in f["matches"]:
         code = f"{m['code']} " if m.get("code") else ""
-        b.append((L, f"{code}{m['program_name_pl']} — {MATCH_PL[m['match_status']]}; nabór w dniu analizy: "
-                     f"{CALL_PL[m['call_status_on_as_of']]}, obecnie: {CALL_PL[m['call_status_now']]}; "
-                     f"forma: {m['support_type']}. {' '.join(m['reasons_pl'])}"))
+        name = f"{code}{m['program_name_pl']} — {MATCH_PL[m['match_status']]}"
+        call = CALL_PL[m["call_status_now"]]
+        if concise:
+            b.append(("phase", name))
+            b.append((P, f"Nabór: {call}"))
+        else:
+            b.append((L, f"{name}; nabór w dniu analizy: {CALL_PL[m['call_status_on_as_of']]}, obecnie: {call}; "
+                         f"forma: {m['support_type']}. {' '.join(m['reasons_pl'])}"))
         for line in m.get("rates_pl", []) + m.get("estimate_pl", []):
             b.append((L, f"    {line}"))
-        if m.get("how_to_apply_pl"):
+        if not concise and m.get("how_to_apply_pl"):
             b.append((L, f"    Jak złożyć wniosek: {m['how_to_apply_pl']}"))
         if m.get("call_basis_pl"):
             b.append((L, f"    Termin: {m['call_basis_pl']}"))
-        if m.get("source_urls"):
+        if concise:
+            b.extend(("source", url) for url in m.get("source_urls") or [])
+        elif m.get("source_urls"):
             b.append((L, f"    Źródła (stan na {m.get('verified_at')}): {', '.join(m['source_urls'])}"))
     for w in f["double_funding_warnings"] + f["warnings"]:
         b.append((L, w))
@@ -212,12 +231,24 @@ def render_blocks(plan: FinalPlan) -> list[tuple[str, str]]:
             when = f" [najbliższy termin: {_d(task['window_from'])}–{_d(task['window_to'])}; {task['window_note_pl']}]"
         prog = f"; program: {', '.join(task['program_ids'])}" if task.get("program_ids") else ""
         b.append(("task", f"{task['order']:02d}. {task['title_pl']}"))
-        b.append(("task_detail", f"{task['timing_pl']}{when}{dep}; metody: {', '.join(task['method_ids'])}"
-                                 f"{prog}; status: {task_statuses.get(task['status'], task['status'])}"))
+        if concise:
+            verification = " · wymaga weryfikacji" if task["status"] == "requires_verification" else ""
+            b.append(("task_detail", f"{task['timing_pl']}{when}{dep}{verification}"))
+        else:
+            b.append(("task_detail", f"{task['timing_pl']}{when}{dep}; metody: {', '.join(task['method_ids'])}"
+                                     f"{prog}; status: {task_statuses.get(task['status'], task['status'])}"))
     for s in im["stop_go_conditions"]:
         b.append((L, s))
     a = plan.section_5_analysis
     b.append((H, "5. Szczegóły analizy działki i uprawy"))
+    if concise:
+        b.extend(_analysis_summary_blocks(a))
+        shown = {text.strip() for _, text in b}
+        warnings = [warning for warning in dict.fromkeys(plan.warnings) if warning not in shown]
+        if warnings:
+            b.append(("phase", "Istotne uwagi"))
+            b.extend((L, warning) for warning in warnings)
+        return b
     b.append((P, "Statusy modułów: " + ", ".join(f"{k}: {v}" for k, v in a["module_statuses"].items())))
     d = a["diagnosis"]
     for p in d["problems"]:
@@ -251,6 +282,38 @@ def render_blocks(plan: FinalPlan) -> list[tuple[str, str]]:
     return b
 
 
+def _analysis_summary_blocks(analysis: dict[str, Any]) -> list[tuple[str, str]]:
+    blocks = []
+    diagnosis = analysis["diagnosis"]
+    confidence_labels = {"low": "niska", "medium": "średnia", "high": "wysoka", "unknown": "nieustalona"}
+    for problem in diagnosis["problems"]:
+        reasons = problem.get("reasons_pl") or problem.get("reasons") or []
+        if reasons:
+            confidence = confidence_labels.get(problem.get("confidence"), "nieustalona")
+            blocks.append(("li", f"{reasons[0]} Pewność: {confidence}."))
+    blocks.extend(("li", item["reason_pl"]) for item in diagnosis["constraints"] if item.get("reason_pl"))
+
+    balance = analysis["crop_assessment"].get("crop_water_balance") or {}
+    critical = _fmt(balance.get("indicative_critical_window_p_minus_etc_mm"), "mm")
+    season = _fmt(balance.get("indicative_season_p_minus_etc_mm"), "mm")
+    blocks.append(("p", f"Orientacyjny bilans P−ETc: okres krytyczny {critical} · sezon {season}."))
+
+    labels = {"soil": "Gleba", "terrain": "Teren", "hydrology": "Hydrologia", "weather": "Pogoda", "satellite": "Satelity"}
+    incomplete = [labels.get(key, key) for key, status in analysis["module_statuses"].items() if status != "ok"]
+    if incomplete:
+        blocks.append(("li", f"Niepełne dane: {', '.join(incomplete)}."))
+    metadata = [(module.get("metadata") or {}) for module in analysis["modules"].values()]
+    limitations = dict.fromkeys(limit for meta in metadata for limit in (meta.get("limitations") or [])[:1])
+    if limitations:
+        blocks.append(("phase", "Ograniczenia danych"))
+        blocks.extend(("li", limit) for limit in limitations)
+    sources = dict.fromkeys(source for meta in metadata for source in meta.get("sources") or [])
+    if sources:
+        blocks.append(("phase", "Źródła danych"))
+        blocks.extend(("li", source) for source in sources)
+    return blocks
+
+
 def render_text(plan: FinalPlan) -> str:
     out = []
     for kind, text in render_blocks(plan):
@@ -273,9 +336,10 @@ def _ascii(text: str) -> str:
     return unicodedata.normalize("NFKD", text).encode("latin-1", "ignore").decode("latin-1")
 
 
-_INK = (28, 43, 40)
-_MUTED = (65, 83, 78)
+_INK = (24, 38, 56)
+_MUTED = (65, 83, 103)
 _GREEN = (20, 82, 59)
+_GOLD = (186, 131, 13)
 _RULE = (186, 203, 193)
 _PANEL = (243, 247, 244)
 _LOGO = Path(__file__).with_name("logo-hydroplon.png")
@@ -337,7 +401,7 @@ class _ReportPdf(FPDF):
         self.set_fill_color(*_PANEL)
         y = self.y
         self.multi_cell(self.epw, 6.2, title, align="L", fill=True, padding=(2, 4), new_x="LMARGIN", new_y="NEXT")
-        self.set_fill_color(*_GREEN)
+        self.set_fill_color(*_GOLD)
         self.rect(self.l_margin, y, 1, self.y - y, "F")
         self.ln(2.5)
 
@@ -371,11 +435,12 @@ def render_pdf(plan: FinalPlan) -> bytes:
     pdf = _ReportPdf(plan)
     pdf.add_page()
     previous_kind = None
-    for kind, text in render_blocks(plan):
+    for kind, text in render_blocks(plan, concise=True):
         if previous_kind == "meta" and kind != "meta":
             pdf.ln(4)
         previous_kind = kind
-        text = pdf.doc_text(text)
+        if kind != "source":
+            text = pdf.doc_text(text)
         if kind == "title":
             pdf.set_font(pdf.body_font, "B", 25)
             pdf.set_text_color(*_INK)
@@ -388,6 +453,11 @@ def render_pdf(plan: FinalPlan) -> bytes:
             pdf.multi_cell(pdf.epw, 5, text, align="L", fill=True, padding=(.85, 4), new_x="LMARGIN", new_y="NEXT")
         elif kind == "h":
             pdf.write_section(text)
+        elif kind == "source":
+            pdf.set_font(pdf.body_font, "", 9)
+            pdf.set_text_color(0, 85, 165)
+            label = pdf.doc_text(f"Źródło · {urlsplit(text).netloc}")
+            pdf.multi_cell(pdf.epw, 4.5, label, link=text, align="L", new_x="LMARGIN", new_y="NEXT")
         else:
             pdf.write_paragraph(kind, text)
     return bytes(pdf.output())

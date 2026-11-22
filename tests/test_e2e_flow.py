@@ -83,6 +83,9 @@ def test_report_text_and_pdf_from_same_plan(orch):
 
     pdf_text = " ".join(" ".join(pdf_text).split())
     assert fp.plan_id in pdf_text
+    assert "Źródła danych" in pdf_text
+    assert "Wersje danych i reguł" not in pdf_text
+    assert "Wersje danych i reguł" in txt
     for line in (
         "Ostatnia obserwacja IMGW w analizie: 15.06.2019.",
         "Ostatnia użyteczna scena Sentinel-2: 11.06.2019.",
@@ -247,7 +250,8 @@ def test_wizard_app_served_and_root_redirects(client):
     for needle in ('id="screen-1"', 'id="screen-4"', "/static/app.css", "/static/app.js"):
         assert needle in r.text, needle
     css, js = client.get("/static/app.css"), client.get("/static/app.js")
-    assert css.status_code == 200 and "text/css" in css.headers["content-type"] and "#0e6548" in css.text  # zieleń KOWR z tokenów Sass
+    assert css.status_code == 200 and "text/css" in css.headers["content-type"]
+    assert "#0e6548" in css.text and "#eac24f" in css.text and "Literata" in css.text
     assert js.status_code == 200 and "javascript" in js.headers["content-type"]
     for needle in ("/api/parcels/by-id", "/api/parcels/by-point", "/api/parcels/address-search",
                    "/api/analysis", "/api/crops/assess", "/api/recommendations", "/api/selections", "/api/plans"):

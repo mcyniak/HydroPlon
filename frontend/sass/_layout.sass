@@ -2,9 +2,9 @@
 
 // ---------- Header ----------
 .topbar
-  background: $green
+  background: $green-deep
   color: #fff
-  box-shadow: 0 3px 14px rgba(2, 47, 28, .12)
+  box-shadow: inset 0 -3px $yellow
 
 .topbar-inner
   @include page-container
@@ -20,13 +20,17 @@
   gap: 12px
   text-decoration: none
   color: inherit
+  &:hover
+    color: inherit
+  &:focus-visible
+    @include focus-ring($bg)
 
 .brand-mark
   display: block
   flex-shrink: 0
   width: 44px
   height: 44px
-  border-radius: 10px
+  border-radius: $radius
   background: $bg
 
 .brand-name
@@ -42,7 +46,7 @@
   border: 1px solid rgba(255, 255, 255, .26)
   background: rgba(255, 255, 255, .12)
   padding: 8px 13px
-  border-radius: 999px
+  border-radius: $radius
   font-size: 11px
   font-weight: 750
   letter-spacing: .07em
@@ -75,9 +79,8 @@
 // ---------- Pasek kroków ----------
 .stepper
   background: #fff
-  border: 1px solid #e3e9df
-  border-radius: 20px
-  box-shadow: $shadow
+  border: 1px solid $border
+  border-radius: $radius
   padding: 19px 28px 16px
   display: grid
   grid-template-columns: 1fr .46fr 1fr .46fr 1fr .46fr 1fr
@@ -102,16 +105,15 @@
       background: $green
       color: #fff
       border-color: $green
-      box-shadow: 0 5px 12px rgba(14, 101, 72, .19)
     .step-name
       color: $ink
   &[data-state="done"]
     .step-bubble
       background: $green-pale
-      color: $green
+      color: $green-deep
       border-color: $green-line
     .step-name
-      color: $green
+      color: $green-deep
 
 .step-bubble
   display: grid
@@ -119,8 +121,8 @@
   width: 37px
   height: 37px
   border-radius: 50%
-  border: 1px solid #e5ece8
-  background: #f4f7f5
+  border: 1px solid $border
+  background: $soft
   color: $ink-3
   font-size: 14px
   font-weight: 800
@@ -137,23 +139,21 @@
 .step-line
   height: 2px
   border-radius: 4px
-  background: #e4ebe7
+  background: $border
   transform: translateY(-11px)
   &.done
-    background: #b4d3bb
+    background: $green-line
 
 // ---------- Karta kreatora ----------
 .wizard-card
   background: #fff
-  border: 1px solid #dfe8e5
-  border-radius: 22px
-  box-shadow: 0 12px 35px rgba(18, 65, 49, .055)
+  border: 1px solid $border
+  border-radius: $radius
   padding: 29px 30px 26px
   min-height: 575px
 
 .step-screen
   display: none
-  animation: appear .22s ease-out
   &.active
     display: block
 
@@ -174,7 +174,7 @@
 .step-count
   background: $green
   color: #fff
-  border-radius: 9px
+  border-radius: $radius
   width: 34px
   height: 34px
   display: grid
@@ -216,7 +216,7 @@
 // ---------- Stopka ----------
 .footer
   background: $green-deep
-  color: #cfe6da
+  color: #e5f3ec
   margin-top: 30px
   p
     margin: 0

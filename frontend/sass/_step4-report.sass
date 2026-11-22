@@ -27,16 +27,16 @@
 // ---------- Opłacalność ----------
 .benefit-card
   position: relative
-  background: linear-gradient(135deg, #e9f8ee 0%, #f9fdf9 78%)
-  border: 1px solid #b7ddc7
-  border-radius: 18px
+  background: $green-pale
+  border: 1px solid $green-line
+  border-radius: $radius
   padding: 24px 26px
   overflow: hidden
   min-height: 226px
   p
     margin: 0
     max-width: 475px
-    color: $green-ink
+    color: $ink-2
     font-size: 12.5px
 
 .benefit-main
@@ -55,7 +55,7 @@
 .benefit-metric
   border: 1px solid #e2ede7
   background: #f8fbf9
-  border-radius: 11px
+  border-radius: $radius
   padding: 9px 12px
   min-width: 128px
   span
@@ -71,9 +71,9 @@
 // ---------- Koszty ----------
 .cost-card
   background: #fff
-  border: 1px solid #dce6e2
+  border: 1px solid $border
   padding: 23px
-  border-radius: 18px
+  border-radius: $radius
   min-height: 226px
   .report-heading .icon
     color: $ink-3
@@ -107,8 +107,8 @@
 
 // ---------- Sekcje: dotacje, plan ----------
 .report-section
-  border: 1px solid #dce6e2
-  border-radius: 17px
+  border: 1px solid $border
+  border-radius: $radius
   padding: 22px 24px
   margin-bottom: 17px
   h3
@@ -134,7 +134,7 @@
   padding: 16px 17px
   background: #fff
   border: 1px solid #f0e3bc
-  border-radius: 11px
+  border-radius: $radius
   margin-top: 15px
   strong
     font-size: 13px
@@ -149,7 +149,7 @@
   font-weight: 760
   background: #fff4d5
   border: 1px solid #e8d08a
-  border-radius: 999px
+  border-radius: $radius
   padding: 8px 10px
   white-space: nowrap
 
@@ -186,7 +186,7 @@
   flex: 0 0 43px
   height: 43px
   place-items: center
-  border-radius: 12px
+  border-radius: $radius
   background: $green
   color: $bg
   .icon
@@ -244,7 +244,7 @@
 .implementation-phase
   min-width: 0
   border: 1px solid $border
-  border-radius: 11px
+  border-radius: $radius
   background: $bg
   > summary
     display: flex
@@ -253,7 +253,7 @@
     justify-content: space-between
     gap: 12px
     padding: 10px 14px
-    border-radius: 10px
+    border-radius: $radius
     cursor: pointer
     list-style: none
     &::-webkit-details-marker
@@ -275,7 +275,7 @@
     > summary
       background: $green-pale
       border-bottom: 1px solid $green-line
-      border-radius: 10px 10px 0 0
+      border-radius: $radius $radius 0 0
       .icon
         transform: rotate(180deg)
 
@@ -301,7 +301,7 @@
   &:focus
     margin: 0 -6px
     padding-inline: 6px
-    border-radius: 6px
+    border-radius: $radius
     background: $green-pale
 
 .implementation-task-heading, .implementation-task-meta
@@ -318,7 +318,7 @@
 
 .implementation-check, .implementation-program
   padding: 1px 6px
-  border-radius: 5px
+  border-radius: $radius
   font-size: 11px
   font-weight: 700
 
@@ -345,7 +345,7 @@
 .implementation-agenda
   padding: 15px 16px
   border: 1px solid $gold-line
-  border-radius: 12px
+  border-radius: $radius
   background: $yellow-pale
   overflow-wrap: anywhere
   h4
@@ -399,7 +399,7 @@
 .implementation-conditions
   padding: 12px 15px
   border: 1px solid $green-line
-  border-radius: 11px
+  border-radius: $radius
   background: $bg
   overflow-wrap: anywhere
   summary
@@ -441,8 +441,8 @@ details.more summary
 
 // ---------- Rozwijana analiza (zawsze na końcu) ----------
 details.analysis-section
-  border: 1px solid #dce6e2
-  border-radius: 16px
+  border: 1px solid $border
+  border-radius: $radius
   background: #fff
   padding: 0
   margin-top: 18px
@@ -457,7 +457,7 @@ details.analysis-section
     font-size: 15px
     color: $ink
     background: #fff
-    border-radius: 16px
+    border-radius: $radius
     &::-webkit-details-marker
       display: none
     .icon
@@ -497,7 +497,7 @@ details.analysis-section
 
 .analysis-chip
   border: 1px solid #e3ece7
-  border-radius: 9px
+  border-radius: $radius
   padding: 12px
   background: #f9fbf9
   b
@@ -528,7 +528,7 @@ details.analysis-section
   color: $gold-deep
   background: #fff4d5
   border: 1px solid #e8d08a
-  border-radius: 6px
+  border-radius: $radius
   padding: 1px 6px
   margin-right: 7px
   font-variant-numeric: tabular-nums

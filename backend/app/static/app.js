@@ -497,7 +497,7 @@ function renderReport() {
   const be = pr.break_even || {};
   const benefit = pr.annual_net_benefit_pln;
   const hero = benefit != null ? `${zl(benefit)} / rok` : 'Do oszacowania';
-  const benefitHtml = `<div class="benefit-card"><div class="report-heading"><svg class="icon"><use href="#icon-chart"/></svg>OPŁACALNOŚĆ I POTENCJALNE KORZYŚCI${demoPrices ? '<span class="tag-demo">CENY DEMONSTRACYJNE</span>' : ''}</div>
+  const benefitHtml = `<div class="benefit-card"><div class="report-heading"><svg class="icon"><use href="#icon-chart"/></svg>OPŁACALNOŚĆ I POTENCJALNE KORZYŚCI</div>
     <div class="benefit-main">${esc(hero)}</div><p>${esc(pr.headline_pl)}</p>
     <div class="benefit-metrics">
       <div class="benefit-metric"><span>Roczna korzyść netto</span><b>${benefit != null ? esc(zl(benefit)) : 'Do oszacowania'}</b></div>
