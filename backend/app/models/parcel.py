@@ -65,3 +65,10 @@ class ParcelProfile(StrictModel):
     @property
     def teryt_id(self) -> str:  # alias historyczny
         return self.parcel_id
+
+
+class AddressMatch(StrictModel):
+    label: str = Field(min_length=1)
+    lat: float = Field(ge=-90, le=90)
+    lon: float = Field(ge=-180, le=180)
+    kind: Literal["address", "street", "city"]

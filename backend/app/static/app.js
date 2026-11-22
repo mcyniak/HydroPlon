@@ -70,6 +70,7 @@ L.control.zoom({ position: 'bottomright' }).addTo(map);
 const baseMap = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
 const baseOrto = L.tileLayer.wms('https://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMS/StandardResolution',
   { layers: 'Raster', format: 'image/jpeg', maxZoom: 19, attribution: 'Ortofotomapa &copy; GUGiK' });
+const addressLayer = L.layerGroup().addTo(map);
 const parcelLayer = L.geoJSON(null, { style: { color: '#0E6548', weight: 3, fillColor: '#18865E', fillOpacity: 0.2 } }).addTo(map);
 const fixtureLayer = L.geoJSON(null, { style: { color: '#BA830D', weight: 1.5, dashArray: '4', fillOpacity: 0.06 },
   onEachFeature: (f, l) => l.bindTooltip(`${esc(f.properties.label)}: ${esc(f.properties.scenario_pl)}`) }).addTo(map);
@@ -87,12 +88,83 @@ map.on('click', (e) => {
   loadParcel(`/api/parcels/by-point?lat=${e.latlng.lat.toFixed(7)}&lon=${e.latlng.lng.toFixed(7)}`, 'Szukam działki w klikniętym miejscu…');
 });
 function updateMapChip() {
-  if (state.parcel) return;
-  $('map-chip-text').textContent = map.getZoom() < MIN_CLICK_ZOOM ? 'Przybliż mapę do swojej działki' : 'Kliknij działkę, aby ją wybrać';
+  if (addressLayer.getLayers().length) {
+    $('map-chip-text').textContent = 'Kliknij działkę w okolicy adresu';
+  } else if (state.parcel) {
+    const p = state.parcel;
+    $('map-chip-text').textContent = `Działka ${p.administrative_location.parcel_number || p.parcel_id}`;
+  } else {
+    $('map-chip-text').textContent = map.getZoom() < MIN_CLICK_ZOOM ? 'Przybliż mapę do swojej działki' : 'Kliknij działkę, aby ją wybrać';
+  }
 }
 map.on('zoomend', updateMapChip);
 
 // ---------- krok 1: działka ----------
+const addressInput = $('address-input');
+const addressButton = $('address-search');
+const addressStatus = $('address-status');
+const addressResults = $('address-results');
+
+function showAddress(place) {
+  if ($('parcel-search').disabled) {
+    ++parcelSeq;
+    $('parcel-search').disabled = false;
+    renderParcelCard();
+  }
+  const point = [place.lat, place.lon];
+  const zoom = { address: 17, street: 16, city: MIN_CLICK_ZOOM }[place.kind];
+  addressLayer.clearLayers();
+  L.circleMarker(point, { radius: 8, color: '#805A0B', fillColor: '#F4CF65', fillOpacity: 1, interactive: false }).addTo(addressLayer);
+  map.invalidateSize({ pan: false });
+  map.setView(point, zoom, { animate: false });
+  updateMapChip();
+  addressStatus.textContent = `${place.label}. Kliknij działkę na mapie.`;
+  $('map-panel').scrollIntoView({ block: 'nearest' });
+}
+
+$('address-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (addressButton.disabled) return;
+  const query = addressInput.value.trim();
+  if (query.length < 3) {
+    addressStatus.textContent = 'Wpisz co najmniej 3 znaki adresu lub nazwy miejscowości.';
+    addressInput.focus();
+    return;
+  }
+  const parcelRequest = parcelSeq;
+  addressButton.disabled = true;
+  addressLayer.clearLayers();
+  updateMapChip();
+  addressResults.replaceChildren();
+  addressResults.hidden = true;
+  addressStatus.textContent = 'Szukam adresu w Geoportalu…';
+  try {
+    const results = await api('GET', `/api/parcels/address-search?q=${encodeURIComponent(query)}`);
+    if (parcelRequest !== parcelSeq) { addressStatus.textContent = ''; return; }
+    if (results.length === 1) {
+      showAddress(results[0]);
+    } else if (results.length > 1) {
+      addressStatus.textContent = 'Wybierz wynik, aby przybliżyć mapę.';
+      for (const place of results) {
+        const item = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'link-btn';
+        button.textContent = place.label;
+        button.addEventListener('click', () => showAddress(place));
+        item.append(button);
+        addressResults.append(item);
+      }
+      addressResults.hidden = false;
+    } else {
+      addressStatus.textContent = 'Brak wyników. Sprawdź nazwę miejscowości, ulicę i numer.';
+    }
+  } catch (error) {
+    addressStatus.textContent = parcelRequest === parcelSeq ? error.message : '';
+  } finally {
+    addressButton.disabled = addressInput.disabled;
+  }
+});
 async function loadParcel(url, msg) {
   const my = ++parcelSeq;
   hideError();
@@ -114,7 +186,11 @@ function setParcel(p) {
   parcelLayer.clearLayers(); parcelLayer.addData(p.geojson_feature);
   map.invalidateSize();
   map.fitBounds(parcelLayer.getBounds(), { maxZoom: 17, padding: [40, 40] });
-  $('map-chip-text').textContent = `Działka ${p.administrative_location.parcel_number || p.parcel_id}`;
+  if (addressLayer.getLayers().length) {
+    addressLayer.clearLayers();
+    addressStatus.textContent = '';
+  }
+  updateMapChip();
   renderParcelCard();
   if (changed) { invalidate(1); }
   startAnalysis();
@@ -124,8 +200,7 @@ function renderParcelCard() {
   const p = state.parcel;
   if (!p) {
     const live = state.health?.data_mode === 'live';
-    $('parcel-detail-slot').innerHTML = `<div class="parcel-empty"><p><b>Nie znasz numeru działki?</b> Przybliż mapę do swojej miejscowości i kliknij pole — numer uzupełni się sam.</p>
-      ${live ? `<button type="button" class="link-btn" data-example>Zobacz przykład: działka ${esc(EXAMPLE_PARCEL.id)} — ${esc(EXAMPLE_PARCEL.label)}</button>` : ''}</div>`;
+    $('parcel-detail-slot').innerHTML = live ? `<div class="parcel-empty"><button type="button" class="link-btn" data-example>Zobacz przykład: działka ${esc(EXAMPLE_PARCEL.id)} — ${esc(EXAMPLE_PARCEL.label)}</button></div>` : '';
     return;
   }
   const m = p.metrics, s = p.source, a = p.administrative_location;
@@ -524,6 +599,11 @@ document.querySelectorAll('.step-indicator').forEach((b) => b.addEventListener('
   try {
     const h = await api('GET', '/api/health'); state.health = h;
     const live = h.data_mode === 'live';
+    if (!live) {
+      addressInput.disabled = true;
+      addressButton.disabled = true;
+      addressStatus.textContent = 'Wyszukiwanie adresów jest dostępne w trybie z danymi rzeczywistymi.';
+    }
     $('mode-pill').textContent = live ? 'DANE RZECZYWISTE' : 'DANE TESTOWE';
     $('context-text').textContent = live ? 'Źródła: GUGiK, SoilGrids, IMGW-PIB, Wody Polskie, Sentinel-2' : 'Tryb testowy — dane syntetyczne';
     renderParcelCard();
