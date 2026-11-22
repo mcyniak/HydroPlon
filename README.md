@@ -11,6 +11,7 @@
   <a href="docs/INSTRUKCJA.md"><strong>Instrukcja obsługi</strong></a> ·
   <a href="#zrzuty-ekranu"><strong>Zrzuty ekranu</strong></a> ·
   <a href="docs/assets/hydroplon-prezentacja-kowr.pdf"><strong>Prezentacja konkursowa KOWR (PDF)</strong></a> ·
+  <a href="#film-demonstracyjny"><strong>Film demonstracyjny</strong></a> ·
   <a href="docs/assets/hydroplon-przykladowy-raport.pdf"><strong>Przykładowy raport PDF</strong></a> ·
   <a href="docs/DANE_I_WERYFIKACJA.md"><strong>Dane i weryfikacja</strong></a>
 </p>
@@ -18,6 +19,12 @@
 ## Uruchom aplikację
 
 Na Windows pobierz całe repozytorium i otwórz [`Uruchom HydroPlon.cmd`](Uruchom%20HydroPlon.cmd). Potrzebujesz Pythona 3.13. Skrypt instaluje zależności i otwiera kreator na [127.0.0.1:8000/app](http://127.0.0.1:8000/app). Polecenia dla macOS i Linux oraz uruchomienie na danych testowych znajdziesz w [instrukcji instalacji](docs/INSTALACJA.md).
+
+## Film demonstracyjny
+
+Przejście od wyboru działki do raportu z dofinansowaniami i kalkulatorem opłacalności. Film trwa 2 min 29 s i ma polskie napisy. Narrację włączysz przyciskiem dźwięku w odtwarzaczu.
+
+https://github.com/user-attachments/assets/274e27ec-75c6-4bea-b9a0-b651e18abb49
 
 ## Zrzuty ekranu
 
