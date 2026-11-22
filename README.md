@@ -10,6 +10,7 @@
   <a href="docs/INSTALACJA.md"><strong>Instalacja</strong></a> ·
   <a href="docs/INSTRUKCJA.md"><strong>Instrukcja obsługi</strong></a> ·
   <a href="#zrzuty-ekranu"><strong>Zrzuty ekranu</strong></a> ·
+  <a href="docs/assets/hydroplon-prezentacja-kowr.pdf"><strong>Prezentacja konkursowa KOWR (PDF)</strong></a> ·
   <a href="docs/assets/hydroplon-przykladowy-raport.pdf"><strong>Przykładowy raport PDF</strong></a> ·
   <a href="docs/DANE_I_WERYFIKACJA.md"><strong>Dane i weryfikacja</strong></a>
 </p>
